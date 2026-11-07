@@ -19,3 +19,9 @@ The evaluated agent receives only its task and allowed fixtures, never grading k
 Release holdout results sparingly. Once inspected and used to revise a skill, that case becomes development/regression material. Repeatedly selecting patches on the same confirmation set turns it into another hill-climb target.
 
 Before release, confirm the same skill text across the selected T3 provider/model matrix. Do not tune against one provider and claim model independence from file-format portability alone. See [the matrix](t3-matrix.md).
+
+## Current candidate: instruction-value pruning
+
+Baseline: jstack commit 3132b7b3628028519257663f6f77a79e45a4422f, preserved in subjects/. The candidate removes generic and duplicated host instructions, shortens descriptions, and folds two small references into their entrypoints. This is a hypothesis, not a performance result.
+
+Test the same development cases with no-added-skill, baseline, and candidate conditions. Include simple lookups, clean diffs, and already-fixed findings. Check that shorter instructions retain evidence quality and completion, while reducing unnecessary questions, artifacts, and tool calls. Do not pass a candidate just because its instruction word count falls. The optional audit skill should be retired if it adds no useful result over normal authoring guidance.
