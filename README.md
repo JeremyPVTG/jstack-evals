@@ -6,7 +6,7 @@ This repository has two jobs: give each change a repeatable development target, 
 
 ## Current state
 
-15 public task specifications and nine routing sketches have been moved here. Executable task fixtures, graders, agent adapters, and held-out cases still need implementation. No model performance results have been published. Revision pinning has deterministic tests; that is tooling evidence only.
+22 public task specifications and nine routing sketches have been moved here. Executable task fixtures, graders, agent adapters, and held-out cases still need implementation. No model performance results have been published. Revision pinning has deterministic tests; that is tooling evidence only.
 
 ## Relationship to jstack
 

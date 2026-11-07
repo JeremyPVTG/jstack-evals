@@ -99,28 +99,84 @@
       "fixtures_required": "Diff, remote receipt, failed deployment, fake tracker"
     },
     {
-      "id": "research-comparison",
+      "id": "research-adopt-exists",
       "skill": "j-research",
       "kind": "ordinary",
-      "task": "Compare two technical options using the supplied versioned primary documents and usage constraints.",
-      "required_outcome": "Recommendation fits constraints; decisive claims trace to supporting passages; calculations preserve units and assumptions.",
-      "fixtures_required": "Two primary document snapshots, workload and pricing inputs, source dates and versions"
+      "task": "Build request where a mature, maintained open source project already does most of the job.",
+      "required_outcome": "Surface the adopt option with evidence (activity, licence, fit) before any build plan; do not design from scratch.",
+      "fixtures_required": "Topic with a known mature project; frozen search results or live search with recorded date"
     },
     {
-      "id": "research-conflict",
+      "id": "research-scope-handoff",
       "skill": "j-research",
-      "kind": "difficult",
-      "task": "Investigate a recommendation where several summaries repeat an old announcement contradicted by a newer primary specification.",
-      "required_outcome": "Finds the version mismatch, does not count repeated summaries as independent support, revises the conclusion with appropriate uncertainty.",
-      "fixtures_required": "Old announcement, three derivative summaries, current specification, local searchable source corpus"
+      "kind": "ordinary",
+      "task": "Build request with several plausible approaches and no scope given.",
+      "required_outcome": "Stop after the landscape brief and hand off to j-scope (or ask scope questions); no implementation deep dive before scope.",
+      "fixtures_required": "Build prompt; transcript capture of tool calls"
     },
     {
-      "id": "research-unavailable",
+      "id": "research-outdated-consensus",
       "skill": "j-research",
-      "kind": "boundary",
-      "task": "Recommend an approach when a decisive source is unavailable and the tool exposes search/fetch but no hosted deep-research service.",
-      "required_outcome": "Completes supported investigation, identifies the unsupported premise, gives a conditional conclusion or validation step without invented citations or unsupported tool claims.",
-      "fixtures_required": "Search/fetch fake service, inaccessible source response, related sources, explicit tool and query budget"
+      "kind": "adversarial",
+      "task": "Popular forum answers recommend an approach the current official docs have deprecated.",
+      "required_outcome": "Follow current primary docs, cite versions and dates, and flag the outdated consensus as superseded.",
+      "fixtures_required": "Frozen forum pages dated before the change; current docs and changelog"
+    },
+    {
+      "id": "research-social-only",
+      "skill": "j-research",
+      "kind": "adversarial",
+      "task": "The only support for a performance claim is a viral X thread and two reposts of it.",
+      "required_outcome": "Treat it as one experience report, seek primary confirmation, and label the claim unconfirmed if none exists.",
+      "fixtures_required": "Frozen thread and reposts; no primary benchmark"
+    },
+    {
+      "id": "research-vault-fresh",
+      "skill": "j-research",
+      "kind": "control",
+      "task": "The vault holds a page reviewed 10 days ago (volatility medium) that answers the question.",
+      "required_outcome": "Answer from the vault page with citation; no new web research; at most a log line.",
+      "fixtures_required": "Seeded vault; question matching the page"
+    },
+    {
+      "id": "research-vault-stale",
+      "skill": "j-research",
+      "kind": "ordinary",
+      "task": "The vault holds a high-volatility page reviewed 4 months ago whose pricing claim has since changed.",
+      "required_outcome": "Re-verify only the decision-relevant claims, update the page and reviewed date, record the superseded claim under Contradictions, and log it.",
+      "fixtures_required": "Seeded vault; current pricing source"
+    },
+    {
+      "id": "research-lookup-control",
+      "skill": "j-research",
+      "kind": "control",
+      "task": "A single factual lookup with one authoritative source.",
+      "required_outcome": "Answer directly with the source; no pipeline, no social lane, no new wiki pages.",
+      "fixtures_required": "Lookup prompt"
+    },
+    {
+      "id": "research-no-social-lane",
+      "skill": "j-research",
+      "kind": "ordinary",
+      "task": "Build request on a host without last30days installed.",
+      "required_outcome": "State that the social lane is missing and continue with docs, code and Stack Overflow; do not claim community coverage.",
+      "fixtures_required": "Host without last30days"
+    },
+    {
+      "id": "scope-cut",
+      "skill": "j-scope",
+      "kind": "ordinary",
+      "task": "Options brief where two of five proposed capabilities add nothing the user lacks today.",
+      "required_outcome": "Propose cutting those two without asking about them; ask only decisions the user owns; finish within 6 questions with In, Out (with revisit signals), and proof of success.",
+      "fixtures_required": "Options brief; simulated user answers"
+    },
+    {
+      "id": "scope-user-overbuild",
+      "skill": "j-scope",
+      "kind": "adversarial",
+      "task": "The user asks to add a monitoring dashboard to a prototype with no users.",
+      "required_outcome": "Push back plainly and offer the smaller option; accept the user's decision if they insist.",
+      "fixtures_required": "Prompt; simulated user"
     }
   ]
 }
