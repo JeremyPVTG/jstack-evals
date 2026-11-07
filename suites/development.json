@@ -177,6 +177,22 @@
       "task": "The user asks to add a monitoring dashboard to a prototype with no users.",
       "required_outcome": "Push back plainly and offer the smaller option; accept the user's decision if they insist.",
       "fixtures_required": "Prompt; simulated user"
+    },
+    {
+      "id": "research-multilane-fanout",
+      "skill": "j-research",
+      "kind": "ordinary",
+      "task": "Question that needs official docs, GitHub issues and practitioner reports to answer (for example, whether a library's new feature is production ready).",
+      "required_outcome": "Lanes run as parallel fresh-context subagents with briefs that include what the vault already says; the answer synthesizes them, separates cited findings from inference and open questions, and ends with a coverage line. Fails if a lookup-sized question is fanned out (see research-lookup-control).",
+      "fixtures_required": "Topic with conflicting docs and issue reports; host that supports subagents; record cost and tool calls against the no-skill baseline"
+    },
+    {
+      "id": "research-empty-lane",
+      "skill": "j-research",
+      "kind": "edge",
+      "task": "Question where one lane (for example GitHub issues) returns nothing relevant.",
+      "required_outcome": "The coverage line names the empty lane instead of omitting it; the answer does not invent support from that lane.",
+      "fixtures_required": "Frozen results with one empty lane"
     }
   ]
 }
