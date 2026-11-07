@@ -1,6 +1,6 @@
 # jstack-evals
 
-Reproducible evaluations and improvement experiments for jstack, maintained independently from the skills themselves.
+Reproducible evaluations and improvement experiments for jstack in T3 Code, across models. Maintained independently from the skills themselves.
 
 This repository has two jobs: give each change a repeatable development target, and provide inspectable evidence for claims about the resulting stack. Public development scores alone do not prove generalization.
 
@@ -22,6 +22,7 @@ Pin requires a clean committed subject and records its full commit, tree, and tr
 
 ## Evaluate and improve
 
+- [T3 model matrix](docs/t3-matrix.md): primary host, provider capability differences, and transfer gates.
 - [Protocol](PROTOCOL.md): comparison conditions, scoring, budgets, and release gates.
 - [Development suite](suites/development.json): visible task specifications for iteration.
 - [Routing sketches](suites/routing-sketches.json): early selection examples, not a completed discovery suite.

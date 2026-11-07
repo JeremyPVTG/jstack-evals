@@ -1,7 +1,7 @@
 # Hill-climb loop
 
 1. Select one observed failure or cost problem from the public development set. Write a falsifiable hypothesis and choose the primary outcome before editing the skill.
-2. Freeze the starting jstack commit, evaluation commit, case IDs, model/host settings, budget, trial count, and grader version. Record the baseline and candidate conditions. Keep project and host instructions identical.
+2. Freeze the starting jstack commit, evaluation commit, case IDs, model/host settings, budget, trial count, and grader version. Record the baseline and candidate conditions. Keep project and host instructions identical within each pair. T3 is the primary host; model and provider are explicit variables.
 3. Make one coherent skill change. Commit it in jstack; pin that revision here. Use isolated fresh workspaces for paired trials and randomize condition order.
 4. Grade actual outputs and resulting state. Record every planned trial, including failures, timeouts, interventions, and retries. Mark infrastructure failures separately. Check regressions across related skills and pack discovery, not only the targeted case.
 5. Accept a candidate only when it improves the chosen outcome or gives equivalent quality at lower cost, introduces no critical failure, and satisfies the protocol's release gates. Report ties and inconclusive results. Reject a patch whose only improvement is a grader loophole.
@@ -17,3 +17,5 @@ No holdout set currently exists. Reserve distinct task families or fixture varia
 The evaluated agent receives only its task and allowed fixtures, never grading keys or result expectations. Restrict workspace and tool access accordingly; merely asking it not to read a grader is insufficient isolation.
 
 Release holdout results sparingly. Once inspected and used to revise a skill, that case becomes development/regression material. Repeatedly selecting patches on the same confirmation set turns it into another hill-climb target.
+
+Before release, confirm the same skill text across the selected T3 provider/model matrix. Do not tune against one provider and claim model independence from file-format portability alone. See [the matrix](t3-matrix.md).

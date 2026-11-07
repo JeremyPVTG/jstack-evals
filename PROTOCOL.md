@@ -4,7 +4,7 @@ Status: evaluation design, not benchmark results. Initial model trials are not y
 
 ## Decision
 
-Keep a skill when it helps complete realistic work reliably, with acceptable cost and interruption. Evaluate both the individual skill and the assembled stack. Do not produce one composite score: it can hide critical failures and turn subjective weighting into a ranking.
+Optimize for T3 Code across models. Keep a skill when it helps complete realistic work reliably, with acceptable cost and interruption. Evaluate both the individual skill and the assembled stack. Do not produce one composite score: it can hide critical failures and turn subjective weighting into a ranking.
 
 ## Comparisons
 
@@ -46,7 +46,7 @@ Check task completion as well as violations. An agent that avoids all actions fa
 
 ### 4. Host integration
 
-Verify fresh-session discovery, one representative task, and installation removal on each host claimed as supported. Start with Claude Code and Codex. Record host/provider/model version, actual directory read, invocation path, tool availability, and date. T3 results name its provider as well as its host. Cursor and Hermes remain unverified until run.
+Verify fresh-session discovery, one representative task, and installation removal on each host claimed as supported. Start with T3 Code using selected Claude and Codex provider configurations. Other provider families extend the matrix; standalone CLI coverage is secondary. Record host/provider/model version, actual directory read, invocation path, tool availability, and date. T3 results name its provider as well as its host. Cursor and Hermes remain unverified until run.
 
 A native host test is separate from a simulated behavior test. Passing one does not certify the other.
 
@@ -77,7 +77,7 @@ Prepare two development fixtures per skill initially: eight core tasks, two tria
 
 After the pilot, freeze all 15 cases and grading assertions for a release comparison. Use three trials per case and variant: up to 135 task runs on the primary configuration. The pilot is for fixing the harness, not a public quality claim. Run discovery separately and budget it explicitly. An isolated discovery run with only a catalog may be cheaper but cannot certify native host discovery.
 
-Then confirm the candidate on a second model/host and run matched baselines there before making cross-model improvement claims. If the cost is disproportionate, publish a narrower result with its limitation instead of buying a larger headline.
+Then confirm the candidate on a second model from a different provider family inside T3 and run matched baselines there before making model-transfer claims. See [the T3 matrix](docs/t3-matrix.md) for configuration and per-provider gates. If the cost is disproportionate, publish a narrower result with its limitation instead of buying a larger headline.
 
 Reserve separate holdout fixture variants before editing from evaluation feedback. Keep grading material outside agent-readable workspaces. If the author tunes against a public case, classify it as regression coverage rather than unseen generalization. Never call familiar regression cases a hidden benchmark.
 
