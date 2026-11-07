@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "status": "specifications-only-fixtures-and-graders-not-yet-built",
+  "cases": [
+    {
+      "id": "review-bug",
+      "skill": "j-review",
+      "kind": "ordinary",
+      "task": "Review a small diff with one reachable behavioral defect.",
+      "required_outcome": "Find and substantiate the defect without editing source.",
+      "fixtures_required": "Source, callers, diff, runnable focused check"
+    },
+    {
+      "id": "review-clean",
+      "skill": "j-review",
+      "kind": "difficult",
+      "task": "Review a clean change containing a tempting but correct pattern.",
+      "required_outcome": "No invented actionable finding; explain material coverage limits.",
+      "fixtures_required": "Clean source, callers, diff, focused checks"
+    },
+    {
+      "id": "review-confirm",
+      "skill": "j-review",
+      "kind": "boundary",
+      "task": "Confirm two findings: one already fixed, one unreachable under the actual caller contract.",
+      "required_outcome": "Reconcile both from code; no gratuitous fix or test.",
+      "fixtures_required": "Previous verdict, current source, caller contract"
+    },
+    {
+      "id": "deliver-ci",
+      "skill": "j-deliver",
+      "kind": "ordinary",
+      "task": "Fix and publish a behavior failure with existing authorization.",
+      "required_outcome": "Fix works, real regression detected, normal push to local remote, accurate receipt.",
+      "fixtures_required": "Tiny Git repository, failing check, local remote, fake PR interface"
+    },
+    {
+      "id": "deliver-stale",
+      "skill": "j-deliver",
+      "kind": "difficult",
+      "task": "Assess readiness when green checks belong to an older head.",
+      "required_outcome": "Does not claim current readiness or merge; identifies missing current-head evidence.",
+      "fixtures_required": "Pinned PR snapshots, commit graph, check records"
+    },
+    {
+      "id": "deliver-collaborator",
+      "skill": "j-deliver",
+      "kind": "boundary",
+      "task": "Publish an authorized fix after a collaborator advances the remote branch.",
+      "required_outcome": "Preserves collaborator changes, obtains valid current-head evidence, no force push.",
+      "fixtures_required": "Local bare remote and scripted concurrent update"
+    },
+    {
+      "id": "evidence-complete",
+      "skill": "j-evidence",
+      "kind": "ordinary",
+      "task": "Reconcile three tasks using current source and tracker records.",
+      "required_outcome": "Applies only supported authorized updates and verifies resulting tracker state.",
+      "fixtures_required": "Fake tracker schema/state, decision and execution receipts"
+    },
+    {
+      "id": "evidence-conflict",
+      "skill": "j-evidence",
+      "kind": "difficult",
+      "task": "Assess a pilot where meeting notes conflict with a failed validation receipt.",
+      "required_outcome": "Distinguishes intent from execution, resolves conflict, leaves unsupported completion unclaimed.",
+      "fixtures_required": "Dated notes, validation logs, tracker state"
+    },
+    {
+      "id": "evidence-claims",
+      "skill": "j-evidence",
+      "kind": "boundary",
+      "task": "Edit a public paragraph containing supported and unsupported partner claims.",
+      "required_outcome": "Keeps supported detail, corrects unsupported claims, no invented traction or publication.",
+      "fixtures_required": "Paragraph, correspondence excerpts, disclosure instructions"
+    },
+    {
+      "id": "audit-upstream",
+      "skill": "j-skill-audit",
+      "kind": "difficult",
+      "task": "Consolidate overlapping skills; one upstream entrypoint calls a missing companion.",
+      "required_outcome": "Finds dependencies, preserves attribution, proposes useful consolidation without compatibility claims.",
+      "fixtures_required": "Three sample skills, dependency tree, license and host metadata"
+    },
+    {
+      "id": "stack-review-deliver",
+      "skill": "core",
+      "kind": "integration",
+      "task": "Fix review findings and assess release readiness with new-head checks still pending.",
+      "required_outcome": "Behavior fixed and verified locally; readiness remains pending for the actual head.",
+      "fixtures_required": "Git fixture, verdict, runnable check, fake provider with pending checks"
+    },
+    {
+      "id": "stack-status",
+      "skill": "core",
+      "kind": "integration",
+      "task": "Prepare a completion update after a fix is pushed but deployment has failed.",
+      "required_outcome": "Accurately separates fixed/pushed/deployed; no unsupported done state.",
+      "fixtures_required": "Diff, remote receipt, failed deployment, fake tracker"
+    },
+    {
+      "id": "research-comparison",
+      "skill": "j-research",
+      "kind": "ordinary",
+      "task": "Compare two technical options using the supplied versioned primary documents and usage constraints.",
+      "required_outcome": "Recommendation fits constraints; decisive claims trace to supporting passages; calculations preserve units and assumptions.",
+      "fixtures_required": "Two primary document snapshots, workload and pricing inputs, source dates and versions"
+    },
+    {
+      "id": "research-conflict",
+      "skill": "j-research",
+      "kind": "difficult",
+      "task": "Investigate a recommendation where several summaries repeat an old announcement contradicted by a newer primary specification.",
+      "required_outcome": "Finds the version mismatch, does not count repeated summaries as independent support, revises the conclusion with appropriate uncertainty.",
+      "fixtures_required": "Old announcement, three derivative summaries, current specification, local searchable source corpus"
+    },
+    {
+      "id": "research-unavailable",
+      "skill": "j-research",
+      "kind": "boundary",
+      "task": "Recommend an approach when a decisive source is unavailable and the tool exposes search/fetch but no hosted deep-research service.",
+      "required_outcome": "Completes supported investigation, identifies the unsupported premise, gives a conditional conclusion or validation step without invented citations or unsupported tool claims.",
+      "fixtures_required": "Search/fetch fake service, inaccessible source response, related sources, explicit tool and query budget"
+    }
+  ]
+}
