@@ -40,6 +40,23 @@ Findings: without the skill, Sonnet answered "current" questions from memory in 
 
 `--case '*-lane'`, 2 runs each, Sonnet: multi-lane 1.00 (2/2), empty-lane 1.00 (2/2), $1.17 including judging. No regression from adding the lane brief. This does not show the brief helps: the earlier multi-lane 0.50 was a harness rejection, not a wrong answer, and the run traces were cleaned up before I could check whether the agent delegated lanes to subagents.
 
+## Shipped: jstack d93de69 (2026-11-08)
+
+Hill-climbed under a protocol agreed by a three-model council (Claude Opus 5.5, GPT-6.1 Sol, GLM 5.3): `../../docs/decisions/2026-11-08-j-research-hill-climb-protocol.md`; every candidate and decision is in `climb/log.md`. Changes since c94d800: description fires on build, choice and reliance questions; an every-run checklist (vault first, answer only from what was read, cite with dates); open vault pages with the read tool before citing them; one-source lookups; and `scripts/research_hook.py`, an optional UserPromptSubmit hook (TypeSafe Jev) that reminds the agent to use the skill.
+
+Mean score, with skill vs the same tools without it:
+
+| Suite | Written by | Sonnet | Opus |
+|---|---|---|---|
+| core (8 cases) | skill author | 0.62 -> 0.98 | 0.71 -> 1.00 |
+| held-out 1 (5) | GPT-6.1 Sol | 0.10 -> 0.87 | 0.13 -> 0.80 |
+| held-out 2 (6) | Gemini 4 Argon | 0.33 -> 1.00 | 0.42 -> 1.00 |
+| test set 1 (10), weighted score | Kimi K3.1 Pro | 0.24 -> 0.93 | 0.41 -> 0.94 |
+
+**The release gate was not met.** On test set 1 (sealed until a frozen candidate, one look) the binary pass rate was 0.82 (Sonnet) and 0.80 (Opus) against a bar of 0.90, three cases were below 4 of 5 runs, and the separate critical-failure judge flagged 3 and 4 runs. Reading the failures afterwards: 6 of the 7 critical flags are on correct answers that cite the old version's documented default alongside the new one (a grader defect), and one owner-sourced case's rubric requires a hypothetical full-migration figure most correct answers omit; two misses are real (an adopt-the-existing-tool case on Sonnet at 3/5, one critical flag on Opus). The set is now a dev set. Owner's decision: ship the better version without a "proven" claim; grader fixes and a second test set wait for evidence from real use.
+
+Not shown by these numbers: live-web behaviour (all search tools are frozen fixtures), subagent delegation (never used in 100+ runs), and the owner's full T3 environment. Hook vs no hook was not separated on the test set.
+
 ## Readiness pass, jstack c94d800 (2026-11-08)
 
 Same harness, traces kept (`--keep-temp`), mean score per variant. Core cases are mine; held-out cases (`source/heldout-cases/`, 5 cases) were written by GPT-6.1 Sol from a behaviour list, without reading the skill, and graded on substance.

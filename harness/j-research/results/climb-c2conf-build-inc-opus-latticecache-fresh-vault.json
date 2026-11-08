@@ -1,0 +1,726 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T03:13:45.088Z",
+  "durationSeconds": 42,
+  "costUsd": 0.8074026,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-inc/with-skill",
+    "ablation": "none",
+    "modelOverride": "opus",
+    "caseFilter": "latticecache-fresh-vault",
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-inc/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "latticecache-fresh-vault",
+      "dir": "heldout-cases-2/latticecache-fresh-vault",
+      "source": "prose",
+      "promptMarkdown": "What would LatticeCache 2.3 cost us on the Pro plan, what's included before overages kick in, and what's the max item size?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer reports from the LatticeCache 2.3 note:\n1. Pro plan base cost of $45/month, including 20 GB of storage, 50 million read ops/month, and 10 million write ops/month.\n2. Overage rates of $1.80 per GB-month of storage, $0.12 per million read ops, and $0.60 per million write ops.\n3. Maximum single item size of 5 MB.\n\nFAIL if it reports wrong pricing, included allowances, or max item size for LatticeCache 2.3, or claims the figures are unknown.",
+          "config": {
+            "criteria": "PASS if the answer reports from the LatticeCache 2.3 note:\n1. Pro plan base cost of $45/month, including 20 GB of storage, 50 million read ops/month, and 10 million write ops/month.\n2. Overage rates of $1.80 per GB-month of storage, $0.12 per million read ops, and $0.60 per million write ops.\n3. Maximum single item size of 5 MB.\n\nFAIL if it reports wrong pricing, included allowances, or max item size for LatticeCache 2.3, or claims the figures are unknown.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "reused-fresh-vault",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.16163740000000001,
+            "judgeCostUsd": 0.015709999999999995,
+            "durationSeconds": 20,
+            "startedAt": "2026-11-08T03:13:45.135Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-afiW95/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0200912,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "LatticeCache 2.3 Pro costs **$45/month**. Overages don't start until you go past the included allowances below, and the **largest single item you can store is 5 MB**.\n\n**Included in the $45/month:**\n| Resource | Included | Overage rate |\n|---|---|---|\n| Replicated NVMe cache storage | 20 GB | $1.80 per extra GB-month |\n| Read ops | 50 million/month | $0.12 per extra million |\n| Write ops | 10 million/month | $0.60 per extra million |\n\n**Hard limits in 2.3:**\n- Largest single item (value): **5 MB**\n- Longest key: 1,024 bytes\n- Concurrent client connections: 2,000 per cache namespace\n\nWrites cost five times as much as reads per extra million. So if your workload writes a lot, write overages will probably be the part of the bill that grows fastest. That's my own reading of the rates, not something the pricing page says.\n\n**Source:** These numbers come from the research vault page [[LatticeCache]] (`wiki/LatticeCache.md`). It is based on LatticeCache's official pricing and limits page, which was updated 2026-11-02, and a copy of that page saved to the vault on 2026-11-04 (`raw/2026-11/2026-11-04 latticecache-2-3-pricing-limits`). The vault page was checked on 2026-11-04. Pricing pages count as fast-changing, so pages like this are trusted for 30 days, and this one is 3 days old. I didn't search the web or change the vault.\n\nCoverage: vault only, 1 page used. No web providers (Exa) or social search were used."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.1370028,
+            "judgeCostUsd": 0.006758400000000005,
+            "durationSeconds": 17,
+            "startedAt": "2026-11-08T03:13:45.135Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-bhRj5f/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0086356,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "LatticeCache 2.3 on the Pro plan costs **$45/month**. The largest single item (value) you can store is **5 MB**.\n\n**What the $45/month includes before overages:**\n- 20 GB of replicated NVMe cache storage\n- 50 million read ops/month\n- 10 million write ops/month\n\n**Overage rates once you go past those:**\n- $1.80 per extra GB-month of storage\n- $0.12 per extra million reads\n- $0.60 per extra million writes\n\n**Other hard limits in 2.3:**\n- Max item (value) size: 5 MB\n- Max key length: 1,024 bytes\n- Max 2,000 concurrent client connections per cache namespace\n\n**Source:** all of this comes from the research vault page `wiki/LatticeCache.md`. That page was taken from LatticeCache's official pricing and limits page, which was updated 2026-11-02 and checked against the vault on 2026-11-04. Prices like these can change quickly, so the vault treats them as current for 30 days. The page is 3 days old, so I didn't search the web again.\n\nCoverage: vault only (one page, current); no web search."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.1847276,
+            "judgeCostUsd": 0.007948399999999994,
+            "durationSeconds": 22,
+            "startedAt": "2026-11-08T03:13:45.135Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-vYtIJT/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0500428,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**LatticeCache 2.3 Pro costs $45/month.** This comes from the research vault page [[LatticeCache]]. It was checked against the official pricing and limits page (updated 2026-11-02) on 2026-11-04, so it's 3 days old and still within its 30-day freshness window. I didn't search the web again.\n\n**Included before overages:**\n- 20 GB of replicated NVMe cache storage\n- 50 million read ops per month\n- 10 million write ops per month\n\n**Overage rates:**\n- $1.80 per extra GB-month of storage\n- $0.12 per extra million read ops\n- $0.60 per extra million write ops\n\n**Max item size:** 5 MB per value. Other hard limits in 2.3: keys can be up to 1,024 bytes, and each cache namespace allows up to 2,000 concurrent client connections.\n\nUnder these rates, each extra 10M reads would cost about $1.20 and each extra 10M writes about $6. So unless you store a lot more than 20 GB, writes will probably make up most of any overage. I can estimate your monthly bill if you give me your expected storage, reads and writes.\n\nSources: vault only (`wiki/LatticeCache.md`, from `raw/2026-11/2026-11-04 latticecache-2-3-pricing-limits`). No web or social searches were needed because the vault page is current."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.16897839999999997,
+            "judgeCostUsd": 0.015414999999999991,
+            "durationSeconds": 20,
+            "startedAt": "2026-11-08T03:13:45.135Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-5efsNO/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0300868,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**LatticeCache 2.3 Pro costs $45/month.** Everything below comes from the vault page [[LatticeCache]]. That page was built from LatticeCache's official pricing and limits page (updated 2026-11-02) and checked on 2026-11-04. It's 3 days old, well inside its 30-day freshness window, so I didn't search the web again.\n\n**Included in the $45/month:**\n- 20 GB of replicated NVMe cache storage\n- 50 million read ops per month\n- 10 million write ops per month\n\n**Overage rates once you pass those amounts:**\n- Storage: $1.80 per extra GB-month\n- Reads: $0.12 per extra million ops\n- Writes: $0.60 per extra million ops\n\n**Item size and other hard limits in 2.3:**\n- **Largest single item (value): 5 MB**\n- Longest key: 1,024 bytes\n- Up to 2,000 concurrent client connections per cache namespace\n\nFor a quick sense of overage costs: writes cost 5× more than reads per million ops. Each extra 1 GB of storage adds $1.80, about 4% of the base price. To estimate your actual monthly bill, send me your expected storage and read/write volumes.\n\nCoverage: vault only (fresh page, cited above). No web search, and I made no changes to the vault."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.15505639999999998,
+            "judgeCostUsd": 0.007447200000000001,
+            "durationSeconds": 24,
+            "startedAt": "2026-11-08T03:14:02.631Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-YGtoX1/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.019956,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "LatticeCache 2.3 Pro costs **$45/month**. That base price covers 20 GB of storage, 50M reads and 10M writes per month, and the **largest single item you can store is 5 MB**.\n\n**Included before overages:**\n- 20 GB of replicated NVMe cache storage\n- 50 million read ops per month\n- 10 million write ops per month\n\n**Overage rates once you pass those amounts:**\n- $1.80 per extra GB-month of storage\n- $0.12 per extra million reads\n- $0.60 per extra million writes\n\n**Hard limits:**\n- Max item (value) size: **5 MB**\n- Max key length: 1,024 bytes\n- Max 2,000 concurrent client connections per cache namespace\n\n**Source:** All of this comes from the research vault page `wiki/LatticeCache.md`. That page is based on LatticeCache's official pricing and limits page, which was updated 2026-11-02 and last checked on 2026-11-04. Prices can change quickly, so the page counts as current for 30 days. It was checked 3 days ago, so I didn't search the web again.\n\nIf you tell me roughly how much you expect to store and how many reads and writes you expect per month, I can estimate your monthly bill.\n\nCoverage: answered from the vault only. No web searches were run, because the page was recent enough. I didn't add anything to the vault, since nothing new was found."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}

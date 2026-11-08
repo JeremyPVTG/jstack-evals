@@ -1,0 +1,724 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T03:14:33.911Z",
+  "durationSeconds": 45,
+  "costUsd": 1.1825245999999998,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-c2/with-skill",
+    "ablation": "none",
+    "modelOverride": "opus",
+    "caseFilter": "vault-fresh",
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-c2/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "vault-fresh",
+      "dir": "evals/vault-fresh",
+      "source": "prose",
+      "promptMarkdown": "Remind me what Cloudflare AI Search costs and what's included for free.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer gives the included monthly allowance (5M ingestion tokens, 10 GB-month, 1,000 semantic and 1,000 full-text queries), the overage prices ($0.75 and $0.10 per 1,000), billing from 2026-12-01, and says it comes from the research vault or earlier research.\nFAIL if any of these is wrong or missing, or if it presents the answer as freshly researched without mentioning the vault.",
+          "config": {
+            "criteria": "PASS if the answer gives the included monthly allowance (5M ingestion tokens, 10 GB-month, 1,000 semantic and 1,000 full-text queries), the overage prices ($0.75 and $0.10 per 1,000), billing from 2026-12-01, and says it comes from the research vault or earlier research.\nFAIL if any of these is wrong or missing, or if it presents the answer as freshly researched without mentioning the vault.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-searched",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__search",
+            "min": 1
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 0.2880104,
+            "judgeCostUsd": 0.04684519999999999,
+            "durationSeconds": 27,
+            "startedAt": "2026-11-08T03:14:33.963Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-RskVmX/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.1059432,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Cloudflare AI Search doesn't charge anything yet. **Billing starts on 1 December 2026.** After that, each month includes:\n\n| Included per month | Amount |\n|---|---|\n| Ingestion | 5M tokens |\n| Storage | 10 GB-month |\n| Semantic (hybrid) queries | 1,000 |\n| Full-text queries | 1,000 |\n\nIf you go over those amounts:\n- **Hybrid queries:** $0.75 per 1,000\n- **Full-text queries:** $0.10 per 1,000\n\nTwo limits also apply: at most 50 results per query, and 5 custom metadata fields per instance.\n\nThis came from my notes page [[Cloudflare AI Search]], last checked on 1 November 2026 against Cloudflare's pricing page. That's 6 days ago, inside the 30-day window I use for pricing that changes often, so I didn't look it up again online. The notes don't give prices for going over the ingestion or storage allowances, and I didn't check those. If those costs matter to you, I can look them up on Cloudflare's current pricing page.\n\nCoverage: my saved notes only; no web search this run."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.24455919999999998,
+            "judgeCostUsd": 0.051738399999999976,
+            "durationSeconds": 27,
+            "startedAt": "2026-11-08T03:14:33.963Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-g1Mhwd/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0675324,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Billing for Cloudflare AI Search starts on **December 1, 2026**. Until then you aren't charged. After that, each month includes a free allowance and you pay only for usage above it.\n\n**Included free each month:**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic queries\n- 1,000 full-text queries\n\n**Cost above the free allowance:**\n- **Hybrid queries:** $0.75 per 1,000\n- **Full-text queries:** $0.10 per 1,000\n\n**Limits:** at most 50 results per query, and 5 custom metadata fields per instance.\n\nOne thing doesn't line up: the free allowance counts \"semantic\" queries, but the overage price is for \"hybrid\" queries. They're probably the same thing, but I didn't check Cloudflare's pricing page directly, so confirm it there if it affects your budget.\n\n**Source:** my research notes page [[Cloudflare AI Search]], taken from Cloudflare's pricing page as saved on 2026-11-01. It was last checked 6 days ago, which is within the 30-day limit I use for fast-changing pages like pricing, so I didn't search the web again.\n\nCoverage: answered from the notes only. No web, docs or social sources were searched, and nothing was spent."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.21048319999999998,
+            "judgeCostUsd": 0.04841459999999999,
+            "durationSeconds": 25,
+            "startedAt": "2026-11-08T03:14:33.963Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-1IkGMY/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.037139200000000004,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Cloudflare AI Search is free until **1 December 2026**, when billing starts. My research vault has a page on it from 2026-11-01. Its pricing information goes out of date after 30 days, so it's still current and I didn't search the web again.\n\n**Free each month:**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic queries\n- 1,000 full-text queries\n\n**Cost above the free amounts:**\n- **$0.75 per 1,000 hybrid queries**\n- **$0.10 per 1,000 full-text queries**\n\n**Limits:** up to 50 results per query and 5 custom metadata fields per instance.\n\nThe page calls the free queries \"semantic\" but the paid ones \"hybrid\". I'd guess these mean the same type of query, but I haven't confirmed it, so check Cloudflare's pricing page if your costs depend on it. The page also doesn't say what extra ingestion or storage costs once you go past the free amounts.\n\nSource: vault page `wiki/Cloudflare AI Search.md`, based on Cloudflare's pricing page as captured 2026-11-01 (`raw/2026-11/2026-11-01 cloudflare-ai-search-pricing`).\n\nCoverage: vault only (one page, checked 2026-11-01). No web, social or paid searches, and nothing was written to the vault."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.25572959999999995,
+            "judgeCostUsd": 0.04018699999999999,
+            "durationSeconds": 24,
+            "startedAt": "2026-11-08T03:14:33.963Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-OV8W52/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.091056,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Here's what I have on Cloudflare AI Search pricing, from your vault page [[Cloudflare AI Search]]. It was last checked against Cloudflare's pricing page on 2026-11-01, so it's 6 days old and still current. I didn't search the web again.\n\n**When billing starts:** 2026-12-01.\n\n**Free each month:**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic queries\n- 1,000 full-text queries\n\n**What you pay above the free amounts:**\n- Hybrid queries (vector plus keyword): **$0.75 per 1,000**\n- Full-text queries: **$0.10 per 1,000**\n\n**Limits:** up to 50 results per query, and 5 custom metadata fields per instance.\n\n**Missing from the page:**\n- It uses different names for the free allowance (\"semantic\") and the paid rate (\"hybrid\"). It's probably the same query type, but I haven't confirmed that.\n- It has no prices for going over the ingestion-token or storage allowances.\n\nIf either of those matters to your decision, I can check them on Cloudflare's current pricing page.\n\nCoverage: vault only (the page was within its 30-day freshness window). No web search, no paid calls."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.18374219999999997,
+            "judgeCostUsd": 0.00675839999999997,
+            "durationSeconds": 21,
+            "startedAt": "2026-11-08T03:14:58.376Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-vFqn1K/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.018736000000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Cloudflare AI Search **isn't billing anyone yet. Charges start on 2026-12-01.** These are the figures from your research vault page [[Cloudflare AI Search]], last reviewed 2026-11-01. That's within its 30-day freshness window, so I didn't check the web again.\n\n**Included free each month:**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic queries\n- 1,000 full-text queries\n\n**Overage:**\n- $0.75 per 1,000 hybrid queries\n- $0.10 per 1,000 full-text queries\n\n**Limits:** 50 results per query at most, and 5 custom metadata fields per instance.\n\nThe page calls the free query allowance \"semantic\" but prices the overage as \"hybrid\" queries. My guess is they're the same thing, since AI Search combines vector and keyword search, but the page doesn't confirm it. Check Cloudflare's pricing page before December if this matters for your budget.\n\nSource: vault page sourced from `raw/2026-11/2026-11-01 cloudflare-ai-search-pricing`, captured 2026-11-01.\n\nCoverage: the vault only. I made no web searches because the page was still fresh, and spent nothing."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}

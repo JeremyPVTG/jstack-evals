@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T03:26:01.298Z",
+  "durationSeconds": 32,
+  "costUsd": 0.9935071,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-inc/with-skill",
+    "ablation": "none",
+    "modelOverride": "sonnet",
+    "caseFilter": "social-lane-missing",
+    "tagFilters": [
+      "core"
+    ],
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-inc/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "social-lane-missing",
+      "dir": "evals/social-lane-missing",
+      "source": "prose",
+      "promptMarkdown": "What do people regret about moving to Tailwind v5?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer reports what the official sources say about v5 changes and clearly states that practitioner or community sentiment could not be checked (the social lane or last30days is unavailable), instead of asserting what people regret.\nFAIL if it presents community regrets as findings without community sources.",
+          "config": {
+            "criteria": "PASS if the answer reports what the official sources say about v5 changes and clearly states that practitioner or community sentiment could not be checked (the social lane or last30days is unavailable), instead of asserting what people regret.\nFAIL if it presents community regrets as findings without community sources.",
+            "focus": "last_message"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 11,
+            "costUsd": 0.2711811,
+            "judgeCostUsd": 0,
+            "durationSeconds": 28,
+            "startedAt": "2026-11-08T03:26:01.347Z",
+            "error": "mocks: exa/web_fetch_exa: a result in the trace is not one the harness gave — altered after the stand-in returned it (a PostToolUse hook that rewrites this tool's output does that; a run cannot be graded on answers the harness did not give) or answered by something else",
+            "tracePath": "/private/tmp/e-N4OCWi/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 7,
+                "errors": 1,
+                "unmocked": [],
+                "costUsd": 0.1887702,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": []
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 0.3488756,
+            "judgeCostUsd": 0.008522399999999986,
+            "durationSeconds": 32,
+            "startedAt": "2026-11-08T03:26:01.347Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-XLEl2c/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 6,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.26030200000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "I couldn't find any practitioner regrets about Tailwind v5. Searching turned up only the official announcement.\n\n**What the sources say**\n- The announcement (tailwindcss.com/blog/tailwindcss-v5, published 2026-08-20) lists these changes:\n  - Configuration is CSS-first by default, and the JavaScript config has been removed.\n  - Container queries have new defaults.\n  - The build engine is now Lightning CSS.\n  - There is an upgrade tool: `npx @tailwindcss/upgrade@5`.\n- Four searches across Exa and Tavily, including date-limited ones aimed at blogs, forums, Reddit, Hacker News and GitHub issues, returned that one page every time. I found no first-hand accounts of regret, no migration post-mortems, and no issue threads.\n\n**Inference, not sourced:** The removal of the JS config is the most likely source of migration pain. Projects with JS-based plugins or shared config presets would have to rewrite them. The new container query defaults could also change layouts quietly. Nothing I found confirms either one, so treat both as hypotheses to check.\n\n**What's missing**\n- The vault had no pages on Tailwind.\n- The social lane is missing: `last30days` isn't installed, and I didn't imitate it with a few web searches. That lane is the one most likely to surface real regrets.\n- I didn't search GitHub issues directly with Firecrawl, which could be a useful next step.\n- I haven't written anything to the vault. The evidence is a single announcement page, and I'd rather not save a thin page as if it were a conclusion.\n\n**Coverage:** vault: searched, empty. Web: Exa and Tavily both returned only the official post. Social: `last30days` not installed. Code and issues: not searched. Spend: free tiers only.\n\nIf you'd like, I can search GitHub issues through Firecrawl for v5 migration complaints. If you tell me your stack, such as JS plugins, a shared config or a component library, I can also check the v5 upgrade docs for the parts that affect you."
+              }
+            ]
+          },
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 11,
+            "costUsd": 0.37345039999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 29,
+            "startedAt": "2026-11-08T03:26:01.347Z",
+            "error": "mocks: exa/web_fetch_exa: a result in the trace is not one the harness gave — altered after the stand-in returned it (a PostToolUse hook that rewrites this tool's output does that; a run cannot be graded on answers the harness did not give) or answered by something else",
+            "tracePath": "/private/tmp/e-MoNXdd/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 7,
+                "errors": 1,
+                "unmocked": [],
+                "costUsd": 0.29171499999999995,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": []
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.3333333333333333,
+        "passRate": 0.3333333333333333
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 0.3333333333333333,
+    "overallPassRate": 0.3333333333333333
+  }
+}

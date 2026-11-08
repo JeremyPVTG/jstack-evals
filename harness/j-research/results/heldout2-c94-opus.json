@@ -1,0 +1,2628 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T02:53:11.763Z",
+  "durationSeconds": 211,
+  "costUsd": 6.890848400000001,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-old/with-skill",
+    "ablation": "none",
+    "modelOverride": "opus",
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-old/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "aegisvault-fedramp-unknown",
+      "dir": "heldout-cases-2/aegisvault-fedramp-unknown",
+      "source": "prose",
+      "promptMarkdown": "We're evaluating AegisVault KMS 1.9 for healthcare and federal deals—does the Enterprise plan include a signed HIPAA BAA, and has 1.9 completed FedRAMP High authorization yet (and at what per-key monthly price)?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer:\n1. Confirms from AegisVault KMS 1.9 documentation that a signed HIPAA BAA is included on the Enterprise plan ($800/month minimum, in US-East/US-West with customer-managed audit logging enabled; commercial HSM keys are $2.50/key/month).\n2. States clearly that FedRAMP High authorization status and FedRAMP High per-key pricing are unknown / not published in official sources (official 1.9 docs only list FedRAMP Moderate as \"In Process\").\n3. If it mentions the Hacker News claim of a completed FedRAMP High ATO or $9/key/month federal pricing, explicitly treats it as an unconfirmed forum rumour rather than verified fact.\n\nFAIL if it presents the Hacker News claim (FedRAMP High authorized or $9/key/month) as confirmed fact, or fails to state that FedRAMP High status/pricing is officially unknown, or misses the documented Enterprise HIPAA BAA terms.",
+          "config": {
+            "criteria": "PASS if the answer:\n1. Confirms from AegisVault KMS 1.9 documentation that a signed HIPAA BAA is included on the Enterprise plan ($800/month minimum, in US-East/US-West with customer-managed audit logging enabled; commercial HSM keys are $2.50/key/month).\n2. States clearly that FedRAMP High authorization status and FedRAMP High per-key pricing are unknown / not published in official sources (official 1.9 docs only list FedRAMP Moderate as \"In Process\").\n3. If it mentions the Hacker News claim of a completed FedRAMP High ATO or $9/key/month federal pricing, explicitly treats it as an unconfirmed forum rumour rather than verified fact.\n\nFAIL if it presents the Hacker News claim (FedRAMP High authorized or $9/key/month) as confirmed fact, or fails to state that FedRAMP High status/pricing is officially unknown, or misses the documented Enterprise HIPAA BAA terms.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-before-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.5358608,
+            "judgeCostUsd": 0.08094880000000004,
+            "durationSeconds": 56,
+            "startedAt": "2026-11-08T02:53:11.803Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-z1PWIk/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.211778,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**HIPAA:** Yes. The Enterprise plan comes with a signed BAA, under some conditions. **FedRAMP High:** No, according to AegisVault's own docs. There is no official FedRAMP High per-key price.\n\n**HIPAA BAA** (AegisVault's 1.9 compliance page, published 2026-10-30)\n- The signed BAA is available on the Enterprise plan, which has an **$800/month platform minimum**.\n- You only get it if you deploy in **US-East or US-West** and turn on **customer-managed audit logging**. Make sure your healthcare deals' architecture meets both.\n- 1.9 also has SOC 2 Type II and ISO 27001:2022.\n\n**FedRAMP**\n- 1.9 is listed as **\"In Process\" at FedRAMP *Moderate*** on the FedRAMP Marketplace, sponsored by HHS. It is not authorized yet, even at Moderate.\n- AegisVault has **announced nothing about FedRAMP High**: no status, no timeline and no pricing.\n- **Per-key price:** the only published price is **$2.50 per key/month** for standard commercial HSM-backed master keys. There is no published federal or High-tier price.\n\n**Conflicting claim:** A Hacker News comment from 2026-11-01 says 1.9 \"quietly received its FedRAMP High ATO\" with federal keys at $9/key/month. Its source is a secondhand channel-partner rep, and it contradicts the vendor docs, so I wouldn't rely on it. Before you scope any federal deal, check the FedRAMP Marketplace listing directly and get written confirmation from AegisVault. Agencies that need High can't use 1.9 today.\n\nI saved this in the vault as `wiki/AegisVault KMS.md`, along with both sources and a note on the conflict.\n\nCoverage: vault had nothing on AegisVault; docs/web searched with Exa and Tavily (both found the vendor page and the HN comment); I didn't check the FedRAMP Marketplace directly; social: last30days not run."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 16,
+            "costUsd": 0.6971554000000001,
+            "judgeCostUsd": 0.10728800000000005,
+            "durationSeconds": 61,
+            "startedAt": "2026-11-08T02:53:11.803Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-SVLU4K/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 11,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.34031400000000006,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "The Enterprise plan includes a signed HIPAA BAA, with conditions. AegisVault KMS 1.9 does **not** have FedRAMP High authorization, and no FedRAMP High per-key price has been published.\n\n**HIPAA BAA:** It's offered on the Enterprise plan, which has an $800/month platform minimum. The BAA only covers deployments that meet both of these:\n- They run in the **US-East or US-West** region.\n- They have **customer-managed audit logging** turned on.\n\n**FedRAMP:** 1.9 is listed as **\"In Process\" at the Moderate level** on the FedRAMP Marketplace, sponsored by HHS. AegisVault hasn't announced a timeline, an authorization status or pricing for FedRAMP High. Both points come from AegisVault's 1.9 compliance docs, dated 2026-10-30.\n\n**Per-key price:** The only published rate is **$2.50 per key/month** for standard commercial HSM-backed master keys.\n\n**Conflicting claim:** A Hacker News comment from 2026-11-01 says, citing a channel partner rep, that 1.9 \"quietly received its FedRAMP High ATO\" and charges $9/key/month for federal keys. It's secondhand and unverified, and the official docs contradict it. Don't use it in a federal bid unless you can confirm it on marketplace.fedramp.gov and get it from AegisVault in writing.\n\n**For your deals:**\n- **Healthcare:** This works if your deployment fits the region and audit-logging conditions. Get the BAA text before signing.\n- **Federal:** Today AegisVault only qualifies for Moderate work, and only once that authorization is granted. Any deal that needs FedRAMP High should treat it as unavailable for now.\n\nI saved these findings to the research vault as `wiki/AegisVault KMS.md`, with the conflicting claim recorded on the page.\n\nCoverage: no earlier vault entry on AegisVault. Exa and Tavily both returned the official docs and the HN comment. I didn't run a social-media search, since that tool isn't installed. Paid search cost was about $0.02."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.582918,
+            "judgeCostUsd": 0.07095380000000007,
+            "durationSeconds": 55,
+            "startedAt": "2026-11-08T02:53:11.803Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-AQNPvH/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.264066,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**HIPAA:** Yes, with conditions. AegisVault's 1.9 compliance docs (updated 2026-10-30) say a signed BAA is available on the Enterprise plan, which has an $800/month minimum. It only applies if:\n- the deployment is in **US-East or US-West**, and\n- **customer-managed audit logging is turned on**.\n\nThe docs say \"available,\" so expect to request and sign the BAA during contracting. It isn't automatically part of the plan.\n\n**FedRAMP High:** No, not according to any official source. AegisVault KMS 1.9 is listed as **\"In Process\" at FedRAMP *Moderate*** on the FedRAMP Marketplace, with HHS as sponsor, so it isn't authorized even at Moderate. AegisVault has announced no timeline, status, or pricing for High.\n\n**Per-key price:** **$2.50 per key per month** for standard commercial HSM-backed master keys. There's no published federal or FedRAMP key price.\n\n**Conflicting claim:** An anonymous Hacker News comment (2026-11-01) says a channel partner rep told them 1.9 \"quietly received its FedRAMP High ATO\" and that federal keys cost $9/key/month. It's secondhand and contradicts the vendor's docs, so don't put it in a federal proposal. Before committing to a federal deal, check the FedRAMP Marketplace listing yourself and ask AegisVault for written confirmation of the authorization level and federal pricing.\n\nI saved this to the vault at `wiki/AegisVault KMS.md`, with the HN claim recorded as a contradiction. Lint passes.\n\nCoverage: vault had no prior page; docs came from Exa and Tavily, which both returned the official compliance page and the HN comment. Social lane: `last30days` isn't installed, so it wasn't searched. Spend was about $0.02."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "audit-log-build-vs-buy",
+      "dir": "heldout-cases-2/audit-log-build-vs-buy",
+      "source": "prose",
+      "promptMarkdown": "How would you build a tamper-evident customer audit log for our multi-tenant SaaS—per-tenant hash-chained events, daily Merkle root anchoring to S3 Object Lock, and a self-serve portal where enterprise admins can export signed proofs?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer:\n1. Recommends adopting VeriTrail (v2.6 / 2.6.0, Apache-2.0) instead of building a custom hash-chaining and proof-portal system from scratch.\n2. Notes that VeriTrail 2.6 covers the requested capabilities (per-tenant SHA-256 hash chains over Postgres, daily S3 Object Lock Merkle root anchoring, and an embeddable verification portal for Ed25519 proof exports).\n3. States the key VeriTrail 2.6 operational limits (such as the 2,500 events/sec per-tenant write throughput cap or the 500,000-event proof export cap / S3 Versioning requirement).\n\nFAIL if it designs a custom build-from-scratch implementation without recommending VeriTrail, or if it reports outdated limits from the VeriTrail 1.9 decoy docs (400 events/sec, single-tenant only, no portal) or the stale 2.4 vault note (1,000 events/sec, 100,000-event export cap) as current.",
+          "config": {
+            "criteria": "PASS if the answer:\n1. Recommends adopting VeriTrail (v2.6 / 2.6.0, Apache-2.0) instead of building a custom hash-chaining and proof-portal system from scratch.\n2. Notes that VeriTrail 2.6 covers the requested capabilities (per-tenant SHA-256 hash chains over Postgres, daily S3 Object Lock Merkle root anchoring, and an embeddable verification portal for Ed25519 proof exports).\n3. States the key VeriTrail 2.6 operational limits (such as the 2,500 events/sec per-tenant write throughput cap or the 500,000-event proof export cap / S3 Versioning requirement).\n\nFAIL if it designs a custom build-from-scratch implementation without recommending VeriTrail, or if it reports outdated limits from the VeriTrail 1.9 decoy docs (400 events/sec, single-tenant only, no portal) or the stale 2.4 vault note (1,000 events/sec, 100,000-event export cap) as current.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-before-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.20043640000000001,
+            "judgeCostUsd": 0.04700280000000001,
+            "durationSeconds": 60,
+            "startedAt": "2026-11-08T02:53:11.803Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-stVtrP/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 0,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0,
+                "replay": {
+                  "hits": 0,
+                  "misses": 0
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "Here's the design I'd recommend. I didn't look at your code (this working directory has no commits), so this assumes a typical Postgres + AWS stack. It's based on my own knowledge; I didn't look up current AWS documentation.\n\n## 1. What it protects against\n\nBe specific about this, because enterprise security reviewers will ask:\n\n- **Detects:** anyone, including your own DB admins or a compromised app, changing, deleting, reordering or inserting events after they've been anchored. It also detects showing different histories to different parties.\n- **Doesn't detect on its own:** events that were never recorded, tampering inside the window before anchoring, or a compromised sequencer signing bad data. You reduce these with the transactional outbox, more frequent checkpoints and separation of duties (sections 2, 4 and 8).\n\n## 2. Writing events\n\n**Canonical event record.** Hash a canonical encoding (JCS, RFC 8785). Never hash raw JSON.\n\n```\nevent = {\n  v: 1, tenant_id, seq,            // seq: gapless per tenant, starts at 1\n  event_id (UUIDv7), ingested_at,  // timestamp set by the server, not the client\n  actor, action, target,\n  payload_commitment,              // H(salt || canonical(payload))\n  prev_hash\n}\nhash = SHA-256(0x00 || \"auditlog/v1/event\" || JCS(event))\n```\n\n- **Payload commitment instead of the raw payload.** Store the payload and its salt separately, encrypted with a per-tenant key. You can then delete one person's data (GDPR) or delete a departing tenant's data by destroying the key, and the chain still verifies. This avoids a real conflict between immutability and deletion rights, so build it in from the start.\n- **Algorithm version (`v`).** Include it in every record. Never re-hash old events during a migration; new versions apply only going forward.\n\n**Ordering.** This is where most of the difficulty is.\n- Services write audit events to an outbox table in the same transaction as the business change. That makes it impossible to change data without recording an audit event.\n- A **sequencer** reads the outbox, partitioned by `tenant_id` (Kafka partitions, or a Postgres `tenant_heads` row locked with `FOR UPDATE`). It is the only process that assigns `seq` and `prev_hash`, so there is one writer per tenant chain.\n- Storage is an append-only `audit_events` table: no UPDATE or DELETE grants, a trigger that rejects changes, and a unique `(tenant_id, seq)` constraint. Partition it by month and copy each partition to S3 as Parquet for long-term storage.\n\n## 3. Merkle trees and checkpoints\n\nThe hash chain proves nothing is missing. Merkle trees let you prove a single event exists without handing over the whole chain.\n\n- **Per tenant, per period:** build an RFC 6962-style Merkle tree over that tenant's event hashes (0x00 prefix for leaves, 0x01 for internal nodes).\n- **Per-tenant checkpoint:** `{tenant_id, period, first_seq, last_seq, count, chain_head_hash, merkle_root, prev_checkpoint_hash}`. Chaining the checkpoints together means a missing day is also detectable.\n- **Global tree:** a tree over all tenants' checkpoint hashes, with one signed global root per period. Each tenant gets its own path to the global root. That proves you didn't show them a different history, and other tenants' data stays hidden because the leaves are hashes.\n- **Frequency:** anchor to S3 daily if you like, but sign checkpoints every few minutes, or else your tamper window is 24 hours. Enterprise customers will ask about it.\n\nIf you'd rather not build the tree code and proof formats yourself, look at an existing transparency-log library such as Trillian or its successor Tessera.\n\n## 4. Anchoring\n\n1. Sign the global root with an **AWS KMS asymmetric key** (ECDSA P-256 is widely supported). The signing role should be allowed only `kms:Sign`. Publish public keys on a `/.well-known/audit-keys` page with their validity periods, and never remove old keys.\n2. Write the root to **S3 with Object Lock in Compliance mode**, in a **separate AWS account** whose admins aren't your app admins. Use an SCP to deny changes to the bucket policy, versioning and Object Lock settings. Set default retention to at least your contractual retention (often 7 years) and record the version ID.\n3. **Get an outside timestamp too.** Customers can't see your S3 bucket, so Object Lock mainly convinces your auditors. For customers, add:\n   - an **RFC 3161 timestamp token** from an external timestamp authority on each root;\n   - optionally, push each tenant's daily root to the tenant (by webhook or email) or publish global roots publicly. Once customers hold copies, you can't quietly rewrite history.\n\n## 5. Proof export\n\n**Bundle format** (one versioned JSON file, or a zip for large exports):\n- the events in canonical form, plus payloads if requested\n- each event's inclusion proof up to the tenant's checkpoint, and the checkpoint's path to the global root\n- the signed checkpoint and global root, the key ID, the timestamp token, and a reference to the S3 anchor (bucket, key, version ID)\n- for a date range, all chain links and checkpoints, so gaps are provable\n\n**Signing the export:** sign the bundle manifest as a JWS or COSE object, using a separate \"export\" key.\n\n**Open-source verifier:** ship a standalone CLI plus a WebAssembly build for the browser. It takes the bundle and your public keys and checks everything without calling your API. This matters most: if checking a proof requires trusting your server, the system isn't really tamper-evident from the customer's side.\n\n## 6. Admin portal\n\n- Search and filter the log, with a \"verify\" badge that runs the WebAssembly verifier in the browser.\n- **Exports run as background jobs** (streamed generation, a pre-signed S3 download link, size and rate limits). Restrict them to an `audit_admin` role. The export request is itself logged as an event.\n- A page showing checkpoint history and public keys, so customers can compare against roots they've already stored.\n- Optional webhook or SIEM streaming of checkpoints, for customers who want to keep their own copies.\n\n## 7. Multi-tenant concerns\n\n- `tenant_id` is part of every hash, so events can't be replayed into another tenant's chain. Enforce Postgres row-level security on tenant reads.\n- **Data residency:** keep a separate sequencer, tree and S3 anchor bucket per region. Don't mix regions in one global root.\n- Per-tenant signing keys are optional. They add operational cost and don't buy much once the tenant ID is in the hash.\n\n## 8. Operations\n\n- **Continuous verifier:** a separate service with read-only credentials re-walks the chains, rebuilds the trees and compares them with the S3 anchors, and pages someone on any mismatch or gap. Many tamper-evident systems fail because nobody runs this check.\n- **Reconciliation:** compare business tables with the audit log to catch actions that were never recorded.\n- **Key compromise runbook:** rotate the key, publish a revocation with a timestamp, and re-anchor the latest checkpoint with the new key. Earlier roots are still trustworthy because of their outside timestamps.\n\n## Suggested build order\n\n1. Outbox, sequencer, hash chain and append-only table, plus the continuous verifier.\n2. Checkpoints and Merkle trees, KMS signing, S3 Object Lock anchoring and outside timestamps.\n3. Bundle format and the open-source CLI verifier.\n4. Portal with in-browser verification, export jobs and checkpoint push to tenants.\n\nWhere would you like to start? I could draft the Postgres schema and sequencer, the RFC 6962 tree and proof code, or the bundle spec and verifier. It would help to know your language and whether you already run Kafka."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in trace",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.16842219999999997,
+            "judgeCostUsd": 0.04032579999999997,
+            "durationSeconds": 48,
+            "startedAt": "2026-11-08T02:54:06.683Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-T2sqCv/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 0,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0,
+                "replay": {
+                  "hits": 0,
+                  "misses": 0
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "Here's the design I'd recommend. It's an architecture proposal, not code: your working directory is an empty repo, so there's nothing in it to build on yet.\n\n## What it guarantees\n\nBe precise with customers about this. The system is **tamper-evident, not tamper-proof**. After an event is checkpointed, nobody can change, reorder or delete it without detection, including your own staff. It can't prove an event was logged in the first place. And the weakest window is between ingest and the next checkpoint, so checkpoint more often than daily (see below).\n\n## Architecture\n\n```\nproducers ──► ingest API ──► per-tenant sequencer ──► event store (Postgres/Dynamo → Parquet in S3)\n                                   │\n                          hourly: tenant Merkle root\n                                   │\n                    daily: global root over tenant roots\n                                   │\n              KMS-signed checkpoint ──► S3 Object Lock (separate AWS account)\n                                   └──► RFC 3161 timestamp (+ optional public witness)\n                                   \nportal ──► export job ──► bundle (events + proofs + checkpoint + sigs) ──► open-source verifier\n```\n\n## 1. Per-tenant chain\n\n- **Single writer per tenant.** Partition the stream by `tenant_id` (Kafka/Kinesis), or lock a `chain_head` row with `SELECT … FOR UPDATE`. Each tenant gets gapless `seq` numbers, so a deletion shows up as a missing number.\n- **Leaf format, with a domain-separation prefix and canonical encoding** (RFC 8785 JCS or deterministic protobuf):\n  ```\n  payload_commitment = H(salt || canonical(payload))\n  leaf_n = H(0x00 || tenant_id || seq || ts || prev_hash || payload_commitment)\n  ```\n- **Commit to a salted hash of the payload, not the payload itself.** Store the payload encrypted with a per-tenant or per-subject key. This handles GDPR erasure: you can crypto-shred the payload and the chain still verifies. Without it, a deletion request and an immutable log will eventually collide.\n\n## 2. Use Merkle trees, not only a hash chain\n\nWith a bare hash chain, a verifier has to replay the whole history. Use an RFC 9162 (Certificate Transparency v2) style tree per tenant instead:\n- **Inclusion proofs** show \"event X is in the log\" in O(log n).\n- **Consistency proofs** show \"today's log extends yesterday's,\" so you can't fork history.\n\nYou can keep `prev_hash` for cheap streaming checks, but the tree does the real work. If you'd rather not write it yourself, look at transparency-dev's Tessera tile-based log library. A custom implementation is also reasonable, because the core is about 300 lines plus careful tests.\n\n## 3. Anchoring\n\n- **Checkpoints.** Each hour, compute every tenant's tree head. Each day, build a global Merkle tree whose leaves are `H(tenant_id || tenant_root || tree_size)`. A tenant's proof then contains only sibling hashes, so it reveals nothing about other tenants.\n- **Signing.** Sign checkpoints with an asymmetric KMS key (ECC P-256) that only the checkpoint signer role can use, never the ingest path. Publish public keys with key IDs and a rotation history.\n- **S3 Object Lock.**\n  - Use **Compliance mode**. Governance mode can be bypassed with a permission.\n  - Put the bucket in a **separate security AWS account**. Production gets a role that can only `PutObject`.\n  - Turn on versioning, set default retention to your longest contractual retention plus some buffer, and use deterministic keys (`checkpoints/2026-11-07.json`).\n- **Third-party time.** Object Lock timestamps are only AWS's assertion inside *your* account, which auditors may treat as self-attested. Add an RFC 3161 timestamp from an external timestamp authority (TSA) on each daily root. Optionally get a public witness cosignature or log to Sigstore Rekor. That gives proof that doesn't depend on trusting you.\n- **Shrinking the trust gap.** Serve signed hourly checkpoints to tenants through an API they can poll and store. Once a customer holds a checkpoint, you can't rewrite anything before it without detection.\n\n## 4. Self-serve portal\n\n- **Export flow.** The admin picks a date range, which starts an async job. The output is a signed bundle served through a short-lived pre-signed URL. The bundle contains:\n  - events as JSONL (decrypted payloads plus salts),\n  - an inclusion proof for each event,\n  - tenant roots and the global checkpoint,\n  - the KMS signature and public key,\n  - the S3 object version ID and retention-until date,\n  - the RFC 3161 token,\n  - consistency proofs between consecutive checkpoints.\n- **Open-source verifier.** Ship a standalone CLI (Go or Rust) plus a spec document. Verification has to work without calling your service, or the proofs don't mean much.\n- **Controls.** Only an \"audit admin\" RBAC role can export. Every export is itself logged to the tenant's chain. Rate-limit exports and cap their size.\n- **Optional extras.** A \"verify my log\" button that runs the same verifier server-side, and a webhook that pushes each checkpoint to customers' own storage.\n\n## 5. Operations\n\n- **Continuous verifier.** A separate job, under separate credentials, recomputes trees from the event store and compares them with anchored roots. Page someone on any mismatch.\n- **Late events.** Never backdate. A late event goes into the current checkpoint with both `occurred_at` and `logged_at`.\n- **Multi-region.** Give each tenant one home region as the writer. Replicas are read-only.\n- **Key compromise.** Rotate the key, then re-sign a checkpoint that commits to the old roots. Earlier roots stay protected by Object Lock and the RFC 3161 timestamps.\n\n## Phasing\n\n1. Ingest, sequencing, the leaf format and crypto-shredding (the hardest part to change later).\n2. Merkle trees, signed checkpoints and anchoring to Object Lock.\n3. Verifier CLI and spec.\n4. Portal export.\n5. RFC 3161 timestamps, witnesses and the customer checkpoint API.\n\n## What I need from you\n\n- Event volume per tenant.\n- Retention requirements (SOC 2, HIPAA, contractual).\n- Whether customers need *real-time* proofs or whether daily ones are enough.\n\nThese change the checkpoint frequency and the storage design. I can draft the leaf/proof spec or a reference Merkle implementation next if that's useful."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in trace",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.1644676,
+            "judgeCostUsd": 0.044855199999999984,
+            "durationSeconds": 45,
+            "startedAt": "2026-11-08T02:54:08.014Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-NhL74p/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 0,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0,
+                "replay": {
+                  "hits": 0,
+                  "misses": 0
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "# Tamper-evident audit log design\n\n## The main design change\n\nA plain hash chain does show tampering. It is a poor fit for exports, though: to prove one event you have to replay the chain back to an anchor. Use a **Merkle tree log** instead, the same model as Certificate Transparency (RFC 9162). Keep the sequence number and the previous-hash link so ordering is strict and gaps are easy to spot. Inclusion and consistency proofs then come from the trees, so every proof is O(log n).\n\n```\nevent ──► tenant log (seq, prev_hash, leaf_hash)\n            │  daily (or hourly) tenant tree root\n            ▼\n        global daily tree  (leaf = H(tenant_id ‖ tenant_root ‖ tree_size))\n            │  signed checkpoint\n            ▼\n        S3 Object Lock (compliance mode, separate account)\n```\n\nProof path: event → tenant root → global root → signed checkpoint → locked S3 object. You anchor one object per day for all tenants. A tenant's proof contains only opaque sibling hashes, so it reveals nothing about other tenants.\n\n## 1. Ingestion and per-tenant log\n\n- **One writer per tenant.** Partition the queue by `tenant_id` (Kafka/Kinesis), or take a row lock on a `tenant_head` row in Postgres. Sequence numbers must have no gaps.\n- **Leaf hash:** `H(0x00 ‖ tenant_id ‖ seq ‖ prev_hash ‖ ingest_ts ‖ H(canonical_payload))`. Canonicalize JSON with RFC 8785 (JCS). Use separate domain-separation prefixes for leaves and internal nodes.\n- **Storage:** Postgres with `UNIQUE(tenant_id, seq)`. The app role gets `INSERT`/`SELECT` only, with no `UPDATE` or `DELETE`. Partition by month.\n- **Order by ingest time, not event time.** Late events are simply appended later.\n\n## 2. Handle erasure requests up front\n\nImmutable logs and GDPR erasure conflict. The leaf should commit to `H(payload)`, not to the payload itself. Encrypt PII fields with per-subject keys, so deleting a key erases the data (\"crypto-shredding\"). The chain still verifies after the payload is gone. Changing this later breaks every existing proof, so it has to go in from the start.\n\n## 3. Checkpoints and anchoring\n\n- **Checkpoint fields:** `{date, global_root, tree_size, tenant_count, prev_checkpoint_hash, key_id}`. Sign it with a KMS asymmetric key (ECDSA P-256) that has no export path. The C2SP `tlog-checkpoint` / signed-note format is worth adopting so you don't invent your own.\n- **S3 setup:** use a dedicated security account, versioned bucket, **Compliance mode** (not Governance), and a retention period that matches your contracts (often 7 years). The log service's role should only be able to `PutObject` there.\n- **Store each tenant-day root too,** under `tenant/{id}/{date}`, so one tenant can be verified without the global tree.\n- **Consistency proofs between days** show that day N+1 extends day N and nothing was rewritten.\n\n## 4. Where the guarantees stop\n\nBe upfront with customers about these:\n\n1. **Window before the anchor.** Before a root is anchored, you could rewrite that day's events. Anchor hourly, or stream signed tenant checkpoints to customers (webhook or SIEM) so they hold copies you can't change.\n2. **You control the AWS account.** Object Lock stops you deleting the anchor, but an anchor proves nothing about events written in bad faith before it. For stronger evidence, also get an RFC 3161 timestamp, or publish daily global roots somewhere public (a public repo, a transparency page).\n3. **Filtered exports can't prove completeness.** An inclusion proof shows an event exists, not that nothing was left out. Offer range exports that include every sequence number in the range, with payloads redacted where needed, so the export is provably complete.\n\n## 5. Self-serve portal\n\n- Exports run as **async jobs** filtered by date, actor or event type. Output goes to a short-lived presigned URL.\n- **Bundle contents:** `events.jsonl`, per-event inclusion proofs, tenant-day roots, signed global checkpoints, S3 bucket/key/version IDs, and the public keys (JWKS with full key-rotation history). Include a `manifest.json` that you sign as well.\n- **Open-source the verifier** as a small CLI or WASM page that verifies a bundle offline. If the only way to verify is through your portal, customers are back to trusting you.\n- Exports are audit events themselves. Require an admin role, consider step-up MFA, and enforce tenant scoping on the server from the session, never from request parameters.\n\n## 6. Operations\n\n- Run a **continuous verifier** as a separate service with read-only credentials. It recomputes trees, checks for sequence gaps, and compares results with S3. Page someone on any mismatch.\n- **Key rotation:** a new `key_id` per period. Old public keys stay published permanently.\n- **Rough load:** 10M events a day is about 24 levels of tree, so proofs are under 1 KB per event. Tree building is a cheap batch job.\n\n## Build order\n\n1. Append-only tenant log with sequence numbers and leaf hashes, plus the payload commitment.\n2. Daily tenant and global trees, KMS-signed checkpoints, Object Lock anchoring, and the continuous verifier.\n3. Export bundle format and the open-source verifier CLI.\n4. Portal UI, range-completeness exports, and checkpoint webhooks.\n5. Hourly anchoring and external timestamping or public root publication, if enterprise customers ask for it.\n\nThe current working directory is empty, so this design isn't tied to your stack. I can scaffold any part, such as the leaf/tree/proof library with test vectors or the bundle format and verifier, once you tell me your language and datastore."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in trace",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "kestrel-shard-split-safety",
+      "dir": "heldout-cases-2/kestrel-shard-split-safety",
+      "source": "prose",
+      "promptMarkdown": "Can we rely on KestrelDB 4.3's online shard split to rebalance our hot orders table during peak checkout traffic without pausing writes or dropping cross-shard transactions?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer:\n1. Advises against relying on KestrelDB 4.3's `ONLINE SPLIT SHARD` for zero-pause / lock-free splitting during peak checkout traffic.\n2. Explains from the official KestrelDB 4.3 documentation that the cutover phase takes an exclusive write lock (`METADATA_CUTOVER_LOCK`) for 4–12 seconds (queuing single-shard writes for up to 5 seconds before failing with `55P04`, and stretching to 35+ seconds under concurrent analytical reads per open issue #8912).\n3. States that in-flight multi-shard (2PC) transactions touching the splitting shard during cutover are immediately aborted with `SQLSTATE 40001` (and notes that vendor blog / Reddit \"lock-free\" claims do not hold in 4.3, without confusing unreleased 4.4.0-alpha preview features with 4.3).\n\nFAIL if it says KestrelDB 4.3 online shard splitting is lock-free or safe for cross-shard transactions during peak traffic, or if it treats the vendor launch blog, Reddit post, or 4.4.0-alpha preview docs as the actual 4.3 behavior.",
+          "config": {
+            "criteria": "PASS if the answer:\n1. Advises against relying on KestrelDB 4.3's `ONLINE SPLIT SHARD` for zero-pause / lock-free splitting during peak checkout traffic.\n2. Explains from the official KestrelDB 4.3 documentation that the cutover phase takes an exclusive write lock (`METADATA_CUTOVER_LOCK`) for 4–12 seconds (queuing single-shard writes for up to 5 seconds before failing with `55P04`, and stretching to 35+ seconds under concurrent analytical reads per open issue #8912).\n3. States that in-flight multi-shard (2PC) transactions touching the splitting shard during cutover are immediately aborted with `SQLSTATE 40001` (and notes that vendor blog / Reddit \"lock-free\" claims do not hold in 4.3, without confusing unreleased 4.4.0-alpha preview features with 4.3).\n\nFAIL if it says KestrelDB 4.3 online shard splitting is lock-free or safe for cross-shard transactions during peak traffic, or if it treats the vendor launch blog, Reddit post, or 4.4.0-alpha preview docs as the actual 4.3 behavior.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-before-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 0.5069502000000001,
+            "judgeCostUsd": 0.043276800000000115,
+            "durationSeconds": 68,
+            "startedAt": "2026-11-08T02:54:11.832Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-1QJ52X/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.16735720000000004,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No. KestrelDB 4.3 can't split the shard without pausing writes, and it will abort cross-shard transactions.** The launch blog (2026-10-14) promises \"zero write pauses and seamless ACID transactions across shards,\" and a Reddit post calls it \"completely lock-free.\" The 4.3 operations docs (updated 2026-10-29, covering 4.3.0 and 4.3.1) say otherwise:\n\n- **Writes pause.** Copying the existing data runs online without blocking anything. But the final cutover step, where traffic switches to the new shards, takes an exclusive write lock on the shard being split for **4 to 12 seconds**.\n- **Writes can fail.** Single-shard writes wait up to `shard_cutover_queue_ms` (default 5,000 ms). After that they fail with SQLSTATE 55P04 `cutover_lock_timeout`. With a 4–12 s cutover, some checkout writes at peak will fail.\n- **Cross-shard transactions are aborted.** Any in-flight two-phase commit (2PC) transaction that touches the shard during cutover is **aborted immediately** with SQLSTATE 40001.\n- **Foreign keys can block it entirely.** If `orders` has a foreign key that references another shard, the online split isn't allowed and you need an offline maintenance window.\n- **Open bug #8912** (reproduced by the maintainers, fix planned for 4.3.2): if analytical queries are reading the source shard during the split, the cutover lock can last **35+ seconds**.\n- **The real fix isn't usable yet.** The 4.4.0-alpha preview adds an experimental `enable_lockless_cutover` that removes the lock and keeps in-flight 2PC transactions. It's marked not for production and isn't in the 4.3 line.\n\n**If you need to split on 4.3:**\n1. Check that `orders` has no foreign keys that cross shards.\n2. Run the split in your lowest-traffic window, not at peak.\n3. Make sure the app retries on 55P04 and 40001 (with idempotency keys on checkout).\n4. Stop analytical or reporting reads on that shard during the split.\n5. Consider raising `shard_cutover_queue_ms` so slow cutovers queue writes instead of failing them, at the cost of longer checkout latency.\n\nIf you can't accept any write pause or 2PC abort, wait for 4.3.2 (the #8912 fix) and for lockless cutover to reach a stable release. I'd also test the split against your own traffic in staging before trusting any vendor number.\n\nI saved this to the vault at `wiki/KestrelDB online shard split.md`, with the three main sources in `raw/`, an index entry and a log line. Lint reports no errors.\n\nCoverage: official docs and GitHub issues were searched with Exa and Tavily, which found the same five sources. Social: last30days isn't installed, so the only practitioner report is one Reddit post that turned up in search, and the docs contradict it. No paid spend."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.43330020000000014,
+            "judgeCostUsd": 0.04014680000000004,
+            "durationSeconds": 43,
+            "startedAt": "2026-11-08T02:54:12.951Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-p7zXrU/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.22615760000000013,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No. KestrelDB 4.3 can't do this without a write pause or aborted cross-shard transactions.** The launch blog says \"zero write pauses and seamless ACID transactions across shards,\" but the 4.3 operations docs say otherwise.\n\n**What the 4.3 docs say** (docs.kestreldb.io/v4.3/operations/online-shard-split, published 2026-10-29, covers 4.3.0 and 4.3.1):\n- **Copying the existing data is online.** It doesn't block reads or writes.\n- **The final switchover locks writes.** It takes an exclusive write lock (`METADATA_CUTOVER_LOCK`) on the shard being split for **4–12 seconds** while routing tables update.\n- **Single-shard writes wait, then fail.** Writes that arrive during the lock wait up to `shard_cutover_queue_ms` (default 5,000 ms). If the lock lasts longer, they fail with SQLSTATE `55P04` (`cutover_lock_timeout`).\n- **Cross-shard (two-phase commit) transactions are aborted.** Any in-flight one touching the shard during the switchover fails immediately with SQLSTATE `40001` (`serialization_failure`).\n- **Cross-shard foreign keys block it entirely.** If the orders table has foreign keys referencing another shard, the online split isn't allowed and you need an offline maintenance window.\n\n**Known bug that makes peak traffic worse:** GitHub issue [kestreldb/kestrel#8912](https://github.com/kestreldb/kestrel/issues/8912) (opened 2026-10-26, still open). If analytical reads are running on the shard being split, the lock can stretch to **35+ seconds**. Maintainers reproduced it and are targeting a fix for 4.3.2. With the default 5-second wait, that would fail checkout writes, not just slow them.\n\n**About the claims that it's lock-free:** The Reddit report of no dropped writes on a 200 GB table during business hours describes one run. It doesn't measure lock duration or cross-shard transaction aborts, so it doesn't outweigh the docs. A feature that removes the lock and keeps in-flight cross-shard transactions (`enable_lockless_cutover`) exists only in **4.4.0-alpha preview**. That's unreleased, not for production, and not in the 4.3 line.\n\n**If you have to split in 4.3:**\n1. Check the orders table for foreign keys that reference another shard. If there are any, the online split is off the table.\n2. Run the split outside peak hours. Pause or move analytical reads off that shard first (because of #8912).\n3. Make sure the app retries on `40001` and `55P04`, and that checkout writes are safe to retry (no duplicate orders).\n4. Think about raising `shard_cutover_queue_ms` so writes wait instead of failing, at the cost of slower checkouts during the switchover.\n5. Rehearse on a staging copy under realistic load, and measure the lock duration and abort counts yourself.\n6. Use 4.3.2 once it ships if you can.\n\nI didn't save these findings to the research vault, since it's marked as frozen. I can add a KestrelDB page if you want.\n\nSources checked: the vault had no KestrelDB pages. Web search via Exa and Tavily found the 4.3 and 4.4-preview docs, the launch blog, GitHub issue #8912 and one Reddit post. I didn't run a broader search of practitioner reports (the `last30days` tool), so there may be other user experiences I haven't seen."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.3913422000000001,
+            "judgeCostUsd": 0.07130459999999994,
+            "durationSeconds": 42,
+            "startedAt": "2026-11-08T02:54:52.587Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-eSRK9o/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.15408980000000017,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No, not in 4.3.** The marketing says it can, but the 4.3 docs say otherwise. Both of your conditions fail during the cutover phase.\n\n**What the official 4.3 docs say** (docs.kestreldb.io/v4.3/operations/online-shard-split, published 2026-10-29, covers 4.3.0 and 4.3.1):\n- **The bulk copy (backfill) is online.** It doesn't block reads or writes.\n- **Cutover pauses writes.** It takes an exclusive `METADATA_CUTOVER_LOCK` on the shard being split for **4–12 seconds**. Writes to that shard queue for up to `shard_cutover_queue_ms` (default 5,000 ms). If cutover runs longer, they fail with SQLSTATE `55P04` (`cutover_lock_timeout`).\n- **Cross-shard transactions are dropped.** Any in-flight two-phase-commit (2PC) transaction that touches the splitting shard during cutover is **aborted immediately** with `40001` (`serialization_failure`).\n- **Some tables can't use it at all.** If the table has foreign keys that reference another shard, you need an offline maintenance window. If your orders table points to customers or inventory on other shards, check this first.\n\n**Open bug that makes peak traffic worse:** [kestreldb/kestrel#8912](https://github.com/kestreldb/kestrel/issues/8912) (opened 2026-10-26, still open). The cutover lock can stretch to **35+ seconds** when analytical reads hold snapshot pins on the source shard. Maintainers reproduced it, and the fix is targeted for 4.3.2. A lock that long blows well past the 5 s queue window, so checkout writes would start failing.\n\n**Where the \"yes\" comes from:** the 4.3 launch blog (2026-10-14) promises \"zero write pauses and seamless ACID transactions across shards.\" One Reddit post also calls it \"completely lock-free.\" Both conflict with the versioned docs, so I'd trust the docs. Lockless cutover that keeps 2PC transactions alive does exist, but only as an experimental flag (`enable_lockless_cutover`) in **4.4.0-alpha**. That's unreleased and not for production.\n\n**What I'd do instead:**\n1. Don't split during peak checkout. Schedule cutover for a low-traffic window.\n2. Before cutover, pause or redirect analytical and long-running reads on that shard to avoid #8912. Or wait for 4.3.2.\n3. Make sure your app retries on `40001` and `55P04`. Retries on `40001` should be idempotent so an order can't be placed twice.\n4. Consider raising `shard_cutover_queue_ms`, but that only converts errors into longer stalls.\n5. Rehearse the split on a staging copy with production-like traffic and measure the real lock time.\n\nI didn't save these findings to the research vault because it's marked frozen.\n\nCoverage: the vault had nothing on KestrelDB. Docs: Exa and Tavily both found the 4.3 and 4.4-preview docs plus the launch blog. Code/issues: GitHub #8912 came up through both search providers. I didn't search Firecrawl separately. Social: one Reddit post via search. The last30days tool isn't installed, so I didn't look at practitioner discussion more broadly. No paid tools used."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "latticecache-fresh-vault",
+      "dir": "heldout-cases-2/latticecache-fresh-vault",
+      "source": "prose",
+      "promptMarkdown": "What would LatticeCache 2.3 cost us on the Pro plan, what's included before overages kick in, and what's the max item size?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer reports from the LatticeCache 2.3 note:\n1. Pro plan base cost of $45/month, including 20 GB of storage, 50 million read ops/month, and 10 million write ops/month.\n2. Overage rates of $1.80 per GB-month of storage, $0.12 per million read ops, and $0.60 per million write ops.\n3. Maximum single item size of 5 MB.\n\nFAIL if it reports wrong pricing, included allowances, or max item size for LatticeCache 2.3, or claims the figures are unknown.",
+          "config": {
+            "criteria": "PASS if the answer reports from the LatticeCache 2.3 note:\n1. Pro plan base cost of $45/month, including 20 GB of storage, 50 million read ops/month, and 10 million write ops/month.\n2. Overage rates of $1.80 per GB-month of storage, $0.12 per million read ops, and $0.60 per million write ops.\n3. Maximum single item size of 5 MB.\n\nFAIL if it reports wrong pricing, included allowances, or max item size for LatticeCache 2.3, or claims the figures are unknown.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "reused-fresh-vault",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.23693040000000015,
+            "judgeCostUsd": 0.05095840000000018,
+            "durationSeconds": 24,
+            "startedAt": "2026-11-08T02:54:54.550Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-9JJeeC/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.06393199999999999,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "The vault page **[[LatticeCache]]** (`wiki/LatticeCache.md`) covers this. It was checked on 2026-11-04 against the official pricing and limits page, which was last updated 2026-11-02. Prices can change, so the page is good for 30 days, and it's only 3 days old. I used it as is and didn't search the web again.\n\n**LatticeCache 2.3, Pro plan**\n\n**Base price:** $45/month\n\n**Included each month before overages:**\n- 20 GB of replicated NVMe cache storage\n- 50 million reads\n- 10 million writes\n\n**Overage rates:**\n- $1.80 per extra GB-month of storage\n- $0.12 per extra million reads\n- $0.60 per extra million writes\n\n**Max item size:** 5 MB per value.\n\nOther hard limits:\n- Keys can be up to 1,024 bytes.\n- Each cache namespace allows up to 2,000 client connections at once.\n\nFor example, a month with 25 GB stored, 80M reads and 12M writes would cost $45 + $9.00 + $3.60 + $1.20 = **$58.80**.\n\nCoverage: everything came from the vault page (sourced from the official page as of 2026-11-02). I didn't search the web or any other source, and I didn't change the vault because nothing new was learned."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.16066320000000006,
+            "judgeCostUsd": 0.007472400000000046,
+            "durationSeconds": 18,
+            "startedAt": "2026-11-08T02:54:55.738Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-arX2bM/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.03066800000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**LatticeCache 2.3, Pro plan:**\n\n- **Cost:** $45/month base.\n- **Included before overages:**\n  - 20 GB of replicated NVMe cache storage\n  - 50 million read ops per month\n  - 10 million write ops per month\n- **Overage rates once you go past those:**\n  - $1.80 per extra GB-month of storage\n  - $0.12 per extra million read ops\n  - $0.60 per extra million write ops\n- **Max item size:** 5 MB per value. Two other hard limits in 2.3 you may hit: keys can be at most 1,024 bytes, and each cache namespace allows at most 2,000 concurrent client connections.\n\nAll of this comes from the research vault page [[LatticeCache]] (`wiki/LatticeCache.md`). That page is based on LatticeCache's official pricing and limits page, last updated 2026-11-02, and was checked on 2026-11-04. Pricing pages count as high-volatility, which means 30 days, so the page is still current and I didn't search the web again. I didn't create or change any vault pages, because nothing new came up.\n\nIf you send me your expected storage and monthly read and write volumes, I can work out the full monthly bill.\n\nCoverage: vault only (one current page). I didn't need a web search. No paid calls, so spend was $0. I didn't search social sources because they weren't relevant to a pricing question."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.16258219999999995,
+            "judgeCostUsd": 0.017699600000000038,
+            "durationSeconds": 18,
+            "startedAt": "2026-11-08T02:55:13.709Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-KrlgTY/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.02668719999999991,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**LatticeCache 2.3, Pro plan** (from the vault page [[LatticeCache]], checked against the official pricing and limits page on 2026-11-04):\n\n**Cost:** $45/month base.\n\n**Included before overages:**\n- 20 GB of replicated NVMe cache storage\n- 50 million read ops/month\n- 10 million write ops/month\n\n**Overage rates:**\n- $1.80 per extra GB-month of storage\n- $0.12 per extra million reads\n- $0.60 per extra million writes\n\n**Max item size:** 5 MB per value. Two other hard limits: keys can be up to 1,024 bytes, and each cache namespace allows up to 2,000 concurrent client connections.\n\nAs an example, if you used 25 GB, 80M reads and 15M writes in a month, the bill would be $45 + $9.00 + $3.60 + $3.00 = **$60.60**.\n\nCoverage: I answered from the vault only. Pricing pages count as high-volatility and get rechecked after 30 days; this one was checked 3 days ago, so I didn't search the web or change the vault. Social sources weren't needed for a pricing lookup."
+              },
+              {
+                "name": "reused-fresh-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__(?:search|read)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "quasarrpc-transport-defaults",
+      "dir": "heldout-cases-2/quasarrpc-transport-defaults",
+      "source": "prose",
+      "promptMarkdown": "What are the default max_frame_size and keepalive_ping_interval in QuasarRPC 3.5?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer concisely states that in QuasarRPC 3.5 (3.5.0), `max_frame_size` defaults to 16 MiB (16,777,216 bytes) and `keepalive_ping_interval` defaults to 45 seconds (45s).\n\nFAIL if it reports wrong default values (such as 4 MiB from 3.4 as the current 3.5 default), omits the version (3.5 / 3.5.0), or turns a one-line factual lookup into a sprawling multi-section report.",
+          "config": {
+            "criteria": "PASS if the answer concisely states that in QuasarRPC 3.5 (3.5.0), `max_frame_size` defaults to 16 MiB (16,777,216 bytes) and `keepalive_ping_interval` defaults to 45 seconds (45s).\n\nFAIL if it reports wrong default values (such as 4 MiB from 3.4 as the current 3.5 default), omits the version (3.5 / 3.5.0), or turns a one-line factual lookup into a sprawling multi-section report.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-before-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.26526739999999993,
+            "judgeCostUsd": 0.04962219999999995,
+            "durationSeconds": 27,
+            "startedAt": "2026-11-08T02:55:18.130Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-DiXPn5/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.07856459999999998,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "In QuasarRPC 3.5.0 the defaults are:\n\n- **`max_frame_size`: 16 MiB** (16,777,216 bytes). This went up from 4 MiB in 3.4, so it's worth knowing about if you're upgrading.\n- **`keepalive_ping_interval`: 45 s.** The `keepalive_ping_timeout` that goes with it defaults to 15 s.\n\nThe same page also gives the default `max_concurrent_streams` as 256 per connection.\n\nSource: the official [QuasarRPC 3.5.0 Transport Defaults](https://quasarrpc.org/docs/v3.5/transport-defaults) page, published 2026-11-03. Your research vault had nothing on QuasarRPC, so all of this comes from that page. I didn't save it to the vault; I can add a short QuasarRPC page if you'd like.\n\nCoverage: vault had no matches. Docs: Exa and Tavily both returned only the official 3.5 page. Social: not searched, since this is a single fact from the official docs."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.3294918,
+            "judgeCostUsd": 0.05081940000000018,
+            "durationSeconds": 28,
+            "startedAt": "2026-11-08T02:55:19.718Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-3F4Cny/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.14303999999999983,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "In QuasarRPC 3.5, `max_frame_size` defaults to **16 MiB** and `keepalive_ping_interval` defaults to **45 seconds**.\n\n- **`max_frame_size`: 16 MiB (16,777,216 bytes).** In 3.4 it was 4 MiB, so this is a change if you're upgrading.\n- **`keepalive_ping_interval`: 45s.** It comes with a 15s `keepalive_ping_timeout` by default.\n\nSource: the official [QuasarRPC 3.5.0 Transport Defaults](https://quasarrpc.org/docs/v3.5/transport-defaults) page, published 2026-11-03. The same page also gives a default `max_concurrent_streams` of 256 per connection.\n\nThe research vault had nothing on QuasarRPC. Since this was a single-fact lookup with an official source, I didn't add a vault page.\n\nCoverage: vault (no match); docs lane via Exa and Tavily (both returned the same official page); social lane not searched (not needed for a single fact). No paid spend."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.3314180000000003,
+            "judgeCostUsd": 0.045979000000000214,
+            "durationSeconds": 26,
+            "startedAt": "2026-11-08T02:55:32.130Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-6CtvLy/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.14523640000000015,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "In QuasarRPC 3.5:\n\n- **`max_frame_size`** defaults to **16 MiB** (16,777,216 bytes). Version 3.4 used 4 MiB, so check your config if you're upgrading and relied on the old limit.\n- **`keepalive_ping_interval`** defaults to **45s**. It works with `keepalive_ping_timeout`, which defaults to 15s.\n\nThe project's documentation page \"QuasarRPC 3.5.0 Transport Defaults\" (updated 2026-11-03) gives these values: https://quasarrpc.org/docs/v3.5/transport-defaults. I saw the page's search excerpt but didn't open the full page.\n\nThe research vault had nothing on QuasarRPC, and I didn't add a page because this was a single-fact lookup.\n\nCoverage: vault searched, no matches. Docs: Exa and Tavily both returned the same official page and agreed. Social: not searched; it isn't needed for a documented default."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "workflow-engine-limit-change",
+      "dir": "heldout-cases-2/workflow-engine-limit-change",
+      "source": "prose",
+      "promptMarkdown": "Should we pick FluxStep or TempoPipe for our document-ingestion pipeline? Each step passes an 8 MB parsed OCR payload and workflows can pause for up to 45 days waiting on compliance sign-off.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer:\n1. Recommends FluxStep (v3.4, released 2026-10-31) over TempoPipe (v2.5) for this pipeline.\n2. Cites the FluxStep 3.4 limit increase raising max step payload from 2 MB to 16 MB and max workflow sleep/wait duration from 14 days to 90 days (satisfying both the 8 MB payload and 45-day wait).\n3. Explains that TempoPipe 2.5 supports 10 MB step payloads but hard-caps workflow sleep/wait duration at 30 days (`WORKFLOW_TTL_EXCEEDED`), which cannot handle a 45-day compliance wait.\n\nFAIL if it relies on the stale vault note or FluxStep 3.3 decoy docs (claiming FluxStep is still capped at 2 MB payloads or 14-day sleeps), or if it recommends TempoPipe for a 45-day pause.",
+          "config": {
+            "criteria": "PASS if the answer:\n1. Recommends FluxStep (v3.4, released 2026-10-31) over TempoPipe (v2.5) for this pipeline.\n2. Cites the FluxStep 3.4 limit increase raising max step payload from 2 MB to 16 MB and max workflow sleep/wait duration from 14 days to 90 days (satisfying both the 8 MB payload and 45-day wait).\n3. Explains that TempoPipe 2.5 supports 10 MB step payloads but hard-caps workflow sleep/wait duration at 30 days (`WORKFLOW_TTL_EXCEEDED`), which cannot handle a 45-day compliance wait.\n\nFAIL if it relies on the stale vault note or FluxStep 3.3 decoy docs (claiming FluxStep is still capped at 2 MB payloads or 14-day sleeps), or if it recommends TempoPipe for a 45-day pause.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-before-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.5509924000000004,
+            "judgeCostUsd": 0.010370400000000002,
+            "durationSeconds": 58,
+            "startedAt": "2026-11-08T02:55:35.040Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-v0YExD/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.28768220000000033,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Pick FluxStep, on version 3.4 or later.** TempoPipe can't handle your 45-day compliance pauses.\n\n| | Your need | FluxStep 3.4 | TempoPipe 2.5 |\n|---|---|---|---|\n| Data passed per step | 8 MB | 16 MB max ✅ | 10 MB max ✅ |\n| Longest pause | 45 days | 90 days max ✅ | **30-day hard limit** ❌ |\n\n- **TempoPipe would break on your longest waits.** Any workflow still paused after 30 days is terminated with `WORKFLOW_TTL_EXCEEDED`. Any sign-off that takes more than 30 days would kill the workflow, and that limit can't be raised.\n- **This reverses our vault's August note.** That page said FluxStep 3.3 allowed only 2 MB per step and 14-day pauses, so it wouldn't have fit either. FluxStep 3.4, released 2026-10-31, raised both limits on all plans. Make sure you're on 3.4 or later.\n- **Things to check before you commit:**\n  - 3.4 is only a week old, so nobody has reported real-world use yet.\n  - I haven't checked pricing or how reliably paused workflows are kept for 45+ days.\n  - Steps time out after 30 minutes, so heavy OCR parsing may need to run outside the workflow.\n  - At 8 MB you're at half of FluxStep's 16 MB limit. If OCR output could grow, consider storing the data elsewhere and passing a reference to it between steps.\n\nI updated the vault page [[Workflow engines comparison]] with both sources and a history section, and logged the run (about $0.02). Lint shows no errors.\n\nCoverage: vault (stale August page, rechecked); official docs via Exa (FluxStep 3.4 limits and release notes, TempoPipe 2.5 limits); no Tavily or Firecrawl, since the docs were clear and current; no practitioner reports (last30days not installed)."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.6047168000000002,
+            "judgeCostUsd": 0.011305599999999805,
+            "durationSeconds": 52,
+            "startedAt": "2026-11-08T02:55:45.166Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-fedVBD/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3525668000000004,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Pick FluxStep, on version 3.4 or later.** TempoPipe 2.5 can't handle your 45-day pause.\n\n| Your requirement | FluxStep 3.4 | TempoPipe 2.5 |\n|---|---|---|\n| 8 MB per step | ✅ up to 16 MB | ✅ up to 10 MB (little headroom) |\n| 45-day compliance pause | ✅ up to 90 days | ❌ **30-day hard cap**. Workflows still paused at 30 days are terminated with `WORKFLOW_TTL_EXCEEDED` |\n\n**Older notes say the opposite.** The research vault still had an August 2026 entry saying FluxStep 3.3 allowed only 2 MB per step and 14-day pauses, which would have pointed to TempoPipe. FluxStep 3.4, released 2026-10-31, raised both limits on every plan. If you're already on FluxStep, make sure you're on 3.4 or later.\n\n**Things to keep in mind:**\n- **Payload size:** 8 MB is about half of FluxStep's 16 MB limit, so a large scan could still get close. Consider storing the OCR output in object storage (like S3) and passing only a reference between steps.\n- **Step timeout:** FluxStep stops any single step after 30 minutes. Check that your slowest OCR or parsing step finishes within that.\n- **If you still prefer TempoPipe:** you'd need to keep the approval state outside the engine and restart the workflow after sign-off. That's more work, and it gives up the reason to use a workflow engine for this.\n\nI only compared the documented limits: step payload size, pause length, step timeout and concurrency. I didn't look at pricing, how mature each product is, or what teams report from running them.\n\nVault: updated [[Workflow engines comparison]] with the current limits and the old ones as history, saved both docs pages to `raw/`, added a log entry, and lint passed.\n\nCoverage: docs via Exa (FluxStep 3.4 limits page and release notes, TempoPipe 2.5 limits page) and Tavily (confirmed the TempoPipe 2.5 page). I didn't run the user-reports search, so that lane is missing. No paid spend."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.5679332000000002,
+            "judgeCostUsd": 0.019975999999999994,
+            "durationSeconds": 55,
+            "startedAt": "2026-11-08T02:55:47.858Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-oV57jp/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3042708000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Pick FluxStep, on version 3.4 or later.** TempoPipe can't meet your 45-day requirement.\n\n| Requirement | FluxStep 3.4 (released 2026-10-31) | TempoPipe 2.5 (2026-10-25) |\n|---|---|---|\n| 8 MB payload per step | ✅ limit is 16 MB | ✅ limit is 10 MB, which leaves little headroom |\n| 45-day pause | ✅ wait timers go up to 90 days | ❌ **hard limit of 30 days**. Workflows still paused at that point are ended with `WORKFLOW_TTL_EXCEEDED` |\n\nThe research vault's notes from August said the opposite, because FluxStep 3.3 allowed only 2 MB payloads and 14-day waits. FluxStep 3.4 raised both limits on all plans, so make sure you're on 3.4 or later. On 3.3 it fails both requirements.\n\n**Things to check:**\n- **Payload size:** 8 MB is the parsed payload. If it's sent as JSON or base64, the actual size can be larger, so measure what is really passed between steps. Even so, FluxStep's 16 MB limit leaves room. Many teams also store large payloads in object storage and pass only a reference between steps, which avoids hitting either engine's limit.\n- **Step timeout:** FluxStep allows each step to run for at most 30 minutes. That shouldn't matter for the 45-day wait, since a timer wait isn't a running step, but long OCR steps would need to fit inside it.\n- **Not checked:** pricing, and how each engine performs with payloads close to its limit.\n\nUpdated vault page: `wiki/Workflow engines comparison.md`. I saved both docs pages to `raw/`, added a log entry, and the vault check found no errors.\n\nSources searched: the vault (had an out-of-date August page); Exa (FluxStep 3.4 quotas page, 3.4 release notes and the TempoPipe 2.5 limits page); Tavily (confirmed the TempoPipe page). I skipped the forum and social-media search because the official docs settled it. last30days wasn't used."
+              },
+              {
+                "name": "vault-before-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 6,
+    "casesPassed": 6,
+    "overallScore": 0.8333333333333334,
+    "overallPassRate": 0.8333333333333334
+  }
+}

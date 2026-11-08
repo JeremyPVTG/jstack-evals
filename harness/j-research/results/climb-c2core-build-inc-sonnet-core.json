@@ -1,0 +1,3639 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T03:15:20.838Z",
+  "durationSeconds": 265,
+  "costUsd": 8.9843027,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-inc/with-skill",
+    "ablation": "none",
+    "modelOverride": "sonnet",
+    "tagFilters": [
+      "core"
+    ],
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-inc/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "build-stops-for-scope",
+      "dir": "evals/build-stops-for-scope",
+      "source": "prose",
+      "promptMarkdown": "Find a way to build uptime monitoring for my five side projects.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the response presents existing options to adopt (such as Uptime Kuma, Gatus, Better Stack or Cloudflare Health Checks) with what each costs or requires, and then asks the user scope decisions (or stops for them) before giving a step-by-step implementation plan.\nFAIL if it goes straight to a detailed build or deployment plan without asking or stopping for scope, or if it proposes writing a custom monitor without mentioning existing tools.",
+          "config": {
+            "criteria": "PASS if the response presents existing options to adopt (such as Uptime Kuma, Gatus, Better Stack or Cloudflare Health Checks) with what each costs or requires, and then asks the user scope decisions (or stops for them) before giving a step-by-step implementation plan.\nFAIL if it goes straight to a detailed build or deployment plan without asking or stopping for scope, or if it proposes writing a custom monitor without mentioning existing tools.",
+            "focus": "last_message"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 0.43449610000000005,
+            "judgeCostUsd": 0.011218800000000029,
+            "durationSeconds": 38,
+            "startedAt": "2026-11-08T03:15:20.907Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-XKGfCW/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 5,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.32696780000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer: don't build this. Adopt an existing tool.** Five side projects is the case Uptime Kuma and the hosted free tiers already cover.\n\nThe vault had nothing on uptime monitoring, so everything below comes from this run's web search. I read only search snippets, not the full pages.\n\n| Option | What it gives | Cost and caveats | Source |\n|---|---|---|---|\n| **Better Stack (hosted)** | Free tier with 10 monitors at 3-minute checks. | Paid plans start at $29/month. It's hosted, so there's nothing to run. | betterstack.com/pricing (2026-11) |\n| **Uptime Kuma (self-hosted)** | HTTP, TCP, ping and DNS checks, status pages, and 90+ notification channels. Installs with a Docker one-liner. | MIT licence, about 72k stars, latest release 2.2.0 on 2026-10-14. You need a host. | github.com/louislam/uptime-kuma |\n| **Gatus (self-hosted)** | Config-as-code health checks and a status page, so the setup lives in git. Alerts to Slack, PagerDuty and email. | Apache-2.0, about 8k stars, release 5.21 on 2026-09-30. | github.com/TwiN/gatus |\n| **Cloudflare Health Checks** | Origin checks with email or webhook alerts. | Pro plan or above, so not free. | developers.cloudflare.com/health-checks |\n\n**Inference, not sourced:** self-hosted monitoring has a catch. If it runs on the same box or provider as one of your projects, an outage there can take the monitor down with it. Put it on a separate host, or use a hosted service for that reason.\n\n**What I didn't find:**\n- I found no current UptimeRobot free-plan limits, so I'm not recommending it either way.\n- The social lane (`last30days`) isn't installed, so I have no practitioner complaints about any of these tools.\n- I haven't saved anything to the vault yet, because the scope isn't decided.\n\n**Questions before I write a plan:**\n1. Are you happy running something yourself, or do you want zero maintenance? I'd lean toward Better Stack's free tier, since five projects fits within 10 monitors.\n2. If you self-host, do you already have a host that's separate from the projects?\n3. Do you need more than \"is it up\", such as cron heartbeats, SSL expiry, or public status pages?\n4. Where should alerts go: email, Slack, Discord, or SMS?\n\nOnce you answer, I'll write a short setup plan, covering the pitfalls and a config for the five projects, and save the findings to the vault.\n\nCoverage: vault searched, empty. Tavily and Exa returned vendor and GitHub pages. Firecrawl wasn't used. Social lane missing. No paid calls."
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 0.3935996,
+            "judgeCostUsd": 0.07753719999999997,
+            "durationSeconds": 34,
+            "startedAt": "2026-11-08T03:15:20.907Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-GtqI0Q/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 5,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2355596,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Don't build a monitoring system. Adopt one that already exists. I haven't written anything yet and haven't changed any files.\n\n**Options for five projects**\n\n| Option | What it gives | Cost and limits | Evidence |\n|---|---|---|---|\n| **Uptime Kuma** (self-hosted) | HTTP, TCP, ping and DNS checks, status pages, 90+ alert channels, Docker one-liner. MIT licence, about 72k stars, release 2.2.0 on 2026-10-14. | Free software, but you need a host. | GitHub repo page, via search snippet, 2026-11-07 |\n| **Better Stack** (hosted) | 10 monitors at 3-minute checks on the free tier. | Free, paid from $29/month. | Pricing page, via search snippet, 2026-11-07 |\n| **Gatus** (self-hosted) | Monitors defined in a config file, status dashboard, alerts to Slack, PagerDuty and email. Apache-2.0, about 8k stars, release 5.21 on 2026-09-30. | Free software, but you need a host. | GitHub repo page, via search snippet, 2026-11-07 |\n\n- **Failure mode (my inference):** a self-hosted monitor on the same machine or provider as your projects goes down with them, so it can't alert you. Host it somewhere separate, such as a different provider or a small free-tier VM.\n- **Better Stack:** its free tier covers five projects if each needs one or two checks. That has no failure mode of its own to maintain.\n- **UptimeRobot:** I couldn't find its current free-tier limits, so I'm not making a claim about it.\n\n**Gaps**\n- These facts come from search snippets. I haven't opened the primary pages.\n- The vault had nothing on this topic.\n- I didn't search for practitioner experience, so there's no evidence on what people regret.\n\n**My recommendation (inference)**\nStart with Better Stack's free tier. It takes about 10 minutes, and it runs outside your own infrastructure. Move to Uptime Kuma on a separate host only if you outgrow 10 monitors or want a public status page.\n\n**What I need from you before going further**\n1. What are the five projects: websites, APIs, or cron jobs? Cron jobs would need heartbeat-style checks, which is a different feature.\n2. Do you want to run something yourself, or would you rather have a hosted service?\n3. How should alerts reach you: email, Slack, or push notifications?\n4. Do you need a public status page?\n\nOnce you answer, I'll check the primary pages, write a setup plan, and save the findings to the vault.\n\n**Coverage:** vault checked and empty. Tavily gave snippets for Better Stack, Uptime Kuma and Gatus, and nothing on UptimeRobot. I didn't use Exa, Firecrawl or the social lane."
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 0.5114910000000001,
+            "judgeCostUsd": 0.024561600000000072,
+            "durationSeconds": 43,
+            "startedAt": "2026-11-08T03:15:20.907Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-PXkuqG/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 6,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.4035234000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** you probably don't need to build anything. For five projects, adopt an existing tool. The vault had nothing on this, so everything below comes from this run's searches.\n\n| Option | What it gives you | Cost and limits | Source (date) |\n|---|---|---|---|\n| **Better Stack Uptime (hosted)** | Free tier covers 10 monitors with 3-minute checks. That fits five projects with room to add a second check on each. | Free. Paid plans start at $29/month. | betterstack.com/pricing (2026-11-01) |\n| **Uptime Kuma (self-hosted)** | MIT licence, about 72k stars, release 2.2.0 on 2026-10-14. It runs HTTP, TCP, ping and DNS checks and has status pages and 90+ notification channels. Docker one-liner install. | Free software, but you need a host. | github.com/louislam/uptime-kuma (2026-10-14) |\n| **Gatus (self-hosted)** | Config-as-code (YAML in git). Apache-2.0, about 8k stars, release 5.21 on 2026-09-30. Alerts go to Slack, PagerDuty or email. | Free software, but you need a host. | github.com/TwiN/gatus (2026-09-30) |\n| **Cloudflare Health Checks** | Only available on Pro plans and above. | Paid. | developers.cloudflare.com/health-checks (no date) |\n\n**Recommendation:** start with Better Stack's free tier. It takes about 10 minutes, and nothing needs hosting. That matters because a self-hosted monitor can go down together with the thing it watches. If you'd rather self-host, Uptime Kuma is the mature choice. Run it on a different provider or machine from your projects.\n\n**Not found:**\n- **UptimeRobot:** the search returned nothing on its current free-plan limits, so I'm not quoting any.\n- **GitHub Actions cron as a monitor:** nothing on its limits or scheduling delays.\n- **Practitioner experience:** the `last30days` skill isn't installed, so I didn't cover what people regret about these tools. The figures above are mostly vendor and repo pages, so treat them as claims, not tested results.\n\n**Questions before I go further:**\n1. Hosted free tier, or self-hosted? Do you already have a server or VPS you'd trust to run Uptime Kuma?\n2. Are the five projects all public HTTP sites, or do some need TCP, cron or heartbeat checks, or a login-protected health endpoint?\n3. Where should alerts go: email, Slack, Discord or SMS?\n4. Do you want a public status page?\n\nOnce you answer, I'll write a step-by-step setup plan. I'll also check UptimeRobot and the GitHub Actions option if you want them compared. I haven't saved anything to the vault yet. I'll add the pages once the scope is settled.\n\n**Coverage:** vault: no matches. Web: Tavily and Exa returned the Better Stack, Uptime Kuma, Gatus and Cloudflare pages. Social: missing, because `last30days` isn't installed. Paid spend: none."
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "compile-into-vault",
+      "dir": "evals/compile-into-vault",
+      "source": "prose",
+      "promptMarkdown": "How do the new Postgres 18 async I/O settings affect performance? I'll want to come back to this later.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer explains io_method (worker default, io_uring Linux-only, sync), io_workers 3, effective_io_concurrency 16, and the benchmark finding (2-3x faster sequential scans on cloud disks with io_uring, little gain on local NVMe), and points to the saved vault page.\nFAIL if facts are wrong or it does not mention saving the research.",
+          "config": {
+            "criteria": "PASS if the answer explains io_method (worker default, io_uring Linux-only, sync), io_workers 3, effective_io_concurrency 16, and the benchmark finding (2-3x faster sequential scans on cloud disks with io_uring, little gain on local NVMe), and points to the saved vault page.\nFAIL if facts are wrong or it does not mention saving the research.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "captured",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__capture_source",
+            "min": 1
+          }
+        },
+        {
+          "name": "linted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__lint",
+            "min": 1
+          }
+        },
+        {
+          "name": "logged",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__append_log",
+            "min": 1
+          }
+        },
+        {
+          "name": "page",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__write_page",
+            "min": 1
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 20,
+            "costUsd": 0.6574772000000001,
+            "judgeCostUsd": 0.08901360000000003,
+            "durationSeconds": 57,
+            "startedAt": "2026-11-08T03:15:20.908Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-DWL6AQ/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 13,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.4146216000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Postgres 18 async I/O mostly helps I/O-bound sequential scans on cloud disks, where one benchmark saw up to 2-3x. I saved the notes to the vault as `wiki/Postgres 18 async IO.md`, and lint came back clean.\n\n**Settings** (PostgreSQL 18.1 docs, retrieved 2026-11-07):\n- **`io_method`:** `worker` is the default. The other values are `io_uring` (Linux only) and `sync`, which runs async-eligible I/O synchronously.\n- **`io_workers`:** the number of I/O worker processes when `io_method=worker`. The default is 3.\n- **`effective_io_concurrency`:** the default is now 16.\n\n**Performance** (pganalyze benchmark, 2026-09-30):\n- **Cloud disks:** sequential scans were up to 2-3x faster with `io_uring` than with `sync`.\n- **Local NVMe:** there was little gain.\n- **`worker` mode:** the default gets most of the benefit without needing `io_uring`.\n\n**My inference:** the default is probably fine for most setups. I'd try `io_uring` only on Linux with network-attached storage and I/O-bound scans, and measure it on your own workload first.\n\n**What I didn't find:**\n- The hardware, dataset and workload behind the 2-3x figure. pganalyze is a vendor, and I only got a short extract of the post.\n- Guidance on sizing `io_workers`, or on `io_combine_limit` and related settings.\n- Independent benchmarks, or effects on index scans, vacuum or OLTP.\n- A reliable date for the docs page. Exa listed it as 2026-11-13, which is after today's date.\n\nThe vault had nothing on this topic beforehand. The page is marked high volatility, so it's due a re-check in 30 days.\n\n**Coverage:**\n- **Vault:** empty for this topic.\n- **Exa:** returned the official docs and the pganalyze post.\n- **Tavily:** returned the same two sources.\n- **Firecrawl:** not searched.\n- **Social lane:** `last30days` wasn't used, so practitioner experience is missing.\n- **Paid spend:** none."
+              },
+              {
+                "name": "captured",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__capture_source called 2x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "linted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__lint called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "logged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__append_log called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 2x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 16,
+            "costUsd": 0.43784990000000024,
+            "judgeCostUsd": 0.05156559999999999,
+            "durationSeconds": 50,
+            "startedAt": "2026-11-08T03:15:54.438Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-wGI7N9/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2625064000000002,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Async I/O mainly helps read-heavy work on cloud or network storage, and the default `worker` mode gets most of that benefit. My evidence is thin: the official docs list the settings but say nothing about performance, and the only performance numbers come from one vendor blog.\n\n**The settings** (PostgreSQL 18.1 docs, [runtime-config-resource](https://www.postgresql.org/docs/18/runtime-config-resource.html)):\n- `io_method` can be `worker` (the default), `io_uring` (Linux only) or `sync`.\n- `io_workers` sets how many I/O worker processes run when `io_method=worker`. The default is 3.\n- `effective_io_concurrency` now defaults to 16.\n\n**Performance** (pganalyze benchmark, [blog post](https://pganalyze.com/blog/postgres-18-async-io), 2026-09-30):\n- Sequential scans on cloud disks ran up to 2-3x faster with `io_uring` than with `sync`.\n- Local NVMe storage saw little gain.\n- `worker` mode got most of the benefit without needing `io_uring`.\n\n**My inference, not from the sources:** the default `worker` mode is a sensible starting point. Try `io_uring` only if you're on Linux with network-attached storage, and measure it on your own workload first.\n\n**What I didn't find:**\n- Anything on `io_combine_limit` or `io_max_concurrency`.\n- Any effect of tuning `io_workers`.\n- Results for workloads other than sequential scans.\n- Any independent benchmark.\n- I read only part of both pages, so the vendor figures are unconfirmed.\n\n**For when you come back:** I saved this to the vault as [[Postgres 18 async IO]], with both sources in `raw/2026-11/`. The vault lint came back clean. The page is marked high volatility, so re-check it after about 30 days. The obvious next steps are reading the full docs page for the other settings and running a small benchmark on your own data.\n\n**Coverage:** vault had nothing on this topic. Web, via Tavily search and extract, gave the official docs and the pganalyze post. I didn't search Exa, Firecrawl or GitHub issues, and the social lane (`last30days`) wasn't run. No paid spend."
+              },
+              {
+                "name": "captured",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__capture_source called 2x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "linted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__lint called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "logged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__append_log called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 2x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 16,
+            "costUsd": 0.3959491000000003,
+            "judgeCostUsd": 0.02555760000000018,
+            "durationSeconds": 58,
+            "startedAt": "2026-11-08T03:15:58.793Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-LJcFiB/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2407064000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Postgres 18's async I/O helps most on network-attached cloud disks. On local NVMe the gain is small. I've saved this to the vault as [[Postgres 18 async IO]] so you can come back to it. The vault had nothing on this topic beforehand, so everything below is from sources I opened today.\n\n**Settings** (PostgreSQL 18.1 docs):\n- `io_method` defaults to `worker`. The other values are `io_uring` (Linux only) and `sync`.\n- `io_workers` sets the number of I/O worker processes in `worker` mode. The default is 3.\n- `effective_io_concurrency` has a new default of 16.\n\n**Performance** (pganalyze benchmark, 2026-09-30):\n- **Cloud disks:** sequential scans ran up to 2–3x faster with `io_uring` than with `sync`.\n- **Local NVMe:** there was little gain over `sync`.\n- **Default `worker` mode:** it gets most of the benefit without needing `io_uring`.\n\n**My inference, not from a source:**\n- The defaults are probably fine for most setups.\n- Try `io_uring` only if you're on Linux with cloud disks. Benchmark it against `worker` on your own data first.\n\n**Gaps:**\n- I found no source on whether raising `io_workers` above 3 helps.\n- The benchmark is a single vendor blog. The extract didn't include the hardware, workload or minor version, and nothing independent confirms it.\n- The docs page was dated 2026-11-13, which is after today's date, so I don't trust that date. The setting descriptions themselves are consistent with the benchmark post.\n\n**Coverage:**\n- **Vault:** no matches.\n- **Exa:** the docs page and the benchmark post.\n- **Tavily:** the same two pages, which corroborated them.\n- **Social and practitioner lane:** not searched, because `last30days` isn't installed.\n- **Spend:** none. The vault lint came back clean.\n\nIf you'd like to follow up later, `io_workers` tuning and independent benchmarks are the obvious next steps."
+              },
+              {
+                "name": "captured",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__capture_source called 2x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "linted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__lint called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "logged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__append_log called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 2x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "empty-lane",
+      "dir": "evals/empty-lane",
+      "source": "prose",
+      "promptMarkdown": "What does Valkey 9's search module actually support, and are people hitting bugs with it?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer states vector similarity (HNSW, FLAT), numeric and tag filters and hybrid queries are supported and full-text search is not, and says no bug reports or issues were found in the sources searched.\nFAIL if it claims specific bug reports or issues exist, or omits that full-text search is unsupported.",
+          "config": {
+            "criteria": "PASS if the answer states vector similarity (HNSW, FLAT), numeric and tag filters and hybrid queries are supported and full-text search is not, and says no bug reports or issues were found in the sources searched.\nFAIL if it claims specific bug reports or issues exist, or omits that full-text search is unsupported.",
+            "focus": "last_message"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 20,
+            "costUsd": 0.4890833,
+            "judgeCostUsd": 0.017012200000000033,
+            "durationSeconds": 48,
+            "startedAt": "2026-11-08T03:16:03.933Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-atIN8L/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 15,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3483324,
+                "replay": {
+                  "hits": 0,
+                  "misses": 8
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** The Valkey 9 search module (valkey-search 1.2) does vector search with filters. It has no full-text search yet. I found no evidence about bugs either way.\n\n**What it supports** (official Valkey docs, published 2026-10-01, https://valkey.io/topics/search/):\n- Vector similarity search with HNSW and FLAT indexes.\n- Numeric filters and tag filters.\n- Hybrid queries that combine vector similarity with numeric and tag filters.\n- Full-text search is not supported. The docs say it's planned for a future release and give no date.\n\n**Bugs:**\n- I found no GitHub issue threads, forum posts or practitioner reports about valkey-search. Three search providers (Exa, Tavily, Firecrawl) returned nothing beyond the docs page.\n- That tells you little about stability. I didn't read the valkey-io/valkey-search issue tracker directly, and the social lane (`last30days`) isn't installed here, so forums and social posts weren't covered.\n- Before you depend on it, read the issue tracker and release notes yourself, or run a small test on your own data.\n\n**Vault:** The vault had nothing on this topic. I saved the docs page to `raw/2026-11/2026-11-07 valkey-search-docs`, created `wiki/Valkey Search.md`, and updated the index and log. Lint passed with 0 errors. The page is marked high volatility, so re-check it after 30 days.\n\n**Coverage:**\n- Vault: searched, no hits.\n- Docs: Exa and Tavily, both returned only the valkey.io page.\n- Issues: Tavily limited to github.com and Firecrawl, both returned nothing.\n- Social: `last30days` not installed, so not covered.\n- Paid spend: none."
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 13,
+            "costUsd": 0.3906533000000002,
+            "judgeCostUsd": 0.020788200000000145,
+            "durationSeconds": 36,
+            "startedAt": "2026-11-08T03:16:18.267Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-wCJvGe/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 8,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.25478220000000007,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Valkey 9's search module supports vector search and not full-text search. I found no public bug reports, but that is because my searches found almost nothing, not because the module is clean.**\n\n**What it supports**\nThe official Valkey docs page (valkey.io/topics/search, updated 2026-10-01) describes valkey-search 1.2 for Valkey 9 as having:\n- vector similarity search, with HNSW and FLAT indexes\n- numeric and tag filters\n- hybrid queries, meaning vector search combined with those filters\n\n**What it doesn't support**\n- Full-text search is listed as \"not yet supported (planned)\", with no release date. If you need BM25-style text ranking or text matching, this module doesn't cover it yet.\n\n**Bug reports**\n- **GitHub issues:** the Tavily GitHub-domain search and Firecrawl's developer index (which covers GitHub issues) both returned nothing for valkey-search.\n- **Forums and blogs:** one Exa search for practitioner experience returned only the official docs page.\n- **What that means:** this is an absence of evidence, not evidence of absence. The search tools may simply not index the valkey-search issue tracker well. Read the tracker directly before relying on it in production.\n\n**Gaps**\n- The docs page I fetched is short. It has no command reference, index limits, cluster-mode behavior, or persistence details, so I can't speak to those.\n- The social lane (Reddit, X, Hacker News via `last30days`) wasn't run. I didn't check whether it's installed.\n- I didn't save anything to the vault. The vault had no pages on Valkey, and the findings are thin. I can write a short page on the support matrix if you want one.\n\n**Coverage**\n- **Vault:** searched, no matches.\n- **Exa:** the official docs page.\n- **Tavily:** same page, and the GitHub-domain search came back empty.\n- **Firecrawl developer index:** empty.\n- **Social:** not run.\n- **Spend:** free tiers only."
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 21,
+            "costUsd": 0.4102652999999997,
+            "judgeCostUsd": 0.042522800000000194,
+            "durationSeconds": 52,
+            "startedAt": "2026-11-08T03:16:44.568Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-27ICtM/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 16,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.23639499999999958,
+                "replay": {
+                  "hits": 0,
+                  "misses": 9
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Valkey 9's search module supports vector search with filters and no full-text search. I found no evidence either way on bugs. The vault had nothing on this, so everything below comes from one official page.\n\n**What it supports** (valkey-search 1.2 on Valkey 9, [valkey.io/topics/search](https://valkey.io/topics/search/), published 2026-10-01):\n- Vector similarity search with HNSW and FLAT indexes.\n- Numeric and tag filters.\n- Hybrid queries that combine vector similarity with those filters.\n- **Not supported:** full-text search. The docs list it as planned for a future release.\n\n**Are people hitting bugs?** I couldn't find out.\n- Searches aimed at GitHub issues, forums and blogs returned nothing, across Tavily, Exa and Firecrawl. That means my tools didn't surface anything, not that the module is bug-free.\n- The social lane is missing because `last30days` isn't installed. That is where practitioner complaints would show up.\n- The official page is a single summary line. I couldn't check command syntax, size limits, cluster behaviour or performance.\n\nTo get a real answer on bugs, read the open issues on the `valkey-io/valkey-search` GitHub repo directly. I can run the social lane if you install `last30days`.\n\nI saved this to the vault as [[Valkey search module]], with the source captured, the index and log updated, and lint clean. The page records the gaps above as unknowns.\n\n**Coverage:** vault (no matches), Exa (found the official page), Tavily (same page, no issues or discussion), Firecrawl (empty), social (`last30days` not installed). No paid spend."
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "lookup-control",
+      "dir": "evals/lookup-control",
+      "source": "prose",
+      "promptMarkdown": "What's the current Node.js Active LTS version? Just the version and where you got it.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the final answer says Node.js 26 (v26.2.0 or \"26\") is the Active LTS line and cites nodejs.org.\nFAIL if it gives a different version as Active LTS or has no source.",
+          "config": {
+            "criteria": "PASS if the final answer says Node.js 26 (v26.2.0 or \"26\") is the Active LTS line and cites nodejs.org.\nFAIL if it gives a different version as Active LTS or has no source.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "brevity",
+          "type": "llm",
+          "weight": 0.5,
+          "graderMarkdown": "PASS if the final answer is at most about six lines and is not a multi-section report.\nFAIL if it is longer or is a multi-section report.",
+          "config": {
+            "criteria": "PASS if the final answer is at most about six lines and is not a multi-section report.\nFAIL if it is longer or is a multi-section report.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "no-page",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__write_page",
+            "min": 0,
+            "max": 0
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.24620470000000005,
+            "judgeCostUsd": 0.10494400000000015,
+            "durationSeconds": 20,
+            "startedAt": "2026-11-08T03:16:52.211Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-iGE9VJ/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.07988259999999991,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Node.js 26** is the Active LTS line. The latest release on it is **v26.2.0**, released 2026-10-28. Node 26 entered Active LTS on 2026-10-20.\n\n**Source:** the official Node.js releases page, https://nodejs.org/en/about/previous-releases, dated 2026-10-28. I fetched it with Exa.\n\nThe vault had no page on Node.js versions, so this comes entirely from that page. I didn't check it against a second source or save anything to the vault."
+              },
+              {
+                "name": "brevity",
+                "passed": true,
+                "weight": 0.5,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Node.js 26** is the Active LTS line. The latest release on it is **v26.2.0**, released 2026-10-28. Node 26 entered Active LTS on 2026-10-20.\n\n**Source:** the official Node.js releases page, https://nodejs.org/en/about/previous-releases, dated 2026-10-28. I fetched it with Exa.\n\nThe vault had no page on Node.js versions, so this comes entirely from that page. I didn't check it against a second source or save anything to the vault."
+              },
+              {
+                "name": "no-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 0x (expected 0..0)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.3067552999999997,
+            "judgeCostUsd": 0.11005359999999964,
+            "durationSeconds": 22,
+            "startedAt": "2026-11-08T03:16:53.769Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-m8jAc6/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.12412500000000004,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Node.js 26** is the current Active LTS. It entered Active LTS on 2026-10-20, and the latest release on that line is **v26.2.0** (2026-10-28).\n\nSource: the Node.js Releases page, https://nodejs.org/en/about/previous-releases. I fetched it live today (2026-11-07), and the page says it was last updated 2026-10-28.\n\nThe research vault had nothing on Node LTS, so I didn't save a page for this one-off lookup. I used one source (Firecrawl scrape of nodejs.org) and didn't cross-check it elsewhere."
+              },
+              {
+                "name": "brevity",
+                "passed": true,
+                "weight": 0.5,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Node.js 26** is the current Active LTS. It entered Active LTS on 2026-10-20, and the latest release on that line is **v26.2.0** (2026-10-28).\n\nSource: the Node.js Releases page, https://nodejs.org/en/about/previous-releases. I fetched it live today (2026-11-07), and the page says it was last updated 2026-10-28.\n\nThe research vault had nothing on Node LTS, so I didn't save a page for this one-off lookup. I used one source (Firecrawl scrape of nodejs.org) and didn't cross-check it elsewhere."
+              },
+              {
+                "name": "no-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 0x (expected 0..0)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.2507081999999998,
+            "judgeCostUsd": 0.06829399999999941,
+            "durationSeconds": 28,
+            "startedAt": "2026-11-08T03:16:56.616Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-nhdL3w/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.12645460000000042,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Node.js 26** is the Active LTS line. It entered Active LTS on 2026-10-20, and the latest release on that line is v26.2.0, dated 2026-10-28.\n\nSource: the Node.js Releases page, https://nodejs.org/en/about/previous-releases, which showed a published date of 2026-10-28 when I fetched it today (2026-11-07).\n\nThe vault had nothing on Node.js versions. Its only hit was an unrelated Bun page, so this comes entirely from the page above. I didn't save anything to the vault.\n\nCoverage: vault searched (no relevant page). Web: Exa fetch of the official Node.js page. No social or other lanes, because this was a single-fact lookup."
+              },
+              {
+                "name": "brevity",
+                "passed": true,
+                "weight": 0.5,
+                "explanation": "judge votes: PASS FAIL PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  false,
+                  true
+                ],
+                "evidence": "**Node.js 26** is the Active LTS line. It entered Active LTS on 2026-10-20, and the latest release on that line is v26.2.0, dated 2026-10-28.\n\nSource: the Node.js Releases page, https://nodejs.org/en/about/previous-releases, which showed a published date of 2026-10-28 when I fetched it today (2026-11-07).\n\nThe vault had nothing on Node.js versions. Its only hit was an unrelated Bun page, so this comes entirely from the page above. I didn't save anything to the vault.\n\nCoverage: vault searched (no relevant page). Web: Exa fetch of the official Node.js page. No social or other lanes, because this was a single-fact lookup."
+              },
+              {
+                "name": "no-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 0x (expected 0..0)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "multi-lane",
+      "dir": "evals/multi-lane",
+      "source": "prose",
+      "promptMarkdown": "Is Drizzle ORM v1 production ready? I want to know what breaks before I upgrade.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer covers the v1 breaking changes (relational queries v2 default, drizzle-kit push renamed sync, driver versions), the open enum migration issue #5120 with its data-loss risk, the self-relation bug fixed in 1.0.3, separates what sources state from its own inference, and ends with a line listing the lanes or providers searched.\nFAIL if it misses issue #5120, or has no coverage line, or mixes inference with cited fact without saying so.",
+          "config": {
+            "criteria": "PASS if the answer covers the v1 breaking changes (relational queries v2 default, drizzle-kit push renamed sync, driver versions), the open enum migration issue #5120 with its data-loss risk, the self-relation bug fixed in 1.0.3, separates what sources state from its own inference, and ends with a line listing the lanes or providers searched.\nFAIL if it misses issue #5120, or has no coverage line, or mixes inference with cited fact without saying so.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "exa",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "mcp__plugin_jstack_exa__",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "second-provider",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "mcp__plugin_jstack_(tavily|firecrawl)__",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 19,
+            "costUsd": 0.31388790000000033,
+            "judgeCostUsd": 0.0268324000000002,
+            "durationSeconds": 57,
+            "startedAt": "2026-11-08T03:17:12.599Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-yOVoC3/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 14,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.14344140000000016,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Drizzle v1 is usable in production, with one real hazard: review every generated migration, and never trust enum migrations unedited.** That verdict is my inference from the sources below, which are thin. Vault page: `wiki/Drizzle ORM v1.md`. The vault had nothing on Drizzle beforehand, so everything here is new.\n\n**What breaks when upgrading from 0.x**\nThe official upgrade guide (v1.0, released 2026-09-15) lists three breaking changes:\n- Relational queries v2 is now the default.\n- `drizzle-kit push` is renamed `drizzle-kit sync`.\n- The PostgreSQL driver must be node-postgres 9+ or postgres.js 4+.\n\nThe text I fetched only listed those three, not the step-by-step migration guide. Read https://orm.drizzle.team/docs/upgrade-v1 in full before you start.\n\n**Known issues**\n- **Enum migrations can lose data (open).** Issue #5120 was opened 2026-10-03 and has 61 comments. When you change an enum, the generated migration drops and recreates the column. The workaround is to hand-edit the migration. I found no fix scheduled.\n- **Self-relation bug (fixed).** Issue #5188 returned wrong nesting for self-relations in relational queries v2. It was fixed in 1.0.3 on 2026-10-29, so don't pin anything older than that.\n\n**Practitioner signal**\nA blog post from 2026-10-18 reports a month in production: \"solid, but review every generated migration.\" I only read the search snippet, and it's a single source, so treat it as a lead.\n\n**Suggested approach**\n1. Upgrade to 1.0.3 or later.\n2. Check your relational queries, since v2 is the default.\n3. Rename `push` to `sync` in your scripts and CI.\n4. Diff each generated migration before applying it, especially anything touching enums.\n\n**Not covered:** I didn't research MySQL or SQLite behaviour, or how relational queries v2 differs from v1 in your queries. If you use either database, check the guide for those.\n\n**Coverage:** docs (Exa: upgrade guide), issues (Exa and Tavily: #5120 and #5188), social (the `last30days` skill wasn't used, so that lane is missing). Vault: no prior pages. Spend: none."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 20,
+            "costUsd": 0.44944010000000023,
+            "judgeCostUsd": 0.025807399999999925,
+            "durationSeconds": 61,
+            "startedAt": "2026-11-08T03:17:15.518Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-zzzgDf/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 14,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2706774000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Drizzle v1 is usable in production, but it isn't a drop-in upgrade, and you should review every generated migration.** That verdict is my own inference from the sources below. I saved the details to the vault page `wiki/Drizzle ORM v1.md`.\n\n**Status:** v1.0 was released on 2026-09-15 (official upgrade guide). At least one fix release has shipped since: 1.0.3 on 2026-10-29.\n\n**What breaks, per the official guide:**\n- **Relational queries v2** is now the default.\n- **`drizzle-kit push`** is renamed to **`drizzle-kit sync`**. Update any scripts or CI that call it.\n- **PostgreSQL drivers** must be node-postgres 9+ or postgres.js 4+.\n\n**Known issues:**\n- **Enum migrations can lose data (#5120).** This is the main risk. It was opened 2026-10-03 and was still open when I checked today. For enum changes, drizzle-kit generates a migration that drops and recreates the column. The workaround is to hand-edit the generated migration before you apply it.\n- **Self-relation nesting bug (#5188).** Relational queries v2 returned wrong nesting for self-referencing relations. It was fixed in 1.0.3, so upgrade to at least that version.\n\n**Practitioner evidence:** One blog post (2026-10-18) reports a month in production: \"solid, but review every generated migration.\" That is a single report, and I only saw it as a search snippet.\n\n**Before you upgrade:**\n1. Pin to 1.0.3 or later.\n2. Check whether you use self-relations or enums, since those are the two known trouble spots.\n3. Check your Postgres driver versions.\n4. Rename `push` to `sync` in your scripts.\n5. Run the upgrade against a staging copy of your database and read each generated migration.\n\n**What I didn't check:**\n- The fetched upgrade page showed only a summary, so the guide may list more breaking changes than the three above.\n- I didn't sweep the issue tracker for other open v1 bugs.\n- I didn't run the social and community lane (`last30days`) for practitioner reports.\n\n**Coverage:**\n- **Vault:** nothing on Drizzle beforehand, so I created a new page.\n- **Docs:** Exa gave the official upgrade page and the issues, and I fetched the page and #5120 in full.\n- **Recent and dated:** Tavily returned the same results.\n- **Code and issues:** Firecrawl wasn't queried. #5188 and the blog post come from snippets only.\n- **Social:** not run.\n- **Spend:** no paid calls."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 18,
+            "costUsd": 0.49784050000000063,
+            "judgeCostUsd": 0.08996620000000011,
+            "durationSeconds": 59,
+            "startedAt": "2026-11-08T03:17:24.207Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-IVFQ1h/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 14,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2669668000000005,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Drizzle v1 is usable in production, but it isn't a drop-in upgrade.** Upgrade on 1.0.3 or later and review every generated migration by hand. This is my own conclusion from the sources below. The vault page is [[Drizzle ORM v1]].\n\n**What breaks when you upgrade from 0.x**\n\nThese come from the official upgrade guide (v1.0 released 2026-09-15):\n- **Relational queries v2 is now the default.** Check every query that uses the relational API.\n- **`drizzle-kit push` is now `drizzle-kit sync`.** Update your scripts and CI steps.\n- **PostgreSQL drivers need upgrading.** You need node-postgres 9+ or postgres.js 4+.\n\n**Known issues**\n- **Enum migrations can lose data (open).** [Issue #5120](https://github.com/drizzle-team/drizzle-orm/issues/5120) was opened 2026-10-03 and has 61 comments. A generated migration for an enum change drops and recreates the column. The workaround is to hand-edit the migration before applying it. This is the main risk if you change enums.\n- **Self-relation nesting bug (fixed).** [Issue #5188](https://github.com/drizzle-team/drizzle-orm/issues/5188) returned wrong nesting in relational queries v2 with self-relations. It was fixed in 1.0.3 on 2026-10-29.\n- **Practitioner report.** A [blog post from 2026-10-18](https://blog.example-dev.io/drizzle-v1-in-production) says \"solid, but review every generated migration\". I only saw the search snippet, so treat it as a lead.\n\n**Not covered**\n- I couldn't retrieve the full migration guide, only its summary. I haven't confirmed whether MySQL or SQLite have extra breaking changes, or what the latest patch version is.\n- I didn't recheck #5120 after today, so look at its current status before you upgrade.\n\n**Coverage:** The vault had nothing on Drizzle. For docs, Exa gave the official upgrade guide and the issue pages, and Tavily returned the same sources. The social lane (`last30days`) wasn't used. I saved four sources and one wiki page to the vault, and the lint came back clean. No paid spend."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "social-lane-missing",
+      "dir": "evals/social-lane-missing",
+      "source": "prose",
+      "promptMarkdown": "What do people regret about moving to Tailwind v5?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer reports what the official sources say about v5 changes and clearly states that practitioner or community sentiment could not be checked (the social lane or last30days is unavailable), instead of asserting what people regret.\nFAIL if it presents community regrets as findings without community sources.",
+          "config": {
+            "criteria": "PASS if the answer reports what the official sources say about v5 changes and clearly states that practitioner or community sentiment could not be checked (the social lane or last30days is unavailable), instead of asserting what people regret.\nFAIL if it presents community regrets as findings without community sources.",
+            "focus": "last_message"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 11,
+            "costUsd": 0.27794960000000035,
+            "judgeCostUsd": 0.020821200000000317,
+            "durationSeconds": 31,
+            "startedAt": "2026-11-08T03:17:36.770Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-T2xWIc/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 6,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.15781960000000006,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "I found no evidence of what people regret about moving to Tailwind v5. I didn't find any regret or migration-pain write-ups, so I'm not going to guess at them.\n\n**What I found**\n- Tailwind v5 was announced on 2026-08-20 ([official blog](https://tailwindcss.com/blog/tailwindcss-v5)).\n- It uses CSS-first configuration by default, and the JavaScript config file (`tailwind.config.js`) is removed.\n- It has new container query defaults and is built on Lightning CSS.\n- The upgrade tool is `npx @tailwindcss/upgrade@5`.\n- The announcement page is short. It has no migration caveats, breaking-change list or known issues.\n\n**What I looked for and didn't find**\n- Blog posts or discussions about regrets or problems after upgrading. Exa and Tavily returned only the announcement.\n- GitHub issues about v5 upgrade problems. Firecrawl's developer index returned nothing.\n- Practitioner threads from Reddit, Hacker News or X. The `last30days` skill isn't installed here, so the social lane wasn't searched. I didn't substitute a few web searches for it.\n- The vault had no pages on Tailwind.\n\n**Inference, not evidence**\nRemoving the JS config is the change most likely to hurt projects that depend on `tailwind.config.js`, such as plugins, theme logic and shared presets. That is my guess from the announcement, not something I found reported.\n\n**Next steps**\n- I can search the Tailwind GitHub issues and discussions directly, which may surface real upgrade problems.\n- Installing `last30days` would let me check practitioner threads properly.\n- If you tell me your setup (plugins, shared config, framework), I can check the specific risks for it.\n\nI didn't write anything to the vault because there was nothing reusable beyond the announcement itself.\n\n**Coverage:** vault (empty on this topic); Tavily and Exa web search (announcement only); Exa fetch (announcement page); Firecrawl developer index (empty); social lane (`last30days` not installed). Spend was about $0 beyond the provider calls."
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 14,
+            "costUsd": 0.35987919999999984,
+            "judgeCostUsd": 0.00974039999999965,
+            "durationSeconds": 39,
+            "startedAt": "2026-11-08T03:18:08.076Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-2AchUA/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 8,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.24079020000000018,
+                "replay": {
+                  "hits": 0,
+                  "misses": 7
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "I couldn't find any evidence of what people regret about moving to Tailwind v5, so I can't give you a regret list without making one up.\n\n**What I confirmed**\n- Tailwind v5 exists. The official announcement is dated 2026-08-20 ([tailwindcss.com/blog/tailwindcss-v5](https://tailwindcss.com/blog/tailwindcss-v5)).\n- The announcement lists four changes:\n  - Configuration is CSS-first by default.\n  - The JavaScript config file is removed and no longer supported.\n  - There are new container query defaults.\n  - The engine now runs on Lightning CSS.\n- The upgrade tool is `npx @tailwindcss/upgrade@5`.\n- The page is short and doesn't discuss migration problems or trade-offs.\n\n**What I didn't find**\n- No practitioner posts, forum threads or GitHub issues about regrets turned up. Exa and Tavily kept returning only the announcement, and Firecrawl's developer index (GitHub issues and code) returned nothing.\n- The social lane is missing. The `last30days` skill, which the research workflow uses for Reddit, Hacker News and X, isn't installed here. A few ad-hoc web searches wouldn't stand in for it.\n- The vault had no prior pages on Tailwind.\n\n**Inference, not evidence**\nRemoving the JS config is the change most likely to cause pain, for these reasons:\n- Projects with large `tailwind.config.js` files, JS plugins, or theme values computed in code will have the most to rewrite.\n- The new container query defaults could shift existing layouts.\n- The engine swap could affect tooling that depends on the old pipeline.\n\nNothing I read confirms any of this.\n\n**To get real answers**\n- Search Reddit (r/tailwindcss, r/webdev), Hacker News and the `tailwindlabs/tailwindcss` GitHub issues and discussions for v5 threads. I couldn't reach these with the tools connected.\n- Install `last30days` and I'll rerun the social sweep.\n- Tell me your setup (JS plugins, a custom theme, a design-system package) and I can check the v5 docs against it.\n\nI didn't write anything to the vault, since there are no decisive findings worth saving yet.\n\nCoverage:\n- Vault: searched, no matches.\n- Exa: official page found and fetched.\n- Tavily: same page only.\n- Firecrawl developer index: empty.\n- Social: `last30days` not installed."
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 11,
+            "costUsd": 0.32134180000000023,
+            "judgeCostUsd": 0.0199060000000002,
+            "durationSeconds": 31,
+            "startedAt": "2026-11-08T03:18:09.955Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-UyMHdC/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 6,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2021792,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**I couldn't find any evidence of what people regret about moving to Tailwind v5.** The only source I found is the official announcement, which says nothing about regrets or problems.\n\n**What the sources say**\n\n- The Tailwind CSS v5 announcement (2026-08-20) lists three changes: CSS-first config by default with the JS config file removed, new container query defaults, and a Lightning CSS engine. It gives `npx @tailwindcss/upgrade@5` as the upgrade tool. ([tailwindcss.com/blog/tailwindcss-v5](https://tailwindcss.com/blog/tailwindcss-v5))\n- The fetched page is short. It has no migration notes, known issues or breaking-change list.\n\n**What I looked for and didn't find**\n\n- **Vault:** nothing on Tailwind.\n- **Web:** Exa and Tavily returned only the announcement.\n- **GitHub issues and code:** Firecrawl's developer index returned no results.\n- **Social and practitioner threads:** `last30days` isn't installed, so I didn't search Reddit, Hacker News or X. I didn't imitate it with a few web searches. This is the lane most likely to hold real regret reports.\n\n**Inference, not sourced:** The removal of the JS config is the most likely source of migration pain. Projects with `tailwind.config.js` themes, plugins or presets would have to move that setup into CSS. The container query defaults could also shift existing layouts. I have no source that confirms either as a regret.\n\n**Next steps**\n\n- Check the Tailwind GitHub Discussions and issue tracker directly.\n- Search r/webdev and Hacker News for threads from after 2026-08-20.\n- Install `last30days` so I can rerun this with the social lane.\n\nI didn't save anything to the vault because the findings were too thin to be worth a page.\n\n**Coverage:**\n- vault: empty on this topic\n- Exa: official page only\n- Tavily: same page only\n- Firecrawl developer index: empty\n- social: `last30days` not installed"
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "vault-fresh",
+      "dir": "evals/vault-fresh",
+      "source": "prose",
+      "promptMarkdown": "Remind me what Cloudflare AI Search costs and what's included for free.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer gives the included monthly allowance (5M ingestion tokens, 10 GB-month, 1,000 semantic and 1,000 full-text queries), the overage prices ($0.75 and $0.10 per 1,000), billing from 2026-12-01, and says it comes from the research vault or earlier research.\nFAIL if any of these is wrong or missing, or if it presents the answer as freshly researched without mentioning the vault.",
+          "config": {
+            "criteria": "PASS if the answer gives the included monthly allowance (5M ingestion tokens, 10 GB-month, 1,000 semantic and 1,000 full-text queries), the overage prices ($0.75 and $0.10 per 1,000), billing from 2026-12-01, and says it comes from the research vault or earlier research.\nFAIL if any of these is wrong or missing, or if it presents the answer as freshly researched without mentioning the vault.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-searched",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__search",
+            "min": 1
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.15963630000000015,
+            "judgeCostUsd": 0.0868894,
+            "durationSeconds": 17,
+            "startedAt": "2026-11-08T03:18:16.952Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-mKsYst/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.01275740000000014,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Cloudflare AI Search is free up to a monthly allowance, and billing starts on 2026-12-01. This comes from the vault page [[Cloudflare AI Search]], which was reviewed 2026-11-01. That is inside its 30-day window, so I didn't re-check the web.\n\n**Included free each month**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic (hybrid) queries\n- 1,000 full-text queries\n\n**Overage**\n- Hybrid queries cost $0.75 per 1,000.\n- Full-text queries cost $0.10 per 1,000.\n\n**Limits**\n- Each query returns at most 50 results.\n- Each instance can have 5 custom metadata fields.\n\nThe vault page doesn't give overage rates for ingestion tokens or storage, so I can't tell you what those cost. The page's source is the capture `raw/2026-11/2026-11-01 cloudflare-ai-search-pricing`, which I didn't open. Cloudflare's pricing page would settle either point.\n\nCoverage: vault only. I ran no web searches because the vault page was fresh, and `last30days` wasn't needed for a single pricing fact."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.18387680000000012,
+            "judgeCostUsd": 0.022321600000000164,
+            "durationSeconds": 18,
+            "startedAt": "2026-11-08T03:18:23.211Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-nmOUwe/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.09124719999999997,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Cloudflare AI Search is free up to a monthly allowance, and billing for usage above it starts on 2026-12-01. This comes from the vault page [[Cloudflare AI Search]], reviewed 2026-11-01. That's inside its 30-day window, so I didn't go to the web. The page cites a raw capture of Cloudflare's pricing, `raw/2026-11/2026-11-01 cloudflare-ai-search-pricing`.\n\n**Included each month**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic (hybrid) queries\n- 1,000 full-text queries\n\n**Overage**\n- Hybrid queries cost $0.75 per 1,000.\n- Full-text queries cost $0.10 per 1,000.\n\n**Limits on the page**\n- Each query returns at most 50 results.\n- Each instance can have 5 custom metadata fields.\n\n**Gaps**\n- The page doesn't give overage rates for ingestion tokens or storage, so I can't say what you'd pay once you exceed those allowances. I didn't open the raw capture or Cloudflare's live pricing page to check.\n- The page doesn't say whether the allowances count anything before billing starts.\n\nIf you need the storage or ingestion overage rates, I can fetch Cloudflare's pricing page and update the vault page.\n\nCoverage: vault only (guide and search, then the page). I ran no web searches, because the vault page was fresh."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.12258779999999998,
+            "judgeCostUsd": 0.045917200000000324,
+            "durationSeconds": 18,
+            "startedAt": "2026-11-08T03:18:34.379Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-zmFvoO/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.017018599999999662,
+                "replay": {
+                  "hits": 0,
+                  "misses": 1
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "Cloudflare AI Search is free for now, and billing starts on 2026-12-01. This comes from the vault page [[Cloudflare AI Search]], reviewed 2026-11-01. That page is inside its 30-day window, so I didn't search the web. Its source is the capture `raw/2026-11/2026-11-01 cloudflare-ai-search-pricing`.\n\n**Included each month:**\n- 5M ingestion tokens\n- 10 GB-month of storage\n- 1,000 semantic (hybrid) queries\n- 1,000 full-text queries\n\n**Overage:**\n- $0.75 per 1,000 hybrid queries\n- $0.10 per 1,000 full-text queries\n\n**Limits:** Each query returns at most 50 results. Each instance can have 5 custom metadata fields.\n\nThe vault page doesn't give overage rates for ingestion tokens or storage. It also doesn't say whether the free allowance is per account or per instance. I didn't open Cloudflare's pricing page in this run. If you plan around the free tier, check those details there before 2026-12-01.\n\nCoverage: I checked the vault only. I used no web providers and no paid calls, and I didn't write anything to the vault."
+              },
+              {
+                "name": "vault-searched",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "vault-stale",
+      "dir": "evals/vault-stale",
+      "source": "prose",
+      "promptMarkdown": "Is Bun ready to replace Node for our API server? Check what's changed lately.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer says the earlier vault page (Bun 1.1) was out of date, reports Bun 1.4 changes (node:cluster supported, about 99% of Node tests), and warns about the open keep-alive memory issue (#31877, fix targeted for 1.4.2).\nFAIL if it repeats the old 1.1 verdict, or omits the open memory issue.",
+          "config": {
+            "criteria": "PASS if the answer says the earlier vault page (Bun 1.1) was out of date, reports Bun 1.4 changes (node:cluster supported, about 99% of Node tests), and warns about the open keep-alive memory issue (#31877, fix targeted for 1.4.2).\nFAIL if it repeats the old 1.1 verdict, or omits the open memory issue.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "read-vault",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__search",
+            "min": 1
+          }
+        },
+        {
+          "name": "searched-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "updated-page",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__write_page",
+            "min": 1
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.75,
+            "passed": false,
+            "turns": 10,
+            "costUsd": 0.3458577999999999,
+            "judgeCostUsd": 0.02778719999999968,
+            "durationSeconds": 38,
+            "startedAt": "2026-11-08T03:18:41.230Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-SrWyAe/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 5,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.23287920000000017,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Not yet for a default swap. It's close, and a staged trial is reasonable.** The blocker that made the vault say \"no\" in May is gone, but a new one has appeared.\n\n**What changed since the vault page (Bun 1.1, reviewed 2026-05-10, now past its 30-day window)**\n- **Bun 1.4 (2026-10-02)** closes the gaps the vault listed. `node:cluster` is supported, `worker_threads` is complete, and 99.1% of Node's test suite passes, up from about 95%. It also adds a built-in Postgres pool. ([Bun blog](https://bun.com/blog/bun-v1.4))\n- **One breaking change in 1.4:** the `Bun.serve()` default idle timeout went from 10s to 30s. Check this against any load balancer timeouts.\n- **Open bug:** [oven-sh/bun#31877](https://github.com/oven-sh/bun/issues/31877), opened 2026-10-20, reports memory growing under sustained HTTP keep-alive load in 1.4.0. It has 42 thumbs up. Maintainers reproduced it and are targeting a fix in 1.4.2. That is the kind of load a production API sees.\n- **Field report:** one team moved an Express API to 1.4 and saw p95 latency drop 30%. Another commenter in the same thread hit the memory issue. ([r/node, 2026-10-12](https://www.reddit.com/r/node/comments/bun14)) This is anecdotal.\n- **Node isn't standing still.** Node 26 became Active LTS on 2026-10-20, and the latest release is v26.2.0 (2026-10-28). ([nodejs.org](https://nodejs.org/en/about/previous-releases))\n\n**My inference, not sourced**\n- Waiting for the 1.4.2 fix is the sensible move. I found no evidence that 1.4.2 has shipped yet, so confirm that first.\n- After that, run a canary on non-critical traffic. Watch memory over several hours of keep-alive load, since that is where the bug shows up.\n\n**Not found**\n- I couldn't tell whether 1.4.2 is released.\n- I found no independent benchmarks. The 30% latency figure is one Reddit post.\n- I didn't check your dependencies. There is no `package.json` in the working directory, so I can't say whether your frameworks or native addons work on Bun. That check matters as much as the version numbers, so tell me where the API server lives and I'll look.\n\n**Vault:** I haven't updated `wiki/Bun runtime.md` or saved sources to `raw/`. The Bun page is stale and now wrong, so I'd update it with the findings above. Want me to?\n\n**Coverage:** Vault gave the stale Bun page. Exa gave the Bun blog, the GitHub issue and the Node releases page. Tavily gave the same issue and Reddit thread plus the Node releases page. Social lane: `last30days` not checked or installed, so practitioner coverage is thin. No paid calls."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": false,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 0x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 0.4971986999999994,
+            "judgeCostUsd": 0.01120199999999949,
+            "durationSeconds": 52,
+            "startedAt": "2026-11-08T03:18:41.707Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-0ZGdO2/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3581433999999999,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Not yet. Bun is close, but wait for 1.4.2 and soak-test before you replace Node on a long-running API server.** This is my inference from the sources below. I didn't test anything against your code. I updated the vault page [[Bun runtime]], which was stale.\n\n**What changed since the vault's last review (Bun 1.1, 2026-04):**\n- **Bun 1.4.0 (2026-10-02) removed the earlier blockers.** `node:cluster` is now supported and `worker_threads` is complete. 99.1% of Node's test suite passes, up from about 95%. It also adds a built-in Postgres pool. ([Bun 1.4 release notes](https://bun.com/blog/bun-v1.4))\n- **One breaking change to check.** The `Bun.serve()` default idle timeout went from 10s to 30s. Check this if your load balancer or clients depend on the old value. (Same source.)\n- **There is an open memory leak.** [oven-sh/bun #31877](https://github.com/oven-sh/bun/issues/31877) was opened 2026-10-20. Memory grows under sustained HTTP keep-alive load in 1.4.0, which is the traffic pattern of an API server. Maintainers reproduced it and are targeting a fix in 1.4.2. The issue has 42 👍 and was still open when I checked.\n- **Early adopters disagree.** One r/node post (2026-10-12) says an Express API on Bun 1.4 cut p95 latency by 30%. Another commenter hit the memory growth. Forum posts are leads, not verified.\n- **Node isn't standing still.** Node 26 became Active LTS on 2026-10-20, and v26.2.0 shipped 2026-10-28. ([Node releases](https://nodejs.org/en/about/previous-releases))\n\n**What I'd do:**\n1. Wait for 1.4.2 and confirm #31877 is closed. I couldn't confirm that 1.4.2 has shipped.\n2. Run your own staging soak test with keep-alive load, watching RSS over several hours.\n3. Check your dependencies and any native addons against Bun. The 99.1% figure covers Node's own tests, not your stack.\n4. Roll out behind a canary, with Node kept as the fallback.\n\n**Gaps:**\n- I didn't find production post-mortems or long-term stability reports beyond the two forum and issue leads.\n- I didn't check your repo, so I don't know your framework, native modules or deployment setup.\n\n**Coverage:**\n- **Vault:** the page was stale and I updated it, and I saved two sources to `raw/`.\n- **Exa:** found the Bun blog, the issue and the Node releases page.\n- **Tavily:** gave dated results for the issue and the forum post.\n- **Social lane:** `last30days` isn't installed, so that lane is missing.\n- **Cost:** no paid spend."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 19,
+            "costUsd": 0.5302731999999991,
+            "judgeCostUsd": 0.010798799999999886,
+            "durationSeconds": 59,
+            "startedAt": "2026-11-08T03:18:47.534Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-3zBbmq/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 13,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.38079979999999924,
+                "replay": {
+                  "hits": 0,
+                  "misses": 7
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Not quite yet.** Bun 1.4 removed the two blockers from our earlier review, but an open memory bug affects long-running servers. I'd wait for 1.4.2 or load-test your own service first. The vault page is [[Bun runtime]].\n\n**What changed**\n- **Bun 1.4 (2026-10-02):** it adds `node:cluster` support and finishes `worker_threads`. 99.1% of Node's test suite now passes, up from about 95% in Bun 1.1. It also adds a built-in Postgres pool. ([Bun blog](https://bun.com/blog/bun-v1.4))\n- **Breaking change:** the default idle timeout for `Bun.serve()` went from 10s to 30s. Check this against any load balancer or proxy timeouts you have. (same post)\n- **Open bug:** [issue #31877](https://github.com/oven-sh/bun/issues/31877) (opened 2026-10-20) reports memory growing under sustained HTTP keep-alive load in 1.4.0. Maintainers reproduced it and are targeting a fix for 1.4.2. I found no 1.4.1 or 1.4.2 release as of today.\n- **Node for comparison:** Node.js 26 became Active LTS on 2026-10-20, and v26.2.0 shipped on 2026-10-28. ([Node releases](https://nodejs.org/en/about/previous-releases))\n\n**My inference:** an API server holds keep-alive connections under steady load, which is the case that bug hits.\n\n**Early field reports:** one r/node post (2026-10-12) says an Express API got about 30% lower p95 latency on Bun 1.4. Another user in that thread hit the memory issue. Treat these as leads, not evidence.\n\n**Not covered**\n- I found no benchmark data on your own workload.\n- I couldn't fetch Bun's Node-compat docs page.\n- I found no reports on how stable the new Postgres pool is.\n- Your repo has no `package.json` that matched my search, so I couldn't check which frameworks or database drivers you use. That affects how well Bun fits.\n\n**Vault status:** the earlier Bun page was stale (reviewed 2026-05-10, past its 30-day window). I updated it, saved the two primary sources to `raw/`, logged the run, and lint came back clean.\n\n**Coverage:** vault (stale page, now updated); Tavily for dated results; Exa for primary pages; Bun's blog and the GitHub issue read in full. Social: the `last30days` skill isn't installed, so the lane is missing, and the Reddit item came only from search snippets.\n\nIf you want, I can set up a keep-alive load test of your API on Bun 1.4.0 against Node 26 to measure the memory growth directly."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.9166666666666666,
+        "passRate": 0.6666666666666666
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 8,
+    "casesPassed": 8,
+    "overallScore": 0.9895833333333334,
+    "overallPassRate": 0.9583333333333334
+  }
+}

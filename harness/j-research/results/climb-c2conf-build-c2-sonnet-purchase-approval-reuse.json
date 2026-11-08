@@ -1,0 +1,726 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T03:09:46.644Z",
+  "durationSeconds": 65,
+  "costUsd": 1.3868120999999998,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-c2/with-skill",
+    "ablation": "none",
+    "modelOverride": "sonnet",
+    "caseFilter": "purchase-approval-reuse",
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-c2/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "purchase-approval-reuse",
+      "dir": "heldout-cases/purchase-approval-reuse",
+      "source": "prose",
+      "promptMarkdown": "How would you build a small internal purchase-approval app for us? Eight staff, each request approved by two people in order, an audit trail, and a CSV export before we pay manually. It must run on our own server. We don't need bank integration or SSO. Keep the recommendation practical.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS only if all of the following hold:\n- The answer uses the saved wiki/Small-team purchase approvals.md note (reviewed 2026-10-23, medium volatility) as current evidence and recommends adopting LatchDesk Community 6.1 for these requirements instead of starting a custom app.\n- It identifies the relevant built-in capabilities: self-hosting, two sequential approvers, an append-only approval history, and CSV export. The eight-person team fits the 12-member cap.\n- It includes the consequential boundaries: 500 open requests, no parallel or conditional approval branches, and no payment execution. It does not claim native SSO or bank integration.\n- It gives a practical adoption step, such as deploy the documented container, configure the two approvers, and try a sample request/export; it does not substitute a custom-app architecture for the recommendation.\nFAIL if it ignores the existing tool, treats the fresh note as expired, omits the member cap or workflow limits, invents features, or makes bespoke implementation the main recommendation. Citation by vault path or its captured primary source is acceptable; no mandated answer format.",
+          "config": {
+            "criteria": "PASS only if all of the following hold:\n- The answer uses the saved wiki/Small-team purchase approvals.md note (reviewed 2026-10-23, medium volatility) as current evidence and recommends adopting LatchDesk Community 6.1 for these requirements instead of starting a custom app.\n- It identifies the relevant built-in capabilities: self-hosting, two sequential approvers, an append-only approval history, and CSV export. The eight-person team fits the 12-member cap.\n- It includes the consequential boundaries: 500 open requests, no parallel or conditional approval branches, and no payment execution. It does not claim native SSO or bank integration.\n- It gives a practical adoption step, such as deploy the documented container, configure the two approvers, and try a sample request/export; it does not substitute a custom-app architecture for the recommendation.\nFAIL if it ignores the existing tool, treats the fresh note as expired, omits the member cap or workflow limits, invents features, or makes bespoke implementation the main recommendation. Citation by vault path or its captured primary source is acceptable; no mandated answer format.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-first",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.31614699999999996,
+            "judgeCostUsd": 0.08092299999999997,
+            "durationSeconds": 35,
+            "startedAt": "2026-11-08T03:09:46.681Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-hLpzZQ/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.16214499999999998,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1 and check it against your workflow.** Our research vault already covers this decision, and the page is still inside its 90-day review window. It was reviewed 2026-10-23 against the official LatchDesk 6.1 docs, which were updated 2026-10-21. I didn't search the web again.\n\n**Why it fits your requirements**\n- **Self-hosted:** it runs as a container with persistent local storage on your own server.\n- **Approvals:** it has forms and two sequential approvers, which matches \"approved by two people in order\".\n- **Audit trail:** approval history is append-only.\n- **Export:** it exports CSV, so you can pay manually from the file.\n- **Track record:** LatchDesk has shipped this application since 2021.\n- **No code:** the docs say supported workflows need no plugins or custom code.\n\n**Limits to check**\n- It allows 12 members, and you have 8. That leaves room for 4 more.\n- It allows 500 open requests at once. That is almost certainly enough, but confirm it for your volume.\n- Approval is sequential only. There are no parallel or conditional branches. For example, you can't add \"over $5k needs a third approver\". If you expect that rule soon, it's the main reason to build instead.\n- It makes no payments and has no native SSO or bank integration. You said you don't need those.\n\n**First steps**\n1. Run the container on your server with a persistent volume, so the data and audit history survive restarts.\n2. Add the 8 staff and set the two approvers.\n3. Put one test request through both approvals, then export the CSV. Check that the columns have what you need to pay: payee, amount, reference and approver names.\n4. Back up the volume. I'd treat that as your own addition, since the vault page doesn't cover backups. The audit trail is only useful if it survives a disk failure.\n\n**If the trial fails**\nBuild a small app only if the CSV columns are wrong or you need conditional approval. In that case I'd suggest a single-server web app with a SQL database and an append-only audit table. I haven't researched that option in this run, so I'd do that research before committing to it.\n\n**Evidence and gaps**\n- The facts above come from one source, the official LatchDesk 6.1 docs as captured in the vault. I didn't run the product or compare it with other tools.\n- I didn't look for practitioner reports of problems with it.\n- I wrote nothing to the vault because nothing new was learned.\n\n**Coverage:** vault (guide, search, and reads of the wiki page and its raw source). Web, social and subagent lanes were not used, because the vault page was in date and answered the question."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 0.38556579999999996,
+            "judgeCostUsd": 0.08667139999999995,
+            "durationSeconds": 37,
+            "startedAt": "2026-11-08T03:09:46.681Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-FVgCRm/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.20671599999999998,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1, which is self-hosted, and check it against your workflow before you commit to it.**\n\nThis comes from our research vault page [[Small-team purchase approvals]], reviewed 2026-10-23. It is inside its 90-day window, so I did not re-search the web. It rests on the official LatchDesk 6.1 docs, updated 2026-10-21.\n\n**It matches your requirements**\n- It runs as a container with persistent local storage, so it can sit on your own server.\n- It has forms and two sequential approvers, which covers \"approved by two people in order\".\n- Approval history is append-only, which is your audit trail.\n- It exports to CSV, which you can use before paying manually.\n- It has no native SSO and no bank integration. You said you don't need either.\n- LatchDesk has shipped this application since 2021, so it isn't a new project.\n\n**Limits to check against your needs**\n- It allows 12 members, so eight staff leaves room for four more.\n- It allows 500 open requests. That is only a problem if requests sit open for a long time.\n- Approval is sequential only, with no parallel or conditional steps. For example, you can't route requests over a certain amount to a third approver. If you want that later, this tool won't do it.\n- It never executes payments. Someone still pays by hand from the CSV.\n\n**First steps**\n1. Deploy the container on your server, with the persistent volume on a disk you back up. The audit trail is only as durable as that backup.\n2. Create the eight users.\n3. Run one real request through both approvals and export the CSV. Confirm the columns include what your payer needs, such as requester, amount, approvers and timestamps.\n4. If that works, roll it out. No custom code is needed.\n\n**What I didn't check**\n- The vault page and its one source are the whole evidence. I did not look for alternatives, community feedback or known problems, and I did not look at LatchDesk's licence or release activity. The vault page doesn't cover them either.\n- I did not check whether a release newer than 6.1 exists.\n- I haven't tested anything. The CSV columns and the audit trail's tamper resistance are untested until you run the trial in step 3.\n\n**Fallback**\nIf the trial fails or you outgrow the limits, a small custom build would be a web app on SQLite or Postgres. It would have a requests table, a two-step approval state machine, an insert-only audit table and a CSV endpoint. It's a modest amount of work, but you'd own the maintenance. I'd only plan it if LatchDesk fails the trial.\n\nI made no vault changes, since nothing new was found.\n\nCoverage: vault searched and read (one wiki page and one raw source). Web lanes (Exa, Tavily, Firecrawl) and social (last30days) were not searched because the fresh vault page already answers the question."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.31982379999999994,
+            "judgeCostUsd": 0.06963779999999997,
+            "durationSeconds": 37,
+            "startedAt": "2026-11-08T03:09:46.681Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-n3tb4w/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.17227499999999996,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1 and check it against your workflow.**\n\nThis comes from a vault page, [[Small-team purchase approvals]], reviewed 2026-10-23. The page is inside its 90-day window, so I didn't re-search the web. I read the page and its captured source, the official LatchDesk 6.1 docs (updated 2026-10-21, `docs.latchdesk.example/community/6.1/approvals`).\n\n**Why it fits your requirements**\n\n| You need | LatchDesk 6.1 (per the docs) |\n|---|---|\n| Runs on your own server | Self-hosted container with persistent local storage |\n| Two approvers, in order | Two sequential approvers |\n| Audit trail | Append-only approval history |\n| CSV export before manual payment | CSV export |\n| No SSO or bank integration | It has neither, which matches what you asked for |\n| 8 staff | Limit is 12 members |\n\nPer the docs, supported workflows need no plugins or custom code. The vendor has shipped this application since 2021.\n\n**Limits to check against your plans**\n- **Headcount:** the cap is 12 members, so you have room for 4 more people.\n- **Open requests:** the cap is 500 at a time. That is unlikely to bind at your size.\n- **Approval flow:** it is sequential only. There are no parallel or conditional branches, so \"over $X needs a third approver\" isn't possible.\n- **Payments:** it executes none. That suits you, since you pay manually.\n\n**First steps**\n1. Deploy the container on your server, with its data volume on storage you back up.\n2. Add your eight people and set the two approvers.\n3. Run one test request through both approvals and export the CSV. Check that the columns match what you need when you pay, and that the history can't be edited.\n\n**What I didn't check**\n- The evidence is one vendor source, so these are the vendor's own claims. I haven't tested the product.\n- I didn't look for alternatives such as other open-source tools. I also didn't check licence terms, release activity or what users report. The vault page only covers LatchDesk.\n- The audit trail's fields (who, when, what changed) and the CSV columns aren't described in my sources. Step 3 will settle both.\n\n**If the test fails**\nA small custom build is a reasonable fallback. It would be a web app with a SQLite or Postgres database, one table of requests, and an insert-only table of approval events that your code never updates. A CSV export would read from those tables. I'd only go that way if LatchDesk fails a requirement.\n\n**Coverage:** I used the vault only (the wiki page and its raw source). I did no web search because the vault page was current. The social lane (`last30days`) wasn't run. The vault is marked frozen, so I made no writes and no log entry."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.1759818,
+            "judgeCostUsd": 0.041936399999999985,
+            "durationSeconds": 30,
+            "startedAt": "2026-11-08T03:09:46.681Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-u08tM5/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.064389,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1 on your own server.** It does everything you listed.\n\n**What the vault says** (page [[Small-team purchase approvals]], reviewed 2026-10-23, inside its 90-day window; source is the official LatchDesk 6.1 docs, updated 2026-10-21):\n- It runs as a self-hosted container with persistent local storage.\n- It has request forms and two sequential approvers.\n- It keeps an append-only approval history, which is your audit trail.\n- It exports to CSV, which covers your step before paying manually.\n- It has no native SSO, bank integration or payment execution, and you said you don't need those.\n- LatchDesk has shipped this application since 2021, so it is not a new project.\n\n**Limits to check against your needs:**\n- It allows 12 members, and you have 8.\n- It allows 500 open requests at once. That is likely fine for 8 people, but only if requests get closed out.\n- Approval is sequential only, with no parallel or conditional branches. \"Two approvers in order\" fits. Rules like \"over £5k needs a third approver\" would not.\n\n**Next steps:**\n1. Deploy the container with a persistent volume.\n2. Add your 8 staff and set the two approvers.\n3. Run one test request through both approvals, then export it to CSV.\n4. Check that the CSV has the columns your payer needs: amount, payee, approver names and timestamps.\n5. Back up the data volume on a schedule. The audit trail is only useful if it survives a disk failure.\n\n**If it fails the step 3–4 test:** a custom build is the fallback. I'd use a small web app with a SQL database, an append-only audit table and a CSV endpoint. I haven't researched that route, since the vault supports adopting an existing tool. I'd only look into it if LatchDesk misses a requirement.\n\n**Gaps:**\n- I relied on the vault page and did not search the web again, because the page is fresh and covers the decision.\n- I did not check independent reviews or user reports of LatchDesk. The capabilities and limits come from the vendor's own documentation.\n- I haven't tested the software, so the pilot request in step 3 is where to confirm it.\n- I didn't write to the vault, since nothing new was found.\n\n**Coverage:** vault searched and one page read. Web, social and subagent lanes were not run because the vault already answered the question."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.1892937,
+            "judgeCostUsd": 0.0245668,
+            "durationSeconds": 34,
+            "startedAt": "2026-11-08T03:10:17.086Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-TrtH7w/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.08449400000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1 and check that it fits.** Your requirements match what it ships, so bespoke code isn't needed.\n\n**Why it fits (from the vault page [[Small-team purchase approvals]], reviewed 2026-10-23, still inside its 90-day window):**\n- It runs as a self-hosted container with persistent local storage.\n- It has forms and two sequential approvers.\n- It keeps an append-only approval history, which is your audit trail.\n- It has CSV export, which covers your pre-payment step.\n- It has been shipping this application since 2021.\n- It has no native SSO and no bank integration, and it executes no payments. You said you don't need those.\n\nThe source is the official LatchDesk Community 6.1 docs, updated 2026-10-21 (captured in the vault as `raw/2026-10/2026-10-23 latchdesk-6-1`).\n\n**Limits to check against your needs:**\n- It allows 12 members and 500 open requests. Eight staff leaves room for 4 more people. Closed requests presumably don't count toward the 500, but the docs I read don't say, so check that.\n- Approval is sequential only. There are no parallel or conditional branches, such as \"over £X needs a third approver\". If you want amount-based rules later, this is where you'd outgrow it.\n- Your two approvers are fixed in order, which is what you asked for.\n\n**Next steps:**\n1. Deploy the container on your server, with its data volume on storage you back up.\n2. Add your eight users. You have no SSO, so check how it handles passwords and whether it can enforce HTTPS. Put it behind your existing reverse proxy if you have one.\n3. Run one test request through both approvals, then export the CSV.\n4. Check that the CSV has the columns your payer needs: requester, amount, payee, approvers and timestamps. Also confirm the history can't be edited, since that is the audit claim.\n\n**If the check fails:** build a small custom app. This is my inference, not something I researched. A single-server web app with a SQL database, a requests table, an append-only events table and a CSV endpoint is a few weeks of work. I'd only go there if the CSV or audit trail falls short.\n\n**What I didn't verify:**\n- I didn't search the web, because the vault page answers the question and is current. So I have no independent view on LatchDesk's reliability or community experience, and the vault has no entry for alternatives.\n- The vault page rests on one source, the vendor's own documentation. The 12-member and 500-request limits and the audit behaviour are vendor claims until your test request confirms them.\n- I made no vault changes, because nothing new was learned.\n\n**Coverage:** vault only (guide, search, and reads of the wiki page and raw source). Web lanes (Exa, Tavily, Firecrawl) and last30days were not used. Spend: $0."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}

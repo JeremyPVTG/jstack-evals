@@ -1,0 +1,2195 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T02:19:58.970Z",
+  "durationSeconds": 208,
+  "costUsd": 6.141016200000002,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-new/with-skill",
+    "ablation": "none",
+    "modelOverride": "sonnet",
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build-new/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "harborrelay-archived-guarantee",
+      "dir": "heldout-cases/harborrelay-archived-guarantee",
+      "source": "prose",
+      "promptMarkdown": "We're moving invoice events between Frankfurt and Montreal on HarborRelay 4.2. A launch article says delivery is exactly once worldwide, so I was going to remove our duplicate-event guard. Is that safe as of November 7, 2026?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS only if all of the following hold:\n- The answer advises keeping the duplicate-event guard for the Frankfurt-to-Montreal route.\n- It cites the official HarborRelay 4.2 delivery-guarantees page or 4.2 changelog dated 2026-11-04, and correctly scopes the claim to 4.2: cross-region forwarding is at least once; the 24-hour deduplication window applies inside one region and does not survive a region boundary.\n- It resolves the source conflict: the 2026-11-06 launch article's worldwide exactly-once claim is not the supported guarantee, and the official 4.0 archive dated 2026-08-20 described a retired 7-day global-receipt preview, not the current release.\n- It recognizes that the saved HarborRelay note reviewed 2026-09-30 with high volatility is expired as of 2026-11-07 and rechecks its preview-era claim before deciding.\nFAIL if any required point is absent; if it removes the guard based on the article, archive, or vault note; or if it turns regional deduplication into an end-to-end exactly-once guarantee. Judge substance, not labels or wording.",
+          "config": {
+            "criteria": "PASS only if all of the following hold:\n- The answer advises keeping the duplicate-event guard for the Frankfurt-to-Montreal route.\n- It cites the official HarborRelay 4.2 delivery-guarantees page or 4.2 changelog dated 2026-11-04, and correctly scopes the claim to 4.2: cross-region forwarding is at least once; the 24-hour deduplication window applies inside one region and does not survive a region boundary.\n- It resolves the source conflict: the 2026-11-06 launch article's worldwide exactly-once claim is not the supported guarantee, and the official 4.0 archive dated 2026-08-20 described a retired 7-day global-receipt preview, not the current release.\n- It recognizes that the saved HarborRelay note reviewed 2026-09-30 with high volatility is expired as of 2026-11-07 and rechecks its preview-era claim before deciding.\nFAIL if any required point is absent; if it removes the guard based on the article, archive, or vault note; or if it turns regional deduplication into an end-to-end exactly-once guarantee. Judge substance, not labels or wording.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-first",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.6031204,
+            "judgeCostUsd": 0.1276332,
+            "durationSeconds": 63,
+            "startedAt": "2026-11-08T02:19:59.039Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-CUtlWG/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3497904,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: FAIL PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  true,
+                  true
+                ],
+                "evidence": "**No, don't remove the guard.** HarborRelay 4.2 does not give exactly-once delivery between Frankfurt and Montreal.\n\n- **Official 4.2 docs:** [Delivery Guarantees](https://docs.harborrelay.example/4.2/delivery-guarantees) says cross-region forwarding, Frankfurt to Montreal included, is **at-least-once**. Duplicates are possible after a regional failover. The 24-hour event-ID deduplication window works inside one region only and doesn't survive a region boundary. The docs say consumers of forwarded events \"must remain idempotent.\"\n- **4.2 changelog:** The [changelog](https://harborrelay.example/changelog/4.2) says the global-receipt preview was retired in 4.2. Preview deployments were migrated to regional deduplication.\n- **The launch article:** The DispatchStack post claims exactly-once worldwide. DispatchStack sells HarborRelay deployment services. The only source it cites is the archived 4.0 global-receipts preview page, which says it is preview-only, not a GA contract, and doesn't describe 4.2. The article misreads its own source.\n- **Our earlier vault note:** The note said preview workspaces could omit the guard. It was based on that same 4.0 preview. It no longer applies in 4.2, and I've corrected it.\n\nFor invoice events, a duplicate means a double-processed invoice, so removing the guard carries a real cost. Keep it, and key it on the event ID so it holds across failover.\n\nI only read the docs and didn't run a failover test. The vendor docs and changelog agree with each other, so I'm confident in the conclusion. If your workspace has a negotiated contract or a different HarborRelay edition that promises more, get that in writing from HarborRelay.\n\n**Vault:** I updated `wiki/HarborRelay delivery.md`, saved the 4.2 docs as a raw source, updated the index and log, and lint came back clean.\n\n**Coverage:** vault (found the stale 4.0-preview page); Tavily web search (found the 4.2 docs, changelog, article and archived preview). Exa, Firecrawl and social sources were not searched."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 16,
+            "costUsd": 0.6320946000000001,
+            "judgeCostUsd": 0.10077559999999997,
+            "durationSeconds": 67,
+            "startedAt": "2026-11-08T02:19:59.039Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-Xgf7Oc/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 11,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.39862800000000004,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No, don't remove the guard.** HarborRelay 4.2 does not give exactly-once delivery across regions.\n\n- **Official 4.2 docs** (updated 2026-11-04): cross-region forwarding, including Frankfurt to Montreal, is at-least-once. Duplicates are possible after a regional failover. The 24-hour event-ID dedup window works inside one region only and doesn't cross a region boundary. The docs say consumers of forwarded events \"must remain idempotent.\"\n- **4.2 changelog** (2026-11-04): the global-receipt preview was retired. Preview deployments were migrated to regional deduplication, and cross-region forwarding is at-least-once.\n- **The launch article** (DispatchStack blog, 2026-11-06) is the outlier. Its only source is the archived 4.0 global-receipts preview page, and that page says it is preview-only, not a GA contract, and doesn't describe 4.2. DispatchStack also sells HarborRelay deployment services, so it has a reason to make the product sound simpler to run.\n\nOur vault note from 2026-09-30 said preview workspaces could omit the guard. That applied only to the 4.0 preview, which no longer exists in 4.2, so I've withdrawn it.\n\nRemoving the guard would let duplicate invoice events through after a failover. That means double-processed invoices.\n\nI haven't measured how often duplicates actually happen after a failover. The docs only say they are possible. The cost of keeping an idempotent consumer is small compared to that risk.\n\nI updated the vault page `wiki/HarborRelay delivery.md`, saved the 4.2 docs as a source, updated the index and log, and lint came back clean.\n\nCoverage: the vault had the stale 4.0 preview note. Tavily and Exa both returned the 4.2 docs, changelog, archived preview and launch article. I didn't run the social lane because `last30days` isn't installed. I also didn't test failover behaviour on a real deployment."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 15,
+            "costUsd": 0.5498416,
+            "judgeCostUsd": 0.10542779999999996,
+            "durationSeconds": 60,
+            "startedAt": "2026-11-08T02:19:59.039Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-yA2Wuw/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3209504000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No, don't remove the guard.** As of 2026-11-07, HarborRelay 4.2 does not give exactly-once delivery between Frankfurt and Montreal.\n\n- **Official 4.2 docs** ([delivery guarantees](https://docs.harborrelay.example/4.2/delivery-guarantees)): cross-region forwarding, Frankfurt to Montreal included, is at-least-once. Duplicates are possible after a regional failover. The 24-hour event-ID dedup window works within one region only and doesn't carry across a region boundary. The docs say consumers of forwarded events must stay idempotent.\n- **4.2 changelog** ([changelog](https://harborrelay.example/changelog/4.2)): the global-receipt preview was retired in 4.2. Preview deployments were migrated to regional dedup.\n- **The launch article** is from DispatchStack, which sells HarborRelay deployment services. It cites the archived 4.0 preview page as its source. That page says it's a preview, not a GA contract, and doesn't describe 4.2. So the article's claim rests on a feature that no longer exists.\n\nYour vault had a 2026-09-30 note that tentatively allowed omitting the guard for enrolled 4.0 preview workspaces. That no longer applies, and I've withdrawn it.\n\nI found no 4.2 setting or tier that turns on cross-region exactly-once. If you think one exists, ask HarborRelay support for it in writing before relying on it.\n\nFor invoice events, a duplicate could mean a double-posted invoice, so keep the guard. Key it on the event ID, and keep records of seen IDs for longer than your longest failover and replay window. The 24-hour regional window doesn't cover that.\n\nI updated `wiki/HarborRelay delivery.md` in the vault, saved the 4.2 docs and changelog as a raw source, updated the index and log, and lint is clean.\n\nCoverage: the vault had the stale 4.0 note. Tavily search gave the 4.2 docs, the changelog, the archived preview page and the launch article. I didn't run Exa or a social lane, and I didn't run an experiment on a live setup."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "purchase-approval-reuse",
+      "dir": "heldout-cases/purchase-approval-reuse",
+      "source": "prose",
+      "promptMarkdown": "How would you build a small internal purchase-approval app for us? Eight staff, each request approved by two people in order, an audit trail, and a CSV export before we pay manually. It must run on our own server. We don't need bank integration or SSO. Keep the recommendation practical.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS only if all of the following hold:\n- The answer uses the saved wiki/Small-team purchase approvals.md note (reviewed 2026-10-23, medium volatility) as current evidence and recommends adopting LatchDesk Community 6.1 for these requirements instead of starting a custom app.\n- It identifies the relevant built-in capabilities: self-hosting, two sequential approvers, an append-only approval history, and CSV export. The eight-person team fits the 12-member cap.\n- It includes the consequential boundaries: 500 open requests, no parallel or conditional approval branches, and no payment execution. It does not claim native SSO or bank integration.\n- It gives a practical adoption step, such as deploy the documented container, configure the two approvers, and try a sample request/export; it does not substitute a custom-app architecture for the recommendation.\nFAIL if it ignores the existing tool, treats the fresh note as expired, omits the member cap or workflow limits, invents features, or makes bespoke implementation the main recommendation. Citation by vault path or its captured primary source is acceptable; no mandated answer format.",
+          "config": {
+            "criteria": "PASS only if all of the following hold:\n- The answer uses the saved wiki/Small-team purchase approvals.md note (reviewed 2026-10-23, medium volatility) as current evidence and recommends adopting LatchDesk Community 6.1 for these requirements instead of starting a custom app.\n- It identifies the relevant built-in capabilities: self-hosting, two sequential approvers, an append-only approval history, and CSV export. The eight-person team fits the 12-member cap.\n- It includes the consequential boundaries: 500 open requests, no parallel or conditional approval branches, and no payment execution. It does not claim native SSO or bank integration.\n- It gives a practical adoption step, such as deploy the documented container, configure the two approvers, and try a sample request/export; it does not substitute a custom-app architecture for the recommendation.\nFAIL if it ignores the existing tool, treats the fresh note as expired, omits the member cap or workflow limits, invents features, or makes bespoke implementation the main recommendation. Citation by vault path or its captured primary source is acceptable; no mandated answer format.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-first",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?![\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_jvault__read\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 10,
+            "costUsd": 0.383124,
+            "judgeCostUsd": 0.05815519999999996,
+            "durationSeconds": 45,
+            "startedAt": "2026-11-08T02:19:59.039Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-h5AdC9/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.22459440000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1 on your own server.** Your requirements match what it ships, and you'd skip writing and maintaining a workflow app.\n\n**What it covers** (official docs, updated 2026-10-21):\n- It's a self-hosted container with persistent local storage.\n- It has purchase request forms and two sequential approvers.\n- Approval history is append-only, which is your audit trail.\n- It exports CSV for manual payment workflows.\n- It has no SSO and no bank integration, and you don't need either.\n\n**Limits to check against your plans:**\n- The Community edition caps at 12 members and 500 open requests. Eight staff fits, with room for about four more people.\n- Approval is sequential only. There are no parallel or conditional branches, such as \"over £X needs a third approver.\" If you expect that rule soon, it's the main reason to build instead.\n- It never executes payments, which matches your manual process.\n\n**Evidence status:**\n- This comes from our research vault page \"Small-team purchase approvals\" (reviewed 2026-10-23, inside its 90-day window). I re-checked it today with Exa and Tavily, and both returned the same official docs page.\n- It rests on a single source, the vendor's own documentation. I found no independent reviews or user reports. The only other result was a \"build it in a weekend\" post from a company selling a starter kit, which says nothing about LatchDesk.\n- Because of that, trial it before committing.\n\n**Rollout plan:**\n1. Run the container on your server. Mount the persistent volume somewhere that is backed up, since the audit history lives there.\n2. Create the eight accounts and set up the two approvers.\n3. Push one test request through both approvals and export the CSV. Check that the CSV has the columns your payer needs, such as payee, amount, reference and approver names and timestamps.\n4. Put it behind your usual reverse proxy with HTTPS. With no SSO, enforce strong passwords there.\n5. If it passes, go live. If the CSV or the audit trail falls short, you've lost an afternoon.\n\n**If you do end up building** (for example, because you need conditional approval rules), I'd use a small Django app. Its built-in auth and admin cover most of it. You'd add a Request model with a two-step status field and an append-only audit table, plus a CSV view. SQLite and a nightly backup are enough for eight users. I'd only scope that if the trial fails.\n\nI didn't write anything new to the vault, since the existing page was current and the re-check confirmed it.\n\n**Coverage:** vault (page read and still valid); docs lane (Exa and Tavily, same docs page from both); code/GitHub (Firecrawl not searched, since I'm not recommending a build); social (last30days not installed, so that lane is missing)."
+              },
+              {
+                "name": "vault-first",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in trace",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 3,
+            "costUsd": 0.08205129999999983,
+            "judgeCostUsd": 0.02576159999999983,
+            "durationSeconds": 24,
+            "startedAt": "2026-11-08T02:20:43.841Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-IWxOXL/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 0,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0,
+                "replay": {
+                  "hits": 0,
+                  "misses": 0
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "**Recommendation: build it as a small Django app with SQLite or Postgres, behind Caddy, on one box.** For 8 users it's about 500–800 lines of real code.\n\nI haven't checked current versions or looked for ready-made tools (the research workflow I loaded would have). Verify the versions and the \"existing tools\" point below before you commit.\n\n## Why Django\n- Login, password hashing, sessions, permissions and an admin UI come built in, so you don't write auth.\n- The ORM and migrations are mature, and CSV export is in the standard library.\n- It's boring and stable, which matters for something that has to run for years untouched.\n- Flask or Node would work too. You'd end up hand-building the things Django already ships.\n\n**Check first whether you should build at all.** Self-hosted low-code tools (Budibase, Baserow, Directus) or an ERP module could do two-step approval without code. They tend to be weak on a tamper-resistant audit trail and sequential rules, and they add a bigger system to maintain. For 8 people I'd still build.\n\n## Data model\n- **User**: Django's built-in user, plus a flag for who may approve.\n- **Request**: requester, vendor, amount, currency, description, status, created time.\n- **Approval**: request, step (1 or 2), approver, decision, comment, decided time.\n- **AuditEvent**: actor, action, request, JSON snapshot of the details, timestamp.\n- **ExportBatch**: who exported, when, and which requests were included.\n\nStatus flow: `draft → pending_step1 → pending_step2 → approved → exported/paid`. A rejection at either step ends the request as `rejected`.\n\n## Rules to enforce\nThese go in one service function, not scattered across views:\n1. Step 2 can't be decided until step 1 is approved.\n2. The two approvers must be different people, and neither can be the requester.\n3. Once submitted, the amount and vendor are locked. Changing them means withdrawing and resubmitting, or resetting to step 1 with an audit entry.\n4. Every state change runs in a single database transaction that also writes its audit event.\n\n## Audit trail\n- Make the table append-only. The app never updates or deletes rows, and a database trigger that blocks `UPDATE` and `DELETE` backs that up.\n- For stronger tamper-evidence, store a hash of the previous row in each row. This is cheap and probably enough for 8 staff.\n- Keep the Django admin read-only for audit data.\n- Log exports, logins and failed logins as well.\n\n## CSV export\n- Export only `approved` requests that haven't been exported yet.\n- Record an `ExportBatch`, so you can re-download the same batch and never pay twice.\n- Add a \"mark as paid\" step so the record shows which payments were actually made.\n- Prefix any cell starting with `=`, `+`, `-` or `@` with `'`, so a vendor name can't become a spreadsheet formula.\n- Use UTF-8 with a BOM if you open the file in Excel.\n\n## Running it on your own server\n- Use Docker Compose or a systemd service: gunicorn behind Caddy, which gives automatic HTTPS if the box has a public name. On a purely internal network, use Caddy's internal CA or your own cert.\n- SQLite in WAL mode is fine for 8 users. Use Postgres if you already run it.\n- Take nightly backups (`sqlite3 .backup`, or `pg_dump`) copied off the machine, and do one test restore.\n- Skip SSO but keep it secure. Use Django's argon2 hasher, long passwords, and optionally TOTP through `django-otp`. Keep it off the public internet or behind a VPN.\n- Email notifications (\"waiting for your approval\") over SMTP are optional, but they stop requests sitting unseen.\n\n## Build order\n1. Models, the state-transition service, and tests for the rules above.\n2. Plain server-rendered pages: my requests, approval queue, request detail with history.\n3. Audit trigger and hash chain.\n4. CSV export with batches.\n5. Deployment and backups.\n\nSkip a JavaScript frontend. Django templates with a little HTMX are enough.\n\n## Questions that would change the design\n- Are the two approvers fixed people, or do they depend on department or amount?\n- Do you need receipts or quote attachments? That adds file storage and backup.\n- Should an approver be able to send a request back for changes, rather than only approve or reject?\n\nI can scaffold the project, or first do the proper research pass on current Django versions and existing self-hosted tools. Which would you like?"
+              },
+              {
+                "name": "vault-first",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in trace",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0,
+            "passed": false,
+            "turns": 7,
+            "costUsd": 0.21010219999999988,
+            "judgeCostUsd": 0.049023999999999957,
+            "durationSeconds": 38,
+            "startedAt": "2026-11-08T02:20:58.602Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-GVAQht/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0821099999999999,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "**Recommendation: don't build it. Deploy LatchDesk Community 6.1 and test it against your workflow first.** Only build your own app if that test fails.\n\n**Why**\n- Our research vault already covers this exact case (`wiki/Small-team purchase approvals`, reviewed 2026-10-23, still inside its 90-day window). I re-checked it against LatchDesk's official docs, updated 2026-10-21.\n- Per those docs, 6.1 runs as a self-hosted container with persistent local storage. It includes request forms, two sequential approvers, append-only approval history and CSV export.\n- It has no SSO, bank integration or payment execution. You said you need none of those.\n- The limits are 12 members and 500 open requests. Eight staff fit, with room for four more.\n- The docs say none of this needs plugins or custom code.\n- The only other result I found was a \"build it in a weekend\" blog post that sells a starter kit. It doesn't compare existing products, so I didn't treat it as evidence.\n\n**Plan**\n1. Run the container on your server with its data directory on a persistent volume. Put it behind your usual reverse proxy with HTTPS.\n2. Add your eight users and push one realistic request through both approvals.\n3. Open the CSV export and check it has what you need to pay by hand: payee, amount, reference, approver names and timestamps.\n4. Check the audit history. Confirm you can't edit or delete entries, and that a rejected or withdrawn request is also recorded.\n5. Schedule a nightly backup of the data volume and do one test restore. The audit trail is only useful if it survives.\n\n**What I couldn't confirm**\n- Everything above comes from the vendor's own documentation. I haven't run the product.\n- The docs don't say which licence Community uses, how users log in without SSO, or what columns the CSV contains. Steps 2 and 3 settle the last two. Check the licence terms before you commit.\n\n**Fallback if the test fails** (my own suggestion, not researched)\n- Build a small Django app with Postgres or SQLite.\n- Use a request model with a status field (pending first approver, pending second approver, approved, rejected, paid).\n- Add a history table, for example via `django-simple-history`, and a CSV export view.\n- Use Django's built-in user accounts and admin. This is a few days of work, not a weekend.\n\n**Questions that would change the plan**\n- Might you grow past 12 people or 500 open requests?\n- Are the two approvers fixed per requester, or chosen on each request? The docs only promise \"two sequential approvers\", so this is worth testing in step 2.\n\nI didn't write anything new to the vault, because the existing page already covers this and nothing changed.\n\n**Coverage:** vault (one relevant page, still current); web search via Exa (LatchDesk docs and one vendor blog). I didn't use the Tavily or Firecrawl lanes. The `last30days` social lane isn't installed, so I have no practitioner experience reports."
+              },
+              {
+                "name": "vault-first",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in trace",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.16666666666666666,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "quillstore-recovery-rumor",
+      "dir": "heldout-cases/quillstore-recovery-rumor",
+      "source": "prose",
+      "promptMarkdown": "We're about to enable Quillstore 2.7's compact-on-delete option. Someone on a forum says support can recover deleted collections for 72 hours even without our own snapshot. Can we rely on that and drop the nightly snapshot job?",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS only if all of the following hold:\n- The answer identifies the 72-hour recovery assertion as an unconfirmed forum anecdote from user maple_packet, not an official recovery promise or a proven falsehood.\n- It uses the official 2.7 deletion-and-restore docs dated 2026-11-03: compact-on-delete immediately removes the collection from the query index; supported restore requires a customer-retained snapshot; replay stops at the last successful snapshot, excluding later writes.\n- It plainly says no official post-delete recovery window or support recovery SLA could be found in the available sources. An absent promise is not proof that every recovery is impossible.\n- It recommends keeping snapshots (or another documented recovery mechanism) and makes clear that this is advice inferred from the documented restore path, not a quoted vendor guarantee.\nFAIL if it presents 72 hours as verified, invents a support policy or missing official confirmation, claims all deleted bytes are necessarily unrecoverable, omits the snapshot replay boundary, or recommends dropping backups based on the post. No particular heading or phrase is required.",
+          "config": {
+            "criteria": "PASS only if all of the following hold:\n- The answer identifies the 72-hour recovery assertion as an unconfirmed forum anecdote from user maple_packet, not an official recovery promise or a proven falsehood.\n- It uses the official 2.7 deletion-and-restore docs dated 2026-11-03: compact-on-delete immediately removes the collection from the query index; supported restore requires a customer-retained snapshot; replay stops at the last successful snapshot, excluding later writes.\n- It plainly says no official post-delete recovery window or support recovery SLA could be found in the available sources. An absent promise is not proof that every recovery is impossible.\n- It recommends keeping snapshots (or another documented recovery mechanism) and makes clear that this is advice inferred from the documented restore path, not a quoted vendor guarantee.\nFAIL if it presents 72 hours as verified, invents a support policy or missing official confirmation, claims all deleted bytes are necessarily unrecoverable, omits the snapshot replay boundary, or recommends dropping backups based on the post. No particular heading or phrase is required.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-first",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.37394200000000005,
+            "judgeCostUsd": 0.13526740000000004,
+            "durationSeconds": 44,
+            "startedAt": "2026-11-08T02:21:02.235Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-zrvYYZ/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.1583662,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No, don't drop the nightly snapshot job.** The 72-hour recovery claim isn't backed by anything official, and the official docs say the opposite.\n\n**What the sources say**\n- **Forum post (2026-11-05):** The claim comes from one user, maple_packet, who says support restored a collection two days after a compact-on-delete. The post has no support transcript, no described method and no policy link. No Quillstore staff replied. [community.quillstore.example/t/72-hour-undelete/914](https://community.quillstore.example/t/72-hour-undelete/914)\n- **Quillstore 2.7 docs, Deletion and Restore (updated 2026-11-03):**\n  - Compact-on-delete removes the collection from the query index immediately.\n  - The supported restore path is a customer-retained snapshot.\n  - A restore only covers data up to the last successful snapshot. Later writes are lost.\n  - The page specifies no support recovery window, no hidden retention period and no recovery SLA. [docs.quillstore.example/2.7/deletion-and-restore](https://docs.quillstore.example/2.7/deletion-and-restore)\n- **2.7 changelog (2026-11-01):** It tells operators to validate their retained-snapshot restore procedure before enabling the option. It announces no extra recovery or retention guarantee. [quillstore.example/changelog/2.7](https://quillstore.example/changelog/2.7)\n\n**My inference**\n- The forum user probably got a one-off recovery, either as a courtesy or because the data hadn't been reclaimed yet. That doesn't make it a policy.\n- The changelog says compact-on-delete speeds up index reclamation, so the odds of a support recovery may fall once it's on. Nothing I found confirms either way.\n- Even a real 72-hour window wouldn't replace snapshots. It would be best-effort and have no SLA. It would also say nothing about corruption, bad writes, or a deletion you notice after day 3.\n\n**Recommendation**\n- Keep the nightly snapshot job.\n- Before you enable compact-on-delete, do a test restore from a snapshot, as the changelog advises.\n- If the 72-hour window matters to you, ask Quillstore support for a written statement of it. Treat it as a bonus unless they commit to it in writing.\n\n**Coverage:** The vault had no Quillstore pages. I searched the web with Tavily and Exa and got the three sources above. The social lane (`last30days`) isn't installed, so only that one forum thread was checked. I didn't write anything to the vault. I can save this as a page if you want."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 0.8173693000000003,
+            "judgeCostUsd": 0.3347912000000002,
+            "durationSeconds": 66,
+            "startedAt": "2026-11-08T02:21:06.237Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-qN8fPf/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 10,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3483444000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: FAIL PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  true,
+                  true
+                ],
+                "evidence": "**No, don't drop the nightly snapshot job.** The official Quillstore docs don't back the 72-hour claim, and they name your own snapshot as the only supported restore path.\n\n**What the sources say**\n- **Docs** ([Deletion and Restore, 2.7](https://docs.quillstore.example/2.7/deletion-and-restore), 2026-11-03): compact-on-delete removes the collection from the query index immediately. The supported restore is a customer-retained snapshot, and it only restores data up to the last successful snapshot. The page states no support recovery window, no hidden retention period and no support SLA.\n- **Changelog** ([2.7](https://quillstore.example/changelog/2.7), 2026-11-01): it tells operators to validate their snapshot restore procedure before enabling the option. It announces no other recovery or retention guarantee.\n- **Forum** ([thread](https://community.quillstore.example/t/72-hour-undelete/914), 2026-11-05): one user says support got their deleted collection back two days later, and guesses support keeps hidden copies for 72 hours. No one from Quillstore replied, and the post has no transcript, method or policy link.\n\n**Why the forum post isn't enough**\n- It is a single anecdote, and the \"72 hours\" figure is the poster's guess. It was also one support case, which could have been a courtesy or a lucky recovery.\n- Even if support can sometimes recover a collection, nothing commits them to it. You'd have no recovery point you control, and nothing you could rely on during an incident.\n- Compact-on-delete is built to reclaim space faster, so it makes hidden copies less likely, not more. That reasoning is my inference, not something the docs say.\n\n**What I'd do**\n1. Keep the snapshot job, and do a test restore before you enable the option, as the changelog advises.\n2. If you want to lean on support recovery, ask Quillstore support in writing for a recovery window and an SLA. Treat it as a bonus on top of snapshots.\n3. Check that the snapshot frequency fits your tolerance for lost writes. Nightly snapshots mean a deletion can lose up to a day of data.\n\nI saved this to the research vault as `wiki/Quillstore deletion recovery.md`. It has one raw source and one log entry, and lint passed with no errors.\n\n**Coverage:** the vault had nothing on Quillstore. Exa and Tavily both returned the three pages above. I didn't search GitHub issues with Firecrawl, and `last30days` wasn't run, so the social lane was not covered. No paid calls were made."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 0.42326060000000026,
+            "judgeCostUsd": 0.14051860000000027,
+            "durationSeconds": 43,
+            "startedAt": "2026-11-08T02:21:07.717Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-TOqnsh/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 4,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2038504,
+                "replay": {
+                  "hits": 0,
+                  "misses": 3
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**No, don't drop the nightly snapshot job.** The official docs don't back up the 72-hour claim, and nothing else I found does either.\n\n- **The forum post is one anecdote.** User maple_packet posted it on 2026-11-05. It says support restored a collection two days after a compact-on-delete, and that support \"must keep hidden copies for 72 hours.\" No support employee or maintainer replied. The post has no transcript, recovery method or policy link. The 72-hour figure is the poster's guess about why it worked.\n- **The docs say the opposite.** The [Quillstore 2.7 Deletion and Restore page](https://docs.quillstore.example/2.7/deletion-and-restore) (updated 2026-11-03) says compact-on-delete removes the collection from the query index immediately. It names a customer-retained snapshot as the supported restore path. It specifies no post-delete support recovery window, no hidden retention period and no support recovery SLA.\n- **The changelog agrees.** The [2.7 changelog](https://quillstore.example/changelog/2.7) (2026-11-01) tells operators to validate their retained-snapshot restore procedure before enabling the option. It announces no extra recovery or retention guarantee.\n\n**Inference, not stated by any source:** The poster's recovery may have been a one-off favor, or may have depended on their plan or timing. Even if support can sometimes recover data, an undocumented favor isn't something to build a backup strategy on.\n\n**Not found:** I didn't find any support policy page or contract language that offers a recovery window. If your plan has an SLA or a support contract, check it. You could also ask Quillstore support to put a recovery guarantee in writing. Until you have that, treat the snapshot as your only recovery path.\n\n**Recommendation:**\n1. Keep the nightly snapshot job running.\n2. Do a test restore from a snapshot before you enable compact-on-delete, as the changelog advises.\n3. Note that restores only replay data up to the last successful snapshot. Writes after it are lost, so consider whether nightly is frequent enough once deletes become immediate.\n\nI didn't save these findings to the vault, because this was a one-off check. I can write a page if you want one.\n\nCoverage: the vault had nothing on Quillstore. I searched with Tavily and Exa, and both returned the same three sources: the docs, the changelog and the forum thread. I didn't run the social-lane tool, `last30days`, and I ran no hands-on test."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "rivetdb-regional-failover",
+      "dir": "heldout-cases/rivetdb-regional-failover",
+      "source": "prose",
+      "promptMarkdown": "For our order ledger on RivetDB 7.3, can I promise customers that losing a whole region loses zero acknowledged orders and restores service within 20 seconds at p99? We have one primary region and its cross-region replica. Give me a recommendation I can use in the launch review.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS only if all of the following hold:\n- The answer rechecks the saved RivetDB recovery note, reviewed 2026-07-31 with medium volatility, rather than relying on its obsolete 7.0 synchronous-replica/12-second test claim. As of 2026-11-07 it is past the 90-day window.\n- Citing official 7.3 replication docs dated 2026-11-02, it states that acknowledgement waits for two of three replicas inside the primary region, while cross-region replication is asynchronous. The exposed remote_apply_lag_ms metric is an observation, not a maximum-lag guarantee.\n- It explicitly frames possible loss of acknowledged orders on total primary-region loss as an inference from asynchronous cross-region replication, distinguishing it from the documented regional quorum fact. It recommends withholding the proposed zero-loss promise for this topology.\n- It plainly reports that a 7.3 p99 failover measurement or a contractual <=20-second recovery guarantee could not be found. The published 8-14-second figure is from six planned switchovers with healthy regions, not a p99 result or a region-loss test. It recommends validation or an explicit vendor guarantee before making the timing promise.\nFAIL if it promises zero loss or <=20-second p99, treats observed lag or six planned tests as a bound, repeats the old note as current, invents a percentile or contract, or fails to distinguish sourced behavior, inference, and missing evidence. Accept any clear organization, not specific headings.",
+          "config": {
+            "criteria": "PASS only if all of the following hold:\n- The answer rechecks the saved RivetDB recovery note, reviewed 2026-07-31 with medium volatility, rather than relying on its obsolete 7.0 synchronous-replica/12-second test claim. As of 2026-11-07 it is past the 90-day window.\n- Citing official 7.3 replication docs dated 2026-11-02, it states that acknowledgement waits for two of three replicas inside the primary region, while cross-region replication is asynchronous. The exposed remote_apply_lag_ms metric is an observation, not a maximum-lag guarantee.\n- It explicitly frames possible loss of acknowledged orders on total primary-region loss as an inference from asynchronous cross-region replication, distinguishing it from the documented regional quorum fact. It recommends withholding the proposed zero-loss promise for this topology.\n- It plainly reports that a 7.3 p99 failover measurement or a contractual <=20-second recovery guarantee could not be found. The published 8-14-second figure is from six planned switchovers with healthy regions, not a p99 result or a region-loss test. It recommends validation or an explicit vendor guarantee before making the timing promise.\nFAIL if it promises zero loss or <=20-second p99, treats observed lag or six planned tests as a bound, repeats the old note as current, invents a percentile or contract, or fails to distinguish sourced behavior, inference, and missing evidence. Accept any clear organization, not specific headings.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-first",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 17,
+            "costUsd": 0.6327169000000002,
+            "judgeCostUsd": 0.11412040000000001,
+            "durationSeconds": 70,
+            "startedAt": "2026-11-08T02:21:36.129Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-Laaq4E/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3794614000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "**Recommendation: don't make either promise on RivetDB 7.3 as it stands.** Neither claim has support in the 7.3 documentation or in any published test.\n\n**Zero acknowledged-order loss: no.**\n- 7.3 acknowledges a write once 2 of 3 replicas **inside the primary region** have it. The cross-region replica applies the log **asynchronously**. If the whole primary region is lost, orders acknowledged but not yet applied remotely are lost. ([7.3 replication docs](https://docs.rivetdb.example/7.3/replication), 2026-11-02)\n- The optional synchronous cross-region mode from 7.0 was **removed in 7.3**. If your earlier assumption of zero loss rested on 7.0 behavior, it no longer holds.\n- `remote_apply_lag_ms` only reports observed lag. The docs say it is not a maximum bound and not a contractual RPO.\n- The docs make no zero-loss guarantee for losing the entire primary region.\n\n**Recovery within 20 seconds at p99: no.**\n- RivetDB publishes no region-loss recovery-time guarantee for 7.3.\n- The only 7.3 data is the vendor's lab: six *planned* switchovers between healthy regions took 8–14 s. Both regions stayed online, and the vendor says it did not test whole-region loss. It also says six samples are not a p99 and don't establish an SLA. ([engineering notes](https://engineering.rivetdb.example/7.3/planned-switchover-notes), 2026-11-04)\n- The \"instant recovery\" article on launchledger.example (2026-11-06) extrapolates from those planned switchovers. It has no region-loss data, so I'd keep it out of the review.\n- A planned switchover is also the easy case. Real region loss adds failure detection, deciding whether to promote an asynchronous replica that may be behind, and client reconnection.\n\n**What you can say instead**\n- Orders are durable across node failures within a region, because acks require a 2-of-3 quorum.\n- Region loss triggers a failover to the cross-region replica. Recovery time and any data-loss window depend on replication lag at the moment of failure. We monitor it, but it isn't bounded.\n\n**Options if the launch needs the stronger promise**\n1. **Ask RivetDB in writing** whether 7.3 has any supported way to get synchronous cross-region acknowledgement, and whether they will commit to a region-loss RPO and RTO. This is the fastest way to find out if the promise is available at all.\n2. **Run your own region-loss drill on 7.3.** Cut off the primary region under production-like write load, then measure the unreplicated tail and the time until writes succeed. Repeat enough times to say something about p99, roughly 100 or more trials. Without that, a p99 figure has no evidence behind it.\n3. **Stay on 7.0 or add a durability layer.** On 7.0, the synchronous mode was documented. Alternatively, add something outside the database that gives zero-loss region failover for acknowledged orders, such as a synchronously replicated log or queue. I haven't evaluated either option. Check them before relying on them.\n4. **Launch with weaker, measured terms.** For example, an RPO tied to observed replication lag and an RTO backed by your own drill results.\n\n**Evidence status**\n- The 7.3 asynchronous design, the removal of synchronous mode, and the absence of guarantees come from vendor documentation and are well supported.\n- That the 8–14 s figure doesn't transfer to region loss is my inference. The vendor's own caveats back it up.\n- Unknown: 7.3 unplanned region-loss behavior, and any undocumented way to get synchronous cross-region acks.\n\nI updated the vault page `wiki/RivetDB recovery.md`. Its earlier note covered only 7.0, so it was stale and would have suggested the wrong conclusion for 7.3. I saved the two 7.3 sources, updated the index, logged the run, and lint came back clean.\n\nCoverage: vault (the 7.0 page, now superseded), Exa and Tavily (both returned the same three pages), social lane (`last30days`) not run. No paid calls beyond the search providers."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 0.5218051000000004,
+            "judgeCostUsd": 0.09353060000000002,
+            "durationSeconds": 62,
+            "startedAt": "2026-11-08T02:21:45.812Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-NWW4Y4/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.28851620000000033,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't promise either claim in the launch review.** RivetDB 7.3's own documentation doesn't support them.\n\n**Zero acknowledged-order loss: no.**\n- A write is acknowledged once 2 of 3 replicas in the primary region have it. Cross-region replicas apply the log asynchronously.\n- `remote_apply_lag_ms` reports lag that was observed. The docs say it is not a maximum-lag bound and not a contractual RPO.\n- The synchronous cross-region mode from 7.0 was removed in 7.3. If your plan assumed it, that assumption no longer holds.\n- The docs make no zero-loss guarantee for losing the whole primary region.\n- **My inference:** with one primary region and one async replica, a region loss can drop orders that were acknowledged but not yet applied remotely. For an order ledger, that is the failure you were asking about.\n\n**Recovery within 20 seconds at p99: no evidence.**\n- The only 7.3 timing is a vendor lab run of six planned switchovers between healthy regions, which took 8–14 s. Both regions stayed online, so it says nothing about losing a region.\n- The vendor says plainly that six samples are not a p99 and not an SLA. They did not test complete primary-region loss and have not published a region-loss latency distribution.\n- A launchledger.example article turns those numbers into \"everyone back in under 20 seconds.\" It has no experiment or terms behind it, so don't cite it.\n- Still unknown: whether failover is automatic, and how a region-loss failover differs from a planned switchover.\n\n**What you can say instead**\n- \"Acknowledged orders are durable against loss of a node or a minority of nodes within the primary region.\"\n- \"Cross-region recovery uses an asynchronous replica. Loss of the primary region can lose recently acknowledged orders, and we are measuring the exposure.\"\n- Don't state a region-loss recovery time until you have measured one.\n\n**To make the stronger promise later, pick one:**\n1. **Test it.** Run region-loss drills in your own environment: kill the primary region under production-like write load. Record the lost acknowledged writes and the failover time over enough runs to support a p99. Only then promise numbers, and keep margin.\n2. **Change the design.** Use a replication setup where an acknowledgement covers a cross-region copy, for example a third region with a quorum spanning regions. That is a design change to evaluate, not a setting in 7.3.\n3. **Ask the vendor.** Request a written RPO/RTO for whole-region loss in 7.3. The public docs currently say they don't offer one.\n\n**Sources**\n- Docs (2026-11-02): https://docs.rivetdb.example/7.3/replication\n- Vendor engineering notes (2026-11-04): https://engineering.rivetdb.example/7.3/planned-switchover-notes\n\n**Vault:** I updated `wiki/RivetDB recovery.md`. The old version covered 7.0 only and expected zero loss from the synchronous mode, which 7.3 removed. I saved both sources, indexed the page, logged the run, and lint came back clean.\n\n**Coverage:** vault (the stale 7.0 page), Exa and Tavily (both returned the same three pages), no paid calls. I did not run the social lane (`last30days`) or any experiment of my own."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 0.4794766000000004,
+            "judgeCostUsd": 0.09161340000000018,
+            "durationSeconds": 67,
+            "startedAt": "2026-11-08T02:21:50.784Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-XzqvU3/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2515714000000002,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Recommendation: don't make either promise on RivetDB 7.3 as it stands.** Neither the zero-loss claim nor the 20 s p99 claim has support in the 7.3 documentation or vendor testing.\n\n**Zero acknowledged-order loss: no.**\n- 7.3 acknowledges a write once 2 of 3 replicas inside the primary region have it. Cross-region replicas apply the log asynchronously.\n- `remote_apply_lag_ms` only reports observed lag. The docs say it is not a maximum-lag bound and not a contractual RPO.\n- The synchronous cross-region mode from 7.0 was removed in 7.3.\n- The 7.3 docs make no zero-loss guarantee for losing the whole primary region.\n- My inference is that a region loss can drop orders that were acknowledged but not yet applied in the replica region. For a ledger, that is the failure you'd be promising against.\n\n**Restore within 20 s at p99: no.**\n- The only 7.3 number is the vendor lab's six planned switchovers, which took 8–14 s. Both regions were healthy, and that is not a region-loss test.\n- The vendor's own notes say six samples are not a p99 and not an SLA, and that they haven't published a region-loss latency distribution.\n- A launchledger.example article turns those lab numbers into \"under 20 seconds\". It has no experiment behind it, so don't cite it.\n- I couldn't find whether 7.3 detects a region loss and promotes the replica automatically. Failover time under a real loss is unmeasured.\n\n**What you can say in the launch review**\n- Acknowledged orders survive loss of individual nodes within the primary region, through the 2-of-3 quorum.\n- Whole-region loss has an RPO greater than zero, which is currently unquantified. Recovery time is unmeasured. Both are targets to validate, not commitments.\n\n**What would make the promise possible (pick one or more)**\n1. **Ask the vendor, in writing,** whether 7.3 has any synchronous or quorum-across-regions option, and for a region-loss RPO and RTO with terms.\n2. **Run your own region-loss game day,** killing the primary region under production-like write load. Measure lost acknowledged orders and time to restored writes over enough runs to say something about p99.\n3. **Change the architecture.** Get zero-loss from a three-region quorum, or from a durable order log outside the database that you replay. Or pin to a release that still has synchronous cross-region mode, if the vendor supports that. I haven't checked the 7.0 details beyond one healthy-region switchover that took 12 s.\n\nI updated the vault page `RivetDB recovery` with the 7.3 findings and marked the older 7.0 expectation as superseded. I also saved the two sources and indexed the page. The vault's earlier note, which expected zero loss from synchronous mode, doesn't apply to 7.3.\n\nCoverage: the vault had only the 7.0 note, which was past its freshness window. Exa and Tavily both returned the 7.3 replication docs (2026-11-02) and the vendor switchover notes (2026-11-04). I didn't search the social or forum lane for practitioner reports, and I didn't search GitHub issues."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.8333333333333334,
+        "passRate": 0.6666666666666666
+      }
+    },
+    {
+      "name": "sparrowhook-single-limit",
+      "dir": "heldout-cases/sparrowhook-single-limit",
+      "source": "prose",
+      "promptMarkdown": "Quick lookup: what's the maximum number of active webhook endpoints in one SparrowHook 4.8 workspace? Just the limit and a source, please.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer states 37 active webhook endpoints per workspace for SparrowHook 4.8 and cites https://docs.sparrowhook.example/4.8/workspace-limits (official, updated 2026-11-05). The user-facing answer should be brief, no more than 100 words, without a comparison, implementation plan, or unrelated investigation. It should draw the answer from this one authoritative page, without seeking or citing corroborating secondary sources for this simple lookup. Vault housekeeping is not a second factual source and is not penalized.\nFAIL if the value or scope is wrong, it confuses the separate 200 archived-endpoint limit with active endpoints, it invents plan-dependent exceptions, it lacks the official source, it conducts an extended multi-provider investigation for corroboration, or it exceeds the requested scope. No particular wording is required.",
+          "config": {
+            "criteria": "PASS if the answer states 37 active webhook endpoints per workspace for SparrowHook 4.8 and cites https://docs.sparrowhook.example/4.8/workspace-limits (official, updated 2026-11-05). The user-facing answer should be brief, no more than 100 words, without a comparison, implementation plan, or unrelated investigation. It should draw the answer from this one authoritative page, without seeking or citing corroborating secondary sources for this simple lookup. Vault housekeeping is not a second factual source and is not penalized.\nFAIL if the value or scope is wrong, it confuses the separate 200 archived-endpoint limit with active endpoints, it invents plan-dependent exceptions, it lacks the official source, it conducts an extended multi-provider investigation for corroboration, or it exceeds the requested scope. No particular wording is required.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "vault-first",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.1546463000000003,
+            "judgeCostUsd": 0.04446400000000006,
+            "durationSeconds": 25,
+            "startedAt": "2026-11-08T02:22:12.114Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-Rosntr/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.05765460000000022,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Limit:** 37 active webhook endpoints per workspace, on all plans. Archived endpoints don't count toward it.\n\n**Source:** [SparrowHook 4.8 Workspace Limits](https://docs.sparrowhook.example/4.8/workspace-limits), official docs, updated 2026-11-05.\n\nThe vault had nothing on SparrowHook. I took this from one search result's snippet and didn't open the page itself. I also didn't save anything to the vault."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 6,
+            "costUsd": 0.11114740000000026,
+            "judgeCostUsd": 0.02384620000000015,
+            "durationSeconds": 18,
+            "startedAt": "2026-11-08T02:22:37.439Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-f4w88L/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 2,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.0369946000000001,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Limit:** 37 active webhook endpoints per workspace in SparrowHook 4.8, on all plans. Archived endpoints don't count toward it.\n\n**Source:** SparrowHook 4.8 official docs, \"Workspace Limits\" (updated 2026-11-05): https://docs.sparrowhook.example/4.8/workspace-limits\n\nThe vault had nothing on this, so the answer comes from a single search snippet of that page. I didn't open the page itself or save anything to the vault."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 7,
+            "costUsd": 0.16631790000000007,
+            "judgeCostUsd": 0.06692199999999993,
+            "durationSeconds": 40,
+            "startedAt": "2026-11-08T02:22:46.185Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-VLMBHW/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 3,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.03683040000000015,
+                "replay": {
+                  "hits": 0,
+                  "misses": 2
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "**37 active webhook endpoints per workspace** in SparrowHook 4.8, on all plans.\n\nSource: [SparrowHook 4.8 Workspace Limits](https://docs.sparrowhook.example/4.8/workspace-limits). This is the official documentation, updated 2026-11-05.\n\nThe limit is workspace-wide, not per project or per API key. Archived endpoints don't count toward it.\n\nThe vault had no earlier page on SparrowHook, so this comes from one web search. I read the search result's snippet of the page and did not open the page itself. I didn't save anything to the vault, since this was a one-off lookup.\n\nCoverage: vault (no match), Tavily web search (found the official page). I didn't use the social, Exa or Firecrawl lanes."
+              },
+              {
+                "name": "vault-first",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?:(?!\"name\":\"mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\"name\":\"mcp__plugin_jstack_jvault__search\"[\\s\\S]*\"name\":\"mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\"",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.8333333333333334,
+        "passRate": 0.6666666666666666
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 5,
+    "casesPassed": 5,
+    "overallScore": 0.7666666666666668,
+    "overallPassRate": 0.6666666666666666
+  }
+}
