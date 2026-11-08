@@ -1,0 +1,92 @@
+[
+ {
+  "title": "Limits & pricing \u00b7 Cloudflare AI Search docs",
+  "url": "https://developers.cloudflare.com/ai-search/platform/limits-pricing/",
+  "published": "N/A",
+  "text": "## Limits\n\nThe following limits apply based on your Workers plan:\n\n| Limit | Workers Free | Workers Paid |\n| --- | --- | --- |\n| AI Search instances per account | 100 | Unlimited, with a default limit of 5,000. Each instance above 5,000 costs $0.10 per month. |\n| Namespaces per account | 100 | 100 |\n| Files per instance | 100,000 | 1M or 500K for hybrid search |\n| Pages per crawl, `discover` parse type | 100,000 | 100,000 |\n| Maximum PDF file size with OCR enabled | 10 MiB | 10 MiB |\n| Maximum plain-text or code file size | 10 MiB | 10 MiB |\n| Maximum size for PDFs without OCR and other file formats | 4 MiB | 4 MiB |\n| Included semantic queries per month | 1,000 | 1,000 |\n| Included full-text queries per month | 1,000 | 1,000 |\n| Instances per cross-instance search request | 10 | 10 |\n| Maximum pages crawled per day | 500 | Unlimited |\n| Max custom metadata fields | 5 per AI Search instance | 5 per AI Search instance |\n| Metadata per vector | 10 KiB total, including system overhead | 10 KiB total, including system overhead |\n| Filterable indexed string data | First 64 UTF-8 bytes per string | First 64 UTF-8 bytes per string |\n\nWebsite crawling is bounded by several of these limits at once. A `discover` crawl accepts up to 100,000 pages, but the files per instance and maximum pages crawled per day limits also apply, so the number of pages you end up with is whichever of those values is lowest. On Workers Free, the daily limit of 500 pages is the binding one.\n\nFor the limits th"
+ },
+ {
+  "title": "AI Search billing postponed to December 1, 2026, and default sync interval is now 24 hours \u00b7 Changelog",
+  "url": "https://developers.cloudflare.com/changelog/post/2026-11-02-billing-postponed-default-sync-interval/",
+  "published": "2026-11-02T00:00:00.000Z",
+  "text": "November 2, 2026\n\n## AI Search billing postponed to December 1, 2026, and default sync interval is now 24 hours\n\n#### Billing postponed to December 1, 2026\n\nAI Search billing has been postponed by one month and now begins on December 1, 2026, instead of November 1, 2026. You will not be charged for AI Search usage before December 1, 2026. Pricing and included usage are unchanged.\n\nFor rates and included usage, refer to Limits & pricing.\n\n#### Default sync interval is now 24 hours\n\nThe default sync interval for AI Search instances is changing from 6 hours to 24 hours. You can still choose any supported interval, from 15 minutes to 24 hours, with the Sync interval setting in your instance settings or the `sync_interval` field in the API.\n\nFor details, refer to Sync interval.\n\n---"
+ },
+ {
+  "title": "AI Search is now generally available | Cloudflare Blog",
+  "url": "https://blog.cloudflare.com/ai-search-ga/",
+  "published": "2026-10-01T13:00:00.000Z",
+  "text": "As part of general availability, we\u2019ll start billing for AI Search on November 1, 2026, and continue to offer a generous free tier on all Workers plans.\n\n...\n\n## Copy link Bigger files and OCR for scanned documents\n\nAI Search now accepts your text files (Markdown, HTML, CSV, JSON and similar) and PDFs up to 10 MiB, up from 4 MiB. Many PDFs are really scanned images with no extractable text. For those, turn on OCR and AI Search reads the text from each page before chunking and embedding it. OCR is available to every account and is billed under the new AI Search pricing as image processing ingestion tokens.\n\n## Copy link Now in GA: billing and pricing for AI Search\n\nDuring our August 2026 Agents Week, we announced preview pricing for AI Search. With the product going GA today, we\u2019re announcing billing for AI Search that is going live on November 1, 2026. We\u2019ll send a reminder email before billing is enabled.\n\nAI Search pricing is designed, so you can estimate your bill before you index a single file. You pay for three things: the content you ingest, the data you store, and the queries you run. The work in between (parsing, chunking, embedding with Workers AI models, keyword indexing, and reranking) is included. There are no instance hours, capacity units, or monthly minimums to size up front, and small projects fit inside the free monthly allotment.\n\nIngestion pricing is based on one rate per token with whichever Workers AI embedding model you pick, and tokens are counted the s"
+ },
+ {
+  "title": "Release note \u00b7 Cloudflare AI Search docs",
+  "url": "https://developers.cloudflare.com/ai-search/platform/release-note/",
+  "published": "N/A",
+  "text": "## 2026-10-01\n\nAI Search is generally available\n\nAI Search is generally available. Usage-based billing begins on November 1, 2026, and managed Workers AI embedding and reranking calls are included in AI Search pricing, so they no longer appear on your Workers AI bill or in your AI Gateway logs. Refer to Limits & pricing for rates and included monthly usage. New instances use hybrid search by default. AI Search also supports multimodal embedding models and image queries through the REST API and public endpoint. OCR is available on every account: plain-text or code files and PDFs with OCR enabled can be up to 10 MiB, while PDFs without OCR and other supported formats are limited to 4 MiB. When `type` is omitted, AI Search infers the instance type from an HTTP or HTTPS URL or an existing R2 bucket. Refer to Data sources.\n\n...\n\n## 2026-06-18\n\nMigration to managed infrastructure complete\n\nAll AI Search instances have finished migrating to managed infrastructure. Every instance now includes built-in storage, a built-in vector index, and built-in web crawling, so the current limits apply across all instances. Storage, vector indexing, and Browser Run usage for crawling are included. Managed Workers AI embedding and reranking calls are also included in AI Search pricing. Generation, query rewriting, and external providers continue to use your account and gateway. If your instance previously crawled a website, the dedicated R2 bucket AI Search created in your account is no longer used"
+ },
+ {
+  "title": "Cloudflare AI Search billing: cost per document and per query",
+  "url": "https://codeandproof.com/blog/ai-search-billing-per-document",
+  "published": "2026-10-01T22:30:05.000Z",
+  "text": "| Line | Rate | Free monthly allotment |\n| --- | --- | --- |\n| Base ingestion | $0.75 / 1M tokens | 5M tokens |\n| Image processing (OCR add-on ... 5M pool |\n| Stored data | $2.00 / GB-month |\n...\n1k queries | 1,000 queries |\n| Embedding and reranking\n\n---"
+ },
+ {
+  "title": "AI Search Changelog | Cloudflare Docs",
+  "url": "https://developers.cloudflare.com/changelog/product/ai-search/",
+  "published": "N/A",
+  "text": "## AI Search billing postponed to December 1, 2026, and default sync interval is now 24 hours\n\n#### Billing postponed to December 1, 2026\n\nAI Search billing has been postponed by one month and now begins on December 1, 2026, instead of November 1, 2026. You will not be charged for AI Search usage before December 1, 2026. Pricing and included usage are unchanged.\n\nFor rates and included usage, refer to Limits & pricing.\n\n#### Default sync interval is now 24 hours\n\nThe default sync interval for AI Search instances is changing from 6 hours to 24 hours. You can still choose any supported interval, from 15 minutes to 24 hours, with the Sync interval setting in your instance settings or the `sync_interval` field in the API.\n\nFor details, refer to Sync interval.\n\n...\n\n## AI Search is generally available\n\nAI Search is now generally available. Usage-based billing begins on November 1, 2026, with included monthly ingestion, storage, semantic query, and full-text query usage. Cloudflare will send a reminder email the week before billing begins.\n\nRefer to Limits & pricing for rates and included usage.\n\n...\n\n#### Workers AI embeddings and reranking are included\n\nWorkers AI embedding and reranking calls made by AI Search are included in AI Search pricing. These calls no longer appear on your Workers AI bill or in your AI Gateway logs. Generation, query rewriting, and external providers continue to use your account and gateway.\n\nRefer to Limits & pricing for details.\n\n...\n\n#### OCR availabi"
+ },
+ {
+  "title": "Keyword search \u00b7 Cloudflare AI Search docs",
+  "url": "https://developers.cloudflare.com/ai-search/configuration/indexing/keyword-search/",
+  "published": "N/A",
+  "text": "## Limits\n\nInstances with keyword search enabled support up to 500,000 files per instance on the Workers Paid tier, compared to 1,000,000 for vector-only instances. Refer to Limits and pricing for the full list of limits.\n\n---"
+ },
+ {
+  "title": "Cloudflare AI Search vs Algolia 2026: Markdown Sites",
+  "url": "https://md2rich.com/blog/cloudflare-ai-search-vs-algolia-markdown-2026-en",
+  "published": "2026-09-10T18:38:51.000Z",
+  "text": "section is short enough to quote directly. During the open beta, AI Search ... free within the plan limits. Storage, vector indexing, and the Browser Run usage that website crawling consumes are included, not billed separately. Workers AI and AI Gateway\n\n---"
+ },
+ {
+  "title": "Built-in storage \u00b7 Cloudflare AI Search docs",
+  "url": "https://developers.cloudflare.com/ai-search/configuration/data-source/built-in-storage/",
+  "published": "N/A",
+  "text": "Every AI Search instance comes with built-in storage and a built-in vector index, powered by R2 and Vectorize. You can upload files directly to an instance without setting up either service yourself.\n\n...\n\n## Limits and pricing\n\nStorage, vector indexing, Browser Run crawling, and Workers AI embedding and reranking usage are included in AI Search billing. Other usage, such as generation through your AI Gateway, is billed separately. For full details, refer to Limits and pricing.\n\n---"
+ },
+ {
+  "title": "Cloudflare AI Search review (2026): pricing, alternatives and grade BB",
+  "url": "https://www.anchorterminal.com/tools/cloudflare-ai-search",
+  "published": "N/A",
+  "text": "Pay per use $0.75 / 1k req Billing began on 1 November 2026. Each month every account gets 5 million ingestion tokens, 10 GB-month of storage, 1,000 semantic and 1,000 full-text queries. Beyond that, $0.75 per million ingestion tokens (plus $0.50 for images and OCR), $2.00 per GB-month, $0.75 per 1,000 semantic or hybrid queries and $0.10 per 1,000 full-text queries. On Workers Paid the first 5,000 instances are included and each further instance costs $0.10 a month. Generation and query rewriting bill through Workers AI or AI Gateway (https://developers.cloudflare.com/ai-search/platform/limits-pricing/, checked 2026-11-01).\n\n---"
+ },
+ {
+  "title": "Cloudflare AI Search: give your agents a search engine for your data  | Cloudflare Blog",
+  "url": "https://blog.cloudflare.com/ai-search-easier/",
+  "published": "2026-08-06T13:00:00.000Z",
+  "text": "## Copy link Preview pricing: pricing you can predict\n\nAI Search is currently free while in beta, and billing is not yet enabled; we'll email you with plenty of notice before it starts. As we move toward general availability, here's a preview of pricing across ingestion, storage, and queries, plus embedding and reranking (preview prices are subject to change before billing begins):\n\n| | Preview usage price | Free monthly allotment (all Workers plans) |\n| --- | --- | --- |\n| Ingestion | | |\n| Base Ingestion | $0.75 / 1M tokens | 5M tokens \u2020 |\n| Image processing (add-on) | +$0.50 / 1M tokens | 5M tokens \u2020 |\n| Storage | | |\n| Stored data | $2.00 / GB-month | 10 GB |\n| Query | | |\n| Semantic (hybrid and vector search) | $0.75 / 1k queries | 2,000 queries \u2021 |\n| Full-text | $0.10 / 1k queries | 2,000 queries \u2021 |\n| Embedding and Reranking | | |\n| Ingestion and query | Free with select Workers AI models; third-party billed separately | N/A |\n\n\u2020 A single pool of 5M ingestion tokens per month, covering any file type currently supported (e.g., text, images). \u2021 A single pool of 2,000 queries per month, shared across both query types. \n\nOur goal is to provide pricing you can predict, starting with the models your search leans on. Embedding turns your text into the vectors that search matches on, and reranking reorders results so the most relevant come first. Both run free with AI Search defaults or when using select models from the Workers AI catalog, so the models behind indexing and eve"
+ },
+ {
+  "title": "Cloudflare makes AI Search generally available with visual and PDF search",
+  "url": "https://www.aiaffairs.com/technology/cloudflare-ai-search-generally-available-visual-pdf-search/",
+  "published": "2026-10-03T12:15:57.000Z",
+  "text": "5M ingestion tokens, 10 GB of storage, 1,000 semantic queries and 1,000 full-text queries, ... allotments replace the shared pool of 2,000 queries in its preview pricing. The ingestion allotment is a single pool covering supported file types, including\n\n---"
+ },
+ {
+  "title": "Overview",
+  "url": "https://developers.cloudflare.com/ai-search/llms-full.txt",
+  "published": "N/A",
+  "text": "## File limits\n\nAI Search has a file size limit of up to 4 MB.\n\nFiles that exceed this limit will not be indexed and will show up in the error logs.\n\n...\n\nEvery new AI Search instance comes with built-in storage and a built-in vector index, powered by R2 and Vectorize. You can upload files directly to an instance without setting up either service yourself.\n\n...\n\n## Limits and pricing\n\nFor instances with built-in storage, R2 storage, Vectorize, and Browser Run are included. Workers AI and AI Gateway usage is billed separately. For full details, refer to Limits and pricing.\n\n...\n\n## Limits and pricing\n\nThe regular AI Search limits apply when using the Website data source.\n\nThe crawler will download and index pages only up to the maximum object limit supported for an AI Search instance, and it processes the first set of pages it visits until that limit is reached. In addition, any files that are downloaded but exceed the file size limit will not be indexed.\n\nFor instances with built-in storage, Browser Run and storage are included. For older instances, R2, Vectorize, and Browser Run are billed separately.\n\n...\n\n## Limits\n\nInstances with keyword search enabled support up to 500,000 files per instance on the Workers Paid tier, compared to 1,000,000 for vector-only instances. Refer to Limits and pricing for the full list of limits.\n\n...\n\n## Limits\n\nInstances with keyword search enabled support up to 500,000 files per instance on the Workers Paid tier, compared to 1,000,000 for vect"
+ },
+ {
+  "title": "Cloudflare sets November 1 billing date for AI Search,\u2026 | Pivot News",
+  "url": "https://pivotnews.ai/five/cloudflare-sets-november-1-billing-date-for-ai-search-ppc",
+  "published": "2026-10-05T01:21:33.000Z",
+  "text": "pricing announced during Agents Week in August 2026: the free tier now holds 1,000 semantic and 1,000 full-text queries rather than a shared pool of 2,000. The post does not identify which Workers AI models qualify for free embedding and reranking. [1]\n\n---"
+ },
+ {
+  "title": "Cloudflare AI Search billing separates retrieval costs from model charges | OpenTools",
+  "url": "https://opentools.ai/news/cloudflare-ai-search-november-1-billing-indexed-chunks-model-charges",
+  "published": "2026-11-01T19:04:29.000Z",
+  "text": "Current pricing counts ingestion on the final indexed chunks after parsing and chunking. Overlapping text counts in every chunk where it appears. The original file\u2019s length is therefore not a one\u2011to\n...\n, OCR\u2011extracted text also counts as image\u2011processing"
+ }
+]

@@ -1,0 +1,92 @@
+[
+ {
+  "title": "Skills",
+  "url": "https://modelcontextprotocol.io/extensions/skills/overview",
+  "published": "N/A",
+  "text": "# Skills\n\n> Discover and read Agent Skills from MCP servers\n\nThe ext-skills repository\ncontains the published specification for the official Skills extension\n(`io.modelcontextprotocol/skills`). SEP-2640 is Final.\n\nThe Skills Over MCP Working Group\nmaintains the extension. SDK and host support is still being implemented;\nsee the client support matrix and\nimplementations list\nfor current coverage.\n\n> [card] modelcontextprotocol/ext-skills\n> \n> Specification and documentation for Skills over MCP.\n\nThe Skills extension allows MCP servers to expose workflow instructions and\nsupporting files to clients. Clients can discover available skills, retrieve\ntheir metadata, and read their contents using the existing Resources primitive.\n\nA skill is a directory containing a `SKILL.md` file and optional supporting\nfiles, following the Agent Skills specification.\nThis extension defines discovery and retrieval over MCP.\n\nSkills are useful for reusable workflows that combine several tools or require\nsupporting references, such as code review or document processing. Serving them\nover MCP keeps those instructions with the service they describe. Clients can\ndiscover available workflows from metadata and load instructions and supporting\nfiles only when needed.\n\n...\n\nReading `SKILL.md` through `resources/read` does not itself activate a skill.\nTo load the skill, the host routes the read through its skill-loading path, which\nverifies the content and applies any required user approval before loading i"
+ },
+ {
+  "title": "Extension Support Matrix",
+  "url": "https://modelcontextprotocol.org/extensions/client-matrix",
+  "published": "N/A",
+  "text": "# Extension Support Matrix\n\n> Which MCP clients implement which official extensions\n\nThis matrix shows which MCP clients support each official extension. Extensions are always opt-in: a client only uses an extension if both client and server declare support in the `extensions` field of their capabilities.\n\n> [!NOTE]\n> \n> This list is maintained by the community. If you notice any inaccuracies or would like to add or update information, please submit a pull request.\n\n## Extension overview\n\n| Extension | Identifier | Description |\n| --- | --- | --- |\n| MCP Apps | `io.modelcontextprotocol/ui` | Interactive HTML interfaces rendered inline in the conversation |\n| OAuth Client Credentials | `io.modelcontextprotocol/oauth-client-credentials` | Machine-to-machine auth without interactive user login |\n| Enterprise-Managed Authorization | `io.modelcontextprotocol/enterprise-managed-authorization` | Centralized access control via enterprise IdP |\n| Skills over MCP | `io.modelcontextprotocol/skills` | Discover skills and read their instructions and supporting files |\n\n## Support matrix\n\n| Client | MCP Apps | OAuth Client Credentials | Enterprise Auth | Skills | Tasks |\n| --- | --- | --- | --- | --- | --- |\n| Claude (web) | | | | | |\n| Claude Desktop | | | | | |\n| Claude Code | | | | | |\n| VS Code GitHub Copilot | | | | | |\n| Microsoft 365 Copilot | | | | | |\n| Goose | | | | | |\n| Postman | | | | | |\n| MCPJam | | | | | |\n| ChatGPT | | | | Partial | |\n| Cursor | | | | | |\n| Archestra.AI | "
+ },
+ {
+  "title": "[mcp] Serve Phoenix skills over MCP using the SEP-2640 Skills extension",
+  "url": "https://github.com/Arize-ai/phoenix/issues/16596",
+  "published": "N/A",
+  "text": "# [mcp] Serve Phoenix skills over MCP using the SEP-2640 Skills extension\n\n- State: open\n- Author: axiomofjoy\n- Created: 2026-09-28T21:58:45Z\n- Updated: 2026-10-26T13:07:12Z\n- Repository: Arize-ai/phoenix\n- Number: #16596\n- Assignees: axiomofjoy\n\n...\n\nPart of #13975. Related: #14483 (list skills via MCP), #14484 (get skill by name).\n\nMCP now has a finalized Skills extension, SEP-2640 (`io.modelcontextprotocol/skills`, merged 2026-09-13). It defines a `skill://` resource convention plus `skills/list` and `skills/get` for discovering and reading SKILL.md and supporting files. Rather than inventing our own listing/fetching tools, `@arizeai/phoenix-mcp` should serve our skills (`.agents/skills/`) using this extension so any conforming host can pick them up.\n\n- [ ] Declare the `io.modelcontextprotocol/skills` extension capability\n- [ ] Implement `skills/list` and `skills/get` over `.agents/skills/` per the stable spec\n- [ ] Pass the conformance suite server scenarios\n- [ ] Verify against a real host once one ships v1 support (see client matrix)\n\nBlocked on TypeScript SDK support landing (typescript-sdk#2818). A weekly automated comment on this issue tracks host and SDK support status.\n\n...\n\n> ## SEP-2640 support check, 2026-09-28\n> \n> **Changes since last check:** First check, so there's no earlier comment to compare against.\n> \n> | Project | Status | Evidence |\n> |---|---|---|\n> | FastMCP | **Pre-v1.** `SkillsProvider` still uses its own `skill://` resources and `_manifest`, with"
+ },
+ {
+  "title": "Three clients support Skills over MCP, all marked Partial. | MindPattern",
+  "url": "https://mindpattern.ai/s/2026-09-17-three-clients-support-skills-over-mcp-all-marked-partial",
+  "published": "N/A",
+  "text": "The newly published extension support matrix shows exactly three entries in the Skills column: ChatGPT (importing skills from an MCP server), fast-agent, and MCP Inspector (verification via its CLI `--verify`). Claude web, Claude Desktop, Cursor, VS Code Copilot and Goose all show MCP Apps support and nothing in Skills. Shipping skills over MCP instead of on disk today means one consumer product, one framework, one debugging tool.\n\n---"
+ },
+ {
+  "title": "How to Load Agent Skills from an MCP Server (SEP-2640)",
+  "url": "https://ss33.ai/skills/blog/how-to-load-agent-skills-from-an-mcp-server-sep-2640-zdt3ud",
+  "published": "2026-10-30T18:23:03.000Z",
+  "text": "You can load agent skills from an MCP server today only if your client supports MCP's Skills extension, defined in SEP-2640, and as of Oct 30, 2026 that is still a short list. The MCP project's support matrix shows partial Skills support in ChatGPT, fast-agent and MCP Inspector. The ext-skills implementations list adds a few more developer tools, such as MCPJam Inspector and the mcpc CLI. The matrix lists no Skills support for Claude Code, Claude Desktop, Cursor or VS Code GitHub Copilot, and Codex is not on it at all, so in those tools skills still come from folders on disk or from plugins. The MCP project's own page says SDK and host support is still being implemented, so expect this list to change. This guide is for people who use skills, not people who build servers: what the extension does from your side, the steps where it works, and what to do where it doesn't.\n\n...\n\n## Why answers to this question disagree\n\nSearch for \"agent skills MCP server\" and you get three different things under the same words.\n\n1. The official Skills extension. The server lists its skills, and a supporting client fetches a skill's SKILL.md and files when a task needs them. This is SEP-2640, extension ID io.modelcontextprotocol/skills. It needs support in your client.\n\n2. Skills served as MCP prompts. Some servers expose each skill as an MCP prompt. Any client that shows MCP prompts can run them, but a prompt is a single block of text, without a skill's folder of scripts and reference files.\n\n3. "
+ },
+ {
+  "title": "Delivering Agent Skills Over MCP | Microsoft Community Hub",
+  "url": "https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/delivering-agent-skills-over-mcp/4562722",
+  "published": "2026-10-12T00:00:00.000Z",
+  "text": "The official Skills extension for Model Context Protocol (MCP) provides a standard way to make skills available from a server, so compatible agents can find and load them when needed.\n\n...\n\nMCP already gives agents access to content from servers through resources. The Skills extension builds on that. It adds a way to ask which skills a server offers and get the details needed to load them.\n\nIt doesn't change the skill format, and it doesn't run a skill on the server. The application running your agent, called the host, still decides how to offer skills to the user or model and load the selected instructions.\n\nBoth the server and the host need the right support. Being able to call an MCP tool isn't enough to discover and load remote skills. A custom tool that returns skill text isn't, by itself, an implementation of this extension either.\n\nThe extension is identified as `io.modelcontextprotocol/skills`. Its proposal, SEP-2640, has reached Final status. Client support is still developing, so a published specification doesn't mean every MCP host supports it yet.\n\n...\n\n## Where Microsoft Foundry fits\n\nMicrosoft Foundry offers skills support in preview. Its integration guide describes toolbox-based skill discovery as following SEP-2640.\n\nA toolbox gives agents one MCP endpoint for accessing its tools and skills. To share a skill this way:\n\n1. Upload the skill content to create a skill version in your Foundry project.\n2. Add a reference to the skill to a toolbox in the same project"
+ },
+ {
+  "title": "skills - MCP Python SDK",
+  "url": "https://py.sdk.modelcontextprotocol.io/api/mcp/client/extensions/skills/",
+  "published": "N/A",
+  "text": "# skills\n\nClient-side Skills extension (SEP-2640).\n\n`Skills` is an opt-in `ClientExtension` for talking to a skills catalog server. Register it with `Client(extensions=[Skills()])`, then call `client.extension(Skills)` for the SEP-2640 verbs \u2014 `list_skills`, `get_skill`, and `read_directory` \u2014 tied to that connection:\n\n```\nasync with Client(\"http://localhost:8000/mcp\", extensions=[Skills()]) as client:\n    for skill in await client.extension(Skills).list_skills():\n        print(skill.uri, skill.frontmatter[\"description\"])\n\n```\n\n`client.extension(Skills)` returns a `SkillsClient`. Its catalog verbs \u2014 `list_skills`, `get_skill`, and `read_directory` \u2014 check that the server advertises the extension and validate its response; `list_skills` and `read_directory` follow `nextCursor` to completion, so one call returns every page's results.\n\n---"
+ },
+ {
+  "title": "Skills Over MCP Working Group - April 21st 2026 Office Hours Notes \u00b7 modelcontextprotocol/modelcontextprotocol \u00b7 Discussion #2628 \u00b7 GitHub",
+  "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/discussions/2628",
+  "published": "2026-04-21T00:00:00.000Z",
+  "text": "Ola opened with results from a survey of open-source MCP clients that already expose a model-facing `read_resource` tool, which the draft Skills Extension SEP (#69) relies on. Four clients were tested with light forks: fast-agent, Gemini CLI, Codex, and Goose \u2014 all four already support both a read-resource tool and file-based skills, so the modding only added the connective tissue from the SEP (skill-resource indexing alongside the regular resource index; contextual server-name hinting).\n\n---"
+ },
+ {
+  "title": "Enable skills in the MCP server",
+  "url": "https://github.com/openai/codex/pull/36339",
+  "published": "N/A",
+  "text": "Enable skills in the MCP server\n\n## What changed\n\n- Install the skills extension for MCP Codex tool sessions so host skills are\n included in the developer instructions.\n- Route extension warnings to the matching active MCP turn as `codex/event`\n notifications, preserving request and thread metadata and ordering warnings\n before the final tool response.\n- Track reply turns independently and bound forwarded warning messages to 256\n UTF-8 bytes.\n\n---"
+ },
+ {
+  "title": "Survey client resource-loading support across major MCP clients",
+  "url": "https://github.com/modelcontextprotocol/experimental-ext-skills/issues/38",
+  "published": "N/A",
+  "text": "| Notes |\n|--------|:-:|:-:|:-:|:-:|:-:|---|\n| Claude Desktop | ? | ? ... | ? | |\n| Claude Code | ? | ? | ? | ?\n\n...\n\n| VS Code (Copilot) | ? ... | ?\n\n...\n\n| Cursor | ? | ? | ? | ?\n\n...\n\n| Windsurf | ? | ? | ? | ? | ?\n\n...\n\n| Zed | ? | ? | ? | ?\n\n...\n\n| Continue | ? | ? ... | ? | ?\n\n...\n\n**LucaButBoring** commented on 2026-03-03T19:24:48Z:\n\n> Claude Code:\n> - `resources/list`: Yes\n> - `resources/read`: Yes\n> - `resources/subscribe`: Unknown (I don't have anything leveraging that to test with)\n> - Resource templates: No\n> - Model can access: Yes, via `ListResourcesTool` and `ReadResourceTool`\n\n---"
+ },
+ {
+  "title": "Skills across clients | clients.dev",
+  "url": "https://clients.dev/skills",
+  "published": "N/A",
+  "text": "Reusable SKILL.md instruction sets the agent can load on demand.\n\n| Client | Status | Config files | Invocation | Fields |\n| --- | --- | --- | --- | --- |\n| Amp CLI | Supported | `.agents/skills/ /SKILL.md` project Copy .agents/skills/ /SKILL.md `~/.config/agents/skills/ /SKILL.md` global Copy ~/.config/agents/skills/ /SKILL.md`.claude/skills/ /SKILL.md` project Copy .claude/skills/ /SKILL.md | automatic | 2 fields |\n| Claude Code CLI | Supported | `.claude/skills/ /SKILL.md` project Copy .claude/skills/ /SKILL.md `~/.claude/skills/ /SKILL.md` global Copy ~/.claude/skills/ /SKILL.md | /skill-name automatic | 16 fields |\n| Cline IDE extension | Supported | `.cline/skills/ /SKILL.md` project Copy .cline/skills/ /SKILL.md `~/.cline/skills/ /SKILL.md` global Copy ~/.cline/skills/ /SKILL.md | automatic/skill-name | 2 fields |\n| Codex CLI | Supported | `.agents/skills/ /SKILL.md` project Copy .agents/skills/ /SKILL.md `~/.agents/skills/ /SKILL.md` global Copy ~/.agents/skills/ /SKILL.md `/etc/codex/skills/ /SKILL.md` enterprise Copy /etc/codex/skills/ /SKILL.md | $skill-name/skills implicit | 2 fields |\n| Crush CLI | Supported | `.crush/skills/ /SKILL.md` project Copy .crush/skills/ /SKILL.md `~/.config/crush/skills/ /SKILL.md` global Copy ~/.config/crush/skills/ /SKILL.md | automatic (model-invoked) command palette (Ctrl+P) for user-invocable skills | 7 fields |\n| Cursor Editor | Supported | `.cursor/skills/ /SKILL.md` project Copy .cursor/skills/ /SKILL.md`.agents/skills/ /SKILL."
+ },
+ {
+  "title": "OpenAI Shipped Skills Over MCP. The Spec Isn't Merged Yet.",
+  "url": "https://www.arcade.dev/blog/skills-over-mcp-explained/",
+  "published": "N/A",
+  "text": "The pattern is promising enough that people are shipping anyway, including OpenAI plugins, GitHub\u2019s MCP server, fast-agent, MCPJam, and others. Real adoption is starting before the ink is dry, which is at the same time awesome and scary.\n\n---"
+ },
+ {
+  "title": "Add Skills Provider for exposing agent skills as MCP resources",
+  "url": "https://github.com/PrefectHQ/fastmcp/pull/2944",
+  "published": "N/A",
+  "text": "Agent skills (directories with instruction files like `SKILL.md`) are used by Claude Code, Cursor, VS Code Copilot, and other AI tools. This PR adds providers that expose these skill directories as MCP resources, enabling skill discovery and sharing across different tools and clients.\n\n...\n\n## Vendor Providers\n\nPlatform-specific providers with locked default paths:\n\n| Provider | Location |\n|----------|----------|\n| `ClaudeSkillsProvider` | `~/.claude/skills/` |\n| `CursorSkillsProvider` | `~/.cursor/skills/` |\n| `VSCodeSkillsProvider` | `~/.copilot/skills/` |\n| `CodexSkillsProvider` | `~/.codex/skills/` |\n| `GeminiSkillsProvider` | `~/.gemini/skills/` |\n| `GooseSkillsProvider` | `~/.config/agents/skills/` |\n| `CopilotSkillsProvider` | `~/.copilot/skills/` |\n| `OpenCodeSkillsProvider` | `~/.config/opencode/skills/` |\n\n---"
+ },
+ {
+  "title": "clients.mdx",
+  "url": "https://github.com/modelcontextprotocol/docs/blob/main/clients.mdx",
+  "published": "N/A",
+  "text": "| Client | [Resources] | [Prompts] | [Tools] | [Sampling] | Roots | Notes |\n|---------------------------------------------|-------------|-----------|---------|------------|--------|-----------------------------------------------------------------------------|\n| [Claude Desktop App][Claude] | \u2705 | \u2705 | \u2705 | \u274c | \u274c | Full support for all MCP features |\n| [Claude Code][Claude Code] | \u274c | \u2705 | \u2705 | \u274c | \u2705 | Supports prompts, tools, and roots |\n| [5ire][5ire] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools. |\n| [BeeAI Framework][BeeAI Framework] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools in agentic workflows. |\n| [Cline][Cline] | \u2705 | \u274c | \u2705 | \u274c | \u274c | Supports tools and resources. |\n| [Continue][Continue] | \u2705 | \u2705 | \u2705 | \u274c | \u274c | Full support for all MCP features |\n| [Copilot-MCP][CopilotMCP] | \u2705 | \u274c | \u2705 | \u274c | \u274c | Supports tools and resources. |\n| [Cursor][Cursor] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools. |\n| [Emacs Mcp][Mcp.el] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools in Emacs. |\n| [fast-agent][fast-agent] | \u2705 | \u2705 | \u2705 | \u2705 | \u2705 | Full multimodal MCP support, with end-to-end tests |\n| [Genkit][Genkit] | \u26a0\ufe0f | \u2705 | \u2705 | \u274c | \u274c | Supports resource list and lookup through tools. |\n| [GenAIScript][GenAIScript] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools. |\n| [Goose][Goose] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools. |\n| [LibreChat][LibreChat] | \u274c | \u274c | \u2705 | \u274c | \u274c | Supports tools for Agents |\n| [mcp-agent][mcp-agent] | \u274c | \u274c | \u2705 | \u26a0\ufe0f | \u274c | Supports tools, server connection management, and agent workflows. |\n| [Microsoft Copilot Studio] | \u274c "
+ },
+ {
+  "title": "MCP Clients: What Each One Supports and How to Confirm What a Client Declares \u2013 Model Context Protocol \uff08MCP\uff09",
+  "url": "https://modelcontextprotocol.info/docs/clients/",
+  "published": "N/A",
+  "text": "| Client | Tools | Resources | Prompts | Roots | Sampling | Elicitation | Revision named |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n...\n\u2713 (2) | \u2713 (3) | \u2713 (4) | | \u2713 (5) | 2026-07-28 (6\n...\n\u2713 (8) | \u2713 (9) | \u2713 (10) | | \u2713 (11)"
+ }
+]

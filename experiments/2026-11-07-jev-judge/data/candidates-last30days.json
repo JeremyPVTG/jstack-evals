@@ -1,0 +1,92 @@
+[
+ {
+  "title": "mvanhorn/last30days-skill",
+  "url": "https://github.com/mvanhorn/last30days-skill",
+  "published": "N/A",
+  "text": "**An AI agent-led search engine scored by upvotes, likes, and real money - not editors.**\n\nThis README tracks the current v3 pipeline. The runtime skill spec lives in skills/last30days/SKILL.md, which is the source of truth for the latest command and setup behavior.\n\n**Claude Code (recommended \u2014 auto-updates via marketplace):**\n```\n/plugin marketplace add mvanhorn/last30days-skill\n/plugin install last30days\n```\n\n**Codex, Cursor, Copilot, Gemini CLI, or any of 50+ Agent Skills hosts:**\n```\nnpx skills add mvanhorn/last30days-skill -g\n```\n(`-g` installs globally for your user, available across all projects. Drop it to scope per-project.)\n\nMore install options (claude.ai web, OpenClaw, manual) in the Install section below.\n\nZero config. Reddit, HN, Polymarket, and GitHub work immediately. Run it once and the setup wizard unlocks X, YouTube, TikTok, arXiv, Techmeme, and more in 30 seconds.\n\n...\n\nX likes. ... TikTok engagement. Polymarket odds backed by real money and insider information. That's millions of people voting with their attention and their wallets every day. /last30days searches all of it in parallel, scores it by what real people actually engage with, and an AI agent judge synthesizes it into one brief.\n\n...\n\n## Sources, scored by the people\n\n| Source | What the people tell you |\n|--------|--------------------------|\n| **Reddit** | The unfiltered take. Top comments with real upvote counts, free, no API key. The real opinions that Google buries. |\n| **X / Twitter** | Th"
+ },
+ {
+  "title": "How to install and use the /last30days research skill - LumaDock",
+  "url": "https://lumadock.com/tutorials/install-last30days-skill",
+  "published": "N/A",
+  "text": "The engine is MIT licensed, tracks nothing and stores all research locally. Four sources work with zero configuration: Reddit (threads plus top comments via public JSON), Hacker News, Polymarket and GitHub (if the `gh` CLI is installed). YouTube transcripts join in the moment `yt-dlp` is on your PATH, also free.\n\nEverything else follows a bring-your-own-keys model. X works through your own browsercookies at no cost or through an xAI key. TikTok, Instagram Reels, Threads, Pinterest and YouTube comments all run on a single ScrapeCreators key with 10,000 free calls before pay-as-you-go kicks in. Bluesky wants an app password. Perplexity Deep Research is the one genuinely paid option at roughly $0.90 per query through OpenRouter, and it's opt-in for exactly that reason.\n\n...\n\n### Claude Code\n\nThe recommended path, because the plugin marketplace handles updates for you:\n\n...\n\n/plugin marketplace add mvanhorn/last30days-skill\n/plugin install last30days\n```\n\nForce an update check later with `claude plugin update last30days@last30days-skill`. One thing to know: Claude Code doesn't dedupe across install methods. If you install both the marketplace plugin and the `npx skills` copy, `/last30days` shows up twice. One method per machine.\n\n---"
+ },
+ {
+  "title": "How to Use /last30days: A Step-by-Step Guide to Real-Time AI Research | Tosea.ai",
+  "url": "https://tosea.ai/blog/last30days-ai-research-skill-guide",
+  "published": "2026-03-30T00:00:00.000Z",
+  "text": "requires one of the following: a ScrapeCreators API key for Reddit, TikTok ... or an OpenAI API key as a legacy Reddit fallback. X search works with either browser cookie auth (AUTH_TOKEN and CT0 copied from x\n\n---"
+ },
+ {
+  "title": "last30days: The Claude Code Skill That Fixes AI Search",
+  "url": "https://zenn.dev/neotechpark/articles/6084cfe677d223",
+  "published": "2026-08-03T04:27:24.000Z",
+  "text": "### Which sources does it cover?\n\n| Source | What it gives you |\n| --- | --- |\n| Reddit | Top comments with real upvote counts, no API key required |\n| X / Twitter | Fast reactions and expert threads, needs a login or key |\n| YouTube | Full video transcripts, searched for the relevant lines |\n| TikTok | Short-form creator takes not indexed by search engines |\n| Instagram Reels | Influencer perspective with spoken-word transcripts |\n| Hacker News | Developer consensus, points and comment counts |\n| Polymarket | Prediction market odds backed by real trading volume |\n| GitHub | PR velocity, star counts, release notes, issues |\n| arXiv | Recent papers behind a trending technique, free CLI |\n| Techmeme | Date windowed tech news editorial layer, free CLI |\n| Digg | Curated story clusters from a large curated X account list |\n| LinkedIn | Professional posts and articles |\n| StockTwits | Trader sentiment, auto-activates for tickers and crypto |\n| Threads, Bluesky | Post-Twitter text platforms |\n| Pinterest | Visual discovery signal for products and ideas |\n| Perplexity | Grounded synthesis and deep research as an extra layer |\n| Web | Standard editorial coverage, treated as one signal among many |\n\nNot every source needs setup. Reddit with comments, Hacker News, Polymarket, GitHub, and StockTwits work with zero configuration. arXiv and Techmeme use free CLIs that a first run installs automatically. Everything else needs either a browser login, an app password, or an API key, covered "
+ },
+ {
+  "title": "CONCEPTS.md",
+  "url": "https://github.com/mvanhorn/last30days-skill/blob/main/CONCEPTS.md",
+  "published": "N/A",
+  "text": "### Skill\n\nA self-contained agent-instructions package consisting of a `SKILL.md` prose contract plus a sibling `scripts/` directory containing the executable code the SKILL.md invokes. The package conforms to the Agent Skills open format and installs across every major harness (Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, and 50+ others) via `npx skills add`, harness-native plugin installers, or per-harness skill directories. A Skill is the unit of distribution; the Skill is the product.\n\n### Engine\n\nThe Python script (`scripts/last30days.py`) the Skill's SKILL.md invokes to do the actual research work. The Engine and SKILL.md have a contract: SKILL.md tells the model which flags to pass (`--plan`, `--competitors-plan`, `--x-handle`, `--subreddits`, `--emit=compact`, etc.), and the Engine produces a specific output shape (badge line, ranked evidence clusters, emoji-tree footer) that the model is contractually required to pass through. The Engine is implementation; the SKILL.md prose is the agent-facing surface.\n\n### Harness\n\nThe agent runtime that loads Skills and invokes them on the user's behalf. Claude Code is the most common Harness for this Skill but not the only one \u2014 Codex, Cursor, GitHub Copilot, Gemini CLI, and the rest of the Agent Skills ecosystem also count. \"Multi-harness\" describes a Skill that works correctly across every Harness it installs into; features written without multi-harness awareness (e.g., engine flags with no SKILL.md integration, or p"
+ },
+ {
+  "title": "Installation",
+  "url": "https://grok-wiki.com/public/docs/mvanhorn-last30days-skill-50b5421a8cca/pages/02-installation.md",
+  "published": "N/A",
+  "text": "The distributable unit is the Agent Skills package at `skills/last30days/` (`SKILL.md` plus `scripts/last30days.py` and `scripts/lib/`). Harnesses load that package through marketplace plugins, `npx skills`, harness-native installers, or a manual symlink; the engine always runs from whichever directory contains the `SKILL.md` the model read (`SKILL_DIR`).\n\n## Prerequisites\n\n| Requirement | Used for | Notes |\n| --- | --- | --- |\n| Python 3.12+ | Engine (`scripts/last30days.py`) | `requires-python = \">=3.12\"` in `pyproject.toml`; Hermes docs recommend `python3.12` explicitly |\n| Node.js | Vendored Bird client for X search | Listed under `metadata.openclaw.requires.bins` in `SKILL.md` |\n| yt-dlp (optional) | YouTube search and transcripts | `brew install yt-dlp` or `pip install yt-dlp` |\n| gh CLI (optional) | GitHub source | Uses your existing GitHub auth when present |\n\nReddit (public JSON), Hacker News, Polymarket, and GitHub (with `gh`) work with zero API configuration after install. Additional sources unlock via the first-run setup wizard or keys documented on Configure sources.\n\n## Install surfaces\n\n| Surface | Command | Update | On-disk layout (typical) |\n| --- | --- | --- | --- |\n| Claude Code (recommended) | `/plugin marketplace add mvanhorn/last30days-skill` then `/plugin install last30days` | Marketplace auto-refresh; `claude plugin update last30days@last30days-skill` | `~/.claude/plugins/cache/last30days-skill/last30days/{version}/skills/last30days/` |\n| Agent Skills "
+ },
+ {
+  "title": "N/A",
+  "url": "https://www.everydev.ai/tools/last30days",
+  "published": "N/A",
+  "text": "## Sources and What They Contribute\n\nThe skill aggregates across a wide platform surface:\n\n- Reddit \u2014 unfiltered community takes with upvote counts, via free public JSON (no API key required)\n- X / Twitter \u2014 breaking reactions and expert threads via browser session auth\n- YouTube \u2014 full transcripts searched for the most quotable sentences\n- Hacker News \u2014 developer consensus with point and comment counts\n- Polymarket \u2014 real-money prediction market odds as a signal of informed confidence\n- GitHub \u2014 PR velocity, star counts, release notes, and issues; person-mode switches to author-scoped queries\n- TikTok, Instagram Reels, Threads, Pinterest \u2014 via ScrapeCreators API (optional, bring-your-own-key)\n- Bluesky \u2014 AT Protocol posts via app password (free)\n- Perplexity Sonar \u2014 grounded web search with citations via OpenRouter (optional, pay-as-you-go)\n- Digg \u2014 curated story clusters from high-signal X accounts, no X auth required\n\nReddit, Hacker News, Polymarket, and GitHub work with zero configuration. A setup wizard unlocks additional sources in about 30 seconds on first run.\n\n...\n\n## Install Paths and Hosting\n\nThe skill supports multiple install surfaces:\n\n- Claude Code (recommended):`/plugin marketplace add mvanhorn/last30days-skill` \u2014 auto-updates via the marketplace\n- Codex, Cursor, Copilot, Gemini CLI, and 50+ Agent Skills hosts:`npx skills add mvanhorn/last30days-skill -g`\n- claude.ai web: download the `.skill` file from the latest release and upload via Settings > Capabilities"
+ },
+ {
+  "title": "last30days - Claude Code Plugin | ClaudePluginHub",
+  "url": "https://www.claudepluginhub.com/plugins/mvanhorn-last30days",
+  "published": "2026-02-16T09:31:56.000Z",
+  "text": "Researches what people say about any topic over the last 30 days across Reddit, X, YouTube, Hacker News, Polymarket and GitHub, then synthesizes a\n...\n```\n\n(`-g` installs globally for your user, available across all projects. Drop it to\n\n---"
+ },
+ {
+  "title": "Last30Days Skill \u2014 Deep Dive | Last30Days Skill \u2014 Deep Dive",
+  "url": "https://langcraft-flux.github.io/last30days-deep-dive/",
+  "published": "N/A",
+  "text": "the skill is actually building: a social-relevance search engine wrapped as an agent skill. \u2192 \ud83d\udcdc 2. SKILL.md as ... how it coordinates the host model. \u2192 \ud83d\udc0d 3. CLI Entry Point & Runtime ... and execution boundaries. \u2192 \ud83e\udde0 4. Query Planning & Topic Resolution\n\n---"
+ },
+ {
+  "title": "last30days Review: AI Agent That Searches Past Google \u2014 andrew.ooo",
+  "url": "https://andrew.ooo/posts/last30days-skill-ai-agent-social-research-review/",
+  "published": "2026-06-11T00:00:00.000Z",
+  "text": "| Reddit | The unfiltered take. Top comments with upvote counts, free via public JSON. The real\n...\nThe hot take, the expert thread, the breaking reaction. First to know, first to argue.\n...\n| Threads / Bluesky | The post-Twitter text layer. |\n|\n\n---"
+ },
+ {
+  "title": "N/A",
+  "url": "https://context7.com/mvanhorn/last30days-skill/llms.txt",
+  "published": "N/A",
+  "text": "-key>\nINCLUDE_SOURCES=tiktok,instagram\n# LAST30DAYS_ ... _KEYLESS_RATE=1  # keyless reddit.com req/sec; lower = fewer ... , slower runs\n# Xiaohongshu is requested-only: run\n...\nthen host.docker.internal.\n# XIAOHONGSHU_API_BASE=http://localhost:18060\n\n---"
+ },
+ {
+  "title": "/last30days Skill: AI Agent Search Across Social Signals | explainx.ai Blog | explainx.ai",
+  "url": "https://explainx.ai/blog/last30days-skill-ai-agent-search-reddit-x-youtube-polymarket-2026",
+  "published": "2026-06-05T00:00:00.000Z",
+  "text": "## Sources it can search\n\nThe README lists a broad source matrix. Some work with no setup; others need browser sessions, local tools, or API keys.\n\n| Source | What it contributes |\n| --- | --- |\n| Reddit | Threads and top comments with upvote counts |\n| X / Twitter | Expert threads, hot takes, breaking reactions |\n| YouTube | Long-form transcripts and creator commentary |\n| TikTok | Short-form creator signal and cultural relevance |\n| Instagram Reels | Influencer and visual culture signal |\n| Hacker News | Developer debate and technical consensus |\n| Polymarket | Prediction-market odds backed by real money |\n| GitHub | PR velocity, repos, issues, discussions, release notes |\n| Digg | Curated story clusters from Digg's AI 1000 leaderboard |\n| Threads | Post-Twitter creator and brand conversations |\n| Pinterest | Visual discovery for products and ideas |\n| Bluesky | AT Protocol posts and post-Twitter migration signal |\n| Perplexity | Grounded web search via Sonar Pro |\n| Web | Editorial coverage and blog comparisons |\n\n...\n\n###\n\n...\n\nClaude Code is the recommended path because marketplace plugin installs can auto-update.\n\n```text\n/plugin marketplace add mvanhorn/last30days-skill\n/plugin install last30days\n\n```\n\nThe README also supports the Agent Skills install path for Claude Code:\n\n```bash\nnpx skills add mvanhorn/last30days-skill -g -a claude-code\n\n...\n\nUse one install method per machine. The README notes that Claude Code does not dedupe across plugin and `npx skills` installs"
+ },
+ {
+  "title": "CHANGELOG.md",
+  "url": "https://github.com/mvanhorn/last30days-skill/blob/main/CHANGELOG.md",
+  "published": "N/A",
+  "text": "pp-cli 2026.10.1, which rebuilt search after Digg removed its search API.\n...\n- X search now works with no X credential at all. Install the Grok CLI (`curl ... and no `XAI_API_KEY` \u2014 on any host,\n\n---"
+ },
+ {
+  "title": "Last 30 Days: The Claude Code Skill That Makes Research Current",
+  "url": "https://www.ai.joaoqueiros.com/blog/last-30-days-claude-code-skill-real-time-research",
+  "published": "2026-06-27T17:39:02.000Z",
+  "text": "The repo says Reddit, Hacker News, Polymarket, and GitHub work immediately. X, YouTube, TikTok, Instagram Reels, and additional sources may need login, local tooling, APIs, or setup wizard steps depending on your environment.\n\n---"
+ },
+ {
+  "title": "README.md",
+  "url": "https://github.com/mvanhorn/last30days-skill/blob/main/README.md",
+  "published": "N/A",
+  "text": "Claude Code (recommended \u2014 auto-updates via marketplace):\n\n```\n/plugin marketplace add mvanhorn/last30days-skill\n/plugin install last30days\n\n```\n\nCodex, Cursor, Copilot, Gemini CLI, or any of 50+ Agent Skills hosts:\n\n```\nnpx skills add mvanhorn/last30days-skill -g\n\n```\n\n(`-g` installs globally for your user, available across all projects. Drop it to scope per-project.)\n\nMore install options (claude.ai web, OpenClaw, manual) in the Install section below.\n\n...\n\n## Sources, scored by the people\n\n| Source | What the people tell you |\n| --- | --- |\n| Reddit | The unfiltered take. Top comments with real upvote counts, free, no API key. The real opinions that Google buries. |\n| X / Twitter | The hot take, the expert thread, the breaking reaction. First to know, first to argue. |\n| YouTube | The 45-minute deep dive. Full transcripts searched for the 5 quotable sentences that matter. |\n| TikTok | The creator reaching 3.6M people with a take you'll never find on Google. |\n| Instagram Reels | The influencer perspective with spoken-word transcripts. The visual culture signal. |\n| Hacker News | The developer consensus. 825 points, 899 comments. Where technical people actually argue. |\n| Polymarket | Not opinions. Odds. Backed by real money. 96% confidence on album sales. 4% on an acquisition. |\n| GitHub | For people: PR velocity, top repos by stars, release notes. For topics: issues and discussions. |\n| Digg | Story clusters from Digg's AI and Tech sections, with attributable inline quote"
+ }
+]
