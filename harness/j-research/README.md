@@ -36,4 +36,8 @@ Core cases, mean score per case:
 
 Findings: without the skill, Sonnet answered "current" questions from memory in one turn and never searched; with the old description the skill rarely triggered, so most of its value was invisible; the directive description fixed triggering without false triggers. Costs: about $1.1 to $1.6 per 16-run core pass, $1 per trigger pass.
 
+### Lane brief re-check, jstack c94d800 (2026-11-08)
+
+`--case '*-lane'`, 2 runs each, Sonnet: multi-lane 1.00 (2/2), empty-lane 1.00 (2/2), $1.17 including judging. No regression from adding the lane brief. This does not show the brief helps: the earlier multi-lane 0.50 was a harness rejection, not a wrong answer, and the run traces were cleaned up before I could check whether the agent delegated lanes to subagents.
+
 Limits: 2 runs per case, one agent model, frozen mock web, graders partly judged by a model, cases written by the skill's author.
