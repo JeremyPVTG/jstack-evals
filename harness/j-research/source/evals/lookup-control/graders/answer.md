@@ -1,5 +1,5 @@
 ---
 type: llm
 ---
-PASS if the final answer says Node.js 24 (v24.11.0 or "24") is Active LTS, cites nodejs.org, and is at most about six lines.
-FAIL if it gives a different version, has no source, or is a multi-section report.
+PASS if the final answer says Node.js 26 (v26.2.0 or "26") is the Active LTS line and cites nodejs.org.
+FAIL if it gives a different version as Active LTS or has no source.
