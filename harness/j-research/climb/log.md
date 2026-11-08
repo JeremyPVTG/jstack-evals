@@ -19,3 +19,5 @@ Retry with 5 attempts per variant (round 5 rule): incumbent 4 graded (all 1.00),
 
 ## Freeze for test set 1, first look
 Owner chose (j-scope, 2026-11-08): test look, then ship. Frozen: jstack d93de69 (j-research skill + scripts/research_hook.py), hook via hooks/hooks.json (UserPromptSubmit, Jev jev-1.14.0, thresholds 0.70/0.30), harness jstack-evals as committed after this entry, run_eval.sh with tool search on, schema-hint exclusion rule (climb/rejections.py). Test set hash 25606b41ffda81fe. Look 1: 10 cases x 5 runs x Sonnet and Opus, candidate and tools-only.
+
+Format fix before any look (2026-11-08): the eval runner rejects `weight: 0` ("Number must be greater than 0"), so all 10 `critical.md` graders were changed to `weight: 0.001`, nothing else; no agent run had happened. The gate reads the critical grader directly, so the pass decision is unchanged. Re-sealed: content hash 44f944789e3fe439.
