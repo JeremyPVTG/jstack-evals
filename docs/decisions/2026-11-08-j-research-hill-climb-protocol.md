@@ -26,7 +26,9 @@ Owner asked to hill-climb j-research's eval scores to 0.95, agreed by a council 
 - One behavioural change per candidate; its hypothesis and targeted cases are written down before the run.
 - Screen: the targeted dev cases, 3 runs, both models, candidate and incumbent interleaved.
 - Confirm: the targeted cases with 5 runs, plus core with 3 runs as the regression check.
-- Keep a change only if the gain points the same way on both models and a paired bootstrap over cases puts it above 0 at 90%; core may not drop more than 0.03. Otherwise revert and record it.
+- Keep a change only if, on each model, the gain on the **named failing cases** is positive with a 90% lower bound above 0 (paired bootstrap: run differences within each named case, then cases resampled with equal weight), and the gain points the same way on both models. Other targeted cases and core are no-regression checks: no targeted case drops, and core does not drop more than 0.03. Otherwise revert and record it. *(Amended in council round 4: a bootstrap over mostly-ceiling control cases could never pass a clean single-case fix.)*
+- The named failing cases are frozen in the climb log before screening starts. A fix proven on named cases shows it works there, not that it generalises; the fresh test set decides that.
+- Ungraded runs (harness rejections) are left out of every average and do not trigger the core check. If more than a third of either variant's runs on a case are rejected, that comparison is inconclusive, and an inconclusive core comparison cannot clear the regression check: the harness is repaired and the case rerun for both variants first.
 
 ## Grader and fixture defects
 
@@ -37,6 +39,15 @@ Rule: the defect is shown from the spec (the skill text or reality), not from tr
 - `rivetdb-regional-failover`: rubric unchanged during the climb; after a candidate is frozen, GPT Sol (its author) may revise it from intent alone, without answers; both versions reported.
 - `purchase-approval-reuse`: not a grader defect. The skill says not to search the web for what a fresh vault page covers, so the web search is a skill failure. The no-web check is reported as its own efficiency line.
 - Harness rejections ("a result in the trace is not one the harness gave"): classified before exclusion. Only independently established infrastructure faults are retried (once); candidate-caused violations count as failures; if the retry also fails, that comparison is reported inconclusive.
+
+### Known harness fault: Claude Code's schema hint (council round 5, unanimous: option B)
+
+Tool search stays on in eval runs, as in the owner's real sessions. When an agent calls a deferred tool before loading its schema, the mock returns a tool error and Claude Code appends a schema hint; the harness then rejects the run. A rejection is classified as this fault only when a tool result in the trace equals the mock's recorded output exactly, followed by exactly Claude Code's hint (`climb/rejections.py`, `HINT_PREFIX`, frozen as seen on 2026-11-08). Such runs are excluded from averages, kept as raw traces, and counted against all attempts, per variant. Every other rejection follows the general rule above.
+
+- Exclusion rates are compared between variants: they may depend on variant behaviour, and a difference of more than one run in five is reported as a behaviour change, not noise. Similar counts are not claimed as equivalence.
+- A case where this fault blocks a comparison is rerun with 5 attempts per variant, then 10 in total if the round-4 threshold (more than a third rejected) is hit; if still inconclusive, the candidate is not promoted on that evidence.
+- `ENABLE_TOOL_SEARCH=false` (all tools upfront; verified to pass through the eval environment) is kept as a diagnostic only.
+- The fault is reported upstream to Claude Code.
 
 ## Budget and stops
 
