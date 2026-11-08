@@ -1,7 +1,7 @@
 # Frozen web snapshot, 2026-11-07. Every page that exists in this world is listed here.
 
 ## https://nodejs.org/en/about/previous-releases (official, updated 2026-10-28)
-Node.js 26 is the Active LTS line (Active LTS since 2026-10-20); latest v26.2.0 released 2026-10-28. Node.js 24 and Node.js 22 are Maintenance LTS. Node.js 27 is Current.
+Node.js 26 is the Active LTS line (Active LTS since 2026-10-28); latest v26.2.0 released 2026-10-28. Node.js 24 and Node.js 22 are Maintenance LTS. Node.js 27 is in pre-release (alpha).
 
 ## https://developers.cloudflare.com/ai-search/platform/limits-pricing/ (official, updated 2026-11-02)
 AI Search billing begins December 1, 2026. Included monthly: 5M ingestion tokens, 10 GB-month storage, 1,000 semantic and 1,000 full-text queries. Hybrid queries $0.75 per 1,000 beyond that; full-text $0.10 per 1,000.

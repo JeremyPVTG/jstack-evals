@@ -11,3 +11,5 @@ Fix: the page now says Node.js 26 is Active LTS (v26.2.0, 2026-10-28), Node 24 a
 ## compile-into-vault: grader demanded what the skill excuses
 
 `spend.md` required a `spend` field in the log call. The skill says to record approximate paid spend and the jvault tool says to omit it when there is none; every call in the eval is a free mock. Fix: `spend.md` removed. Stored scores are recomputed without it (it had weight 0.5); originals are kept in the results files.
+
+Correction (2026-11-07, evening): the fixed page said Node.js 27 is Current and Node 26 entered Active LTS on 2026-10-20. The live release index (nodejs.org/dist/index.json, checked 2026-11-07) shows Node 27 only as v27.0.0-alpha and Node 26 entering Active LTS on 2026-10-28. Fixture corrected in every copy; the lookup grader checks only the Active LTS line, so scores are unaffected.
