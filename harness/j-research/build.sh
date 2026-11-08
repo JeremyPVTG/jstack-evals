@@ -15,6 +15,7 @@ for variant in with-skill tools-only; do
   cp -R "$here/source/evals" "$out/evals"
   cp -R "$here/source/trigger-evals" "$out/trigger-evals"
   cp -R "$here/source/heldout-evals" "$out/heldout-evals"
+  [ -d "$here/source/heldout-cases" ] && cp -R "$here/source/heldout-cases" "$out/heldout-cases"
 done
 mkdir -p "$here/build/with-skill/skills"
 git -C "$repo" archive "$commit" skills/j-research | tar -x -C "$here/build/with-skill"

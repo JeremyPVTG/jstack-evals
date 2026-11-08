@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eval report — jstack v0.0.0</title>
+</head>
+<body>
+<style>
+:root{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{--plane:#0d0d0d;--surface:#1a1a19;--ink:#ffffff;--ink-2:#c3c2b7;--ink-3:#898781;--hairline:rgba(255,255,255,.10);--grid:#2c2c2a;--inset:rgba(255,255,255,.05);--accent:#3987e5;--base-fill:#898781;--delta-good:#0ca30c;--good:#0ca30c;--warning:#fab219;--critical:#e06c6c;color-scheme:dark}}
+:root[data-theme="dark"]{--plane:#0d0d0d;--surface:#1a1a19;--ink:#ffffff;--ink-2:#c3c2b7;--ink-3:#898781;--hairline:rgba(255,255,255,.10);--grid:#2c2c2a;--inset:rgba(255,255,255,.05);--accent:#3987e5;--base-fill:#898781;--delta-good:#0ca30c;--good:#0ca30c;--warning:#fab219;--critical:#e06c6c;color-scheme:dark}
+:root[data-theme="light"]{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:880px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+header h1{margin:2px 0 0;font-size:24px;font-weight:600;line-height:1.25;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:var(--ink-2);font-size:13px}
+.meta .num{font-variant-numeric:tabular-nums lining-nums}
+.banner{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;
+  border:1px solid var(--hairline);background:var(--surface);font-size:13px}
+.banner .chip-warn{color:var(--warning);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:14px 16px;
+  display:flex;flex-direction:column;gap:4px}
+.tile .label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.tile .value{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums lining-nums;line-height:1.1}
+.tile.hero .value{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:48px}
+.tile .sub{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.tile .value.delta-pos{color:var(--delta-good)}
+.tile .value.delta-neg{color:var(--critical)}
+.toolbar{display:flex;gap:8px;justify-content:flex-end}
+.toolbar button{font:12px system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--hairline);border-radius:6px;padding:4px 10px;cursor:pointer}
+.toolbar button:hover{color:var(--ink)}
+.toolbar button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.case{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px 20px;
+  display:flex;flex-direction:column;gap:10px}
+.case-regressed{border-left:3px solid var(--critical)}
+.verdict{margin:6px 0 0;font-size:15px}
+.verdict .delta{font-size:15px}
+.flag{font-size:11px;font-weight:600;color:var(--warning);white-space:nowrap}
+.star{color:var(--warning);font-size:.45em;vertical-align:super;line-height:0;cursor:help}
+.legend summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.legend-list{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink-2)}
+.case-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.case-head h2{margin:0;font-size:16px;font-weight:600}
+.case-head .spacer{flex:1}
+.case-score{font-size:15px;font-weight:600}
+.mono{font:12px "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.muted{color:var(--ink-3);font-size:12px}
+.meter{display:inline-block;position:relative;width:120px;height:6px;border-radius:4px;background:var(--grid);
+  vertical-align:middle}
+.meter>span{display:block;height:100%;border-radius:4px;max-width:100%}
+.meter .tick{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink-3);border-radius:1px}
+.m-accent>span{background:var(--accent)}
+.m-base>span{background:var(--base-fill)}
+.delta{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.delta-pos{color:var(--delta-good)}
+.delta-neg{color:var(--critical)}
+.delta-zero{color:var(--ink-3)}
+details.section{border-top:1px solid var(--grid);padding-top:10px}
+details.section>summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-2);list-style-position:outside;margin-left:2px}
+details.section>summary:hover{color:var(--ink)}
+details.section[open]>summary{margin-bottom:8px}
+.md{display:flex;flex-direction:column;gap:8px;background:var(--inset);border-radius:8px;
+  padding:12px 14px;overflow-wrap:break-word}
+.md>:first-child{margin-top:0}
+.md h1,.md h2,.md h3,.md h4,.md h5,.md h6{margin:4px 0 0;font-size:1em;font-weight:600;line-height:1.3}
+.md p,.md ul,.md ol,.md blockquote,.md table,.md pre,.md hr{margin:0}
+.md ul,.md ol{display:flex;flex-direction:column;gap:4px;padding-left:20px}
+.md blockquote{border-left:2px solid var(--hairline);padding-left:10px;color:var(--ink-2)}
+.md :not(pre)>code{background:var(--inset);padding:1px 4px;border-radius:4px;
+  font:.92em "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.md pre{background:var(--inset);border:1px solid var(--hairline);padding:10px 12px;border-radius:6px;
+  overflow-x:auto;font:12px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.md pre code{background:none;padding:0;font:inherit}
+.md table{width:100%;border-collapse:collapse}
+.md th,.md td{padding:5px 8px;text-align:left;vertical-align:top;border-bottom:1px solid var(--grid)}
+.md th{font-weight:600;color:var(--ink-2)}
+.md a{color:var(--accent);text-decoration:none}
+.md a:hover{text-decoration:underline}
+.grader-def{display:flex;flex-direction:column;gap:6px;padding:8px 0}
+.grader-def+.grader-def{border-top:1px solid var(--grid)}
+.grader-def-head{display:flex;align-items:baseline;gap:8px}
+.grader-name{font:13px "SF Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.badge{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);
+  border:1px solid var(--hairline);border-radius:999px;padding:1px 8px}
+.config{display:flex;flex-direction:column;gap:2px;background:var(--inset);border-radius:8px;padding:10px 14px}
+.config code{font:12px "SF Mono",ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+.arm{display:flex;flex-direction:column;gap:8px;padding:6px 0}
+.arm+.arm{border-top:1px dashed var(--grid);margin-top:4px;padding-top:12px}
+.arm-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.arm-label{font-size:13px;font-weight:600}
+.run{border:1px solid var(--grid);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.run-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.run-title{font-size:12px;font-weight:600;color:var(--ink-2)}
+.run-error .explanation{color:var(--ink-2)}
+.note{font-size:12px;color:var(--ink-2)}
+.graders{display:flex;flex-direction:column;gap:4px}
+details.grader{border-radius:6px}
+details.grader>summary{cursor:pointer;display:flex;align-items:baseline;gap:8px;padding:3px 4px;
+  border-radius:6px;list-style:none}
+details.grader>summary::-webkit-details-marker{display:none}
+details.grader>summary::before{content:'▸';font-size:10px;color:var(--ink-3);flex:none;
+  transition:transform .12s ease}
+details.grader[open]>summary::before{transform:rotate(90deg)}
+details.grader>summary:hover{background:var(--inset)}
+details.grader>summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.grader-body{padding:6px 8px 8px 24px;display:flex;flex-direction:column;gap:6px}
+.chip{font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.chip-pass{color:var(--good);border:1px solid currentColor}
+.chip-fail{color:var(--critical);border:1px solid currentColor}
+.chip.chip-warn{color:var(--warning);border:1px solid currentColor}
+.explanation{margin:0;font-size:13px;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:break-word}
+.kv{display:flex;gap:8px;font-size:12px;color:var(--ink-3)}
+.votes{font-variant-numeric:tabular-nums;letter-spacing:.1em}
+pre.evidence{margin:0;background:var(--inset);border:1px solid var(--hairline);border-radius:6px;
+  padding:8px 10px;overflow-x:auto;max-height:320px;
+  font:12px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:break-word}
+footer{color:var(--ink-3);font-size:12px;text-align:center;padding-top:8px}
+@media (prefers-reduced-motion:no-preference){
+  details.grader>summary,.toolbar button{transition:background .12s ease,color .12s ease}
+}
+@media (prefers-reduced-motion:reduce){
+  details.grader>summary::before{transition:none}
+}
+@media print{
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;color-scheme:light}
+  body{background:#fff}
+  .toolbar{display:none}
+  .case,.run,.grader-def{break-inside:avoid}
+  pre.evidence{max-height:none}
+}
+</style>
+<div class="wrap">
+<header>
+<div class="eyebrow">Plugin eval report</div>
+<h1>jstack v0.0.0</h1>
+
+<div class="meta">
+<span class="mono">.</span>
+<span>Claude Code v2.1.319</span>
+<span class="num">2026-11-08 02:06 UTC</span>
+<span class="num">3m 27s</span>
+<span class="num">$6.83</span>
+<span class="num">15 runs</span>
+<span class="num">4 in flight</span>
+
+<span>model opus</span>
+<span>judge default</span>
+<span class="num">threshold 0%</span>
+
+</div>
+</header>
+
+<section class="tiles">
+<div class="tile hero"><span class="label">Suite score</span><span class="value">60%</span><span class="sub">mean of per-case scores</span></div>
+
+<div class="tile"><span class="label">Cases</span><span class="value num">5</span><span class="sub">5 of 5 ≥ 0% threshold</span></div>
+<div class="tile"><span class="label">Perfect runs</span><span class="value num">40%</span><span class="sub">runs where every grader passed</span></div>
+</section>
+<details class="section legend">
+<summary>How to read this report</summary>
+<ul class="legend-list">
+<li>A run's score is the weighted fraction of its graders that passed; a "perfect" run passed every grader.</li>
+<li>A case's score is the mean of its runs; a case passes when its score is at or above the 0% threshold (the tick on each case bar).</li>
+<li>The suite score is the mean of the per-case scores.</li>
+<li>Judge votes are independent samples of the LLM judge; the majority decides pass or fail.</li>
+<li><strong>No baseline arm was run</strong> (ablation off) — this report shows absolute scores only and cannot say whether the plugin caused them. Re-run with <code>--ablation with-without</code> to measure the plugin’s effect.</li>
+
+</ul>
+</details>
+<div class="toolbar"><button type="button" data-act="expand">Expand all</button><button type="button" data-act="collapse">Collapse all</button></div>
+<article class="case" id="case-1">
+<div class="case-head">
+<h2>harborrelay-archived-guarantee</h2>
+<span class="muted mono">heldout-cases/harborrelay-archived-guarantee</span>
+<span class="spacer"></span>
+
+
+
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">100%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">Runs</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">19 turns · $0.67 · 02:06:56 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 13 calls · replay 0 hit / 5 live</summary></details>
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No. Keep your duplicate-event guard.** HarborRelay&apos;s official 4.2 documentation says otherwise than the launch article.
+
+**What the official 4.2 docs and changelog say (both published 2026-11-04):**
+- Forwarding between regions, including Frankfurt to Montreal, is **at least once**, not exactly once. You can get duplicates after a regional failover.
+- The built-in event-ID deduplication covers 24 hours and **one region only**. It doesn&apos;t carry across a region boundary, so it won&apos;t catch a Frankfurt event that shows up again in Montreal.
+- The docs say consumers of forwarded events &quot;must remain idempotent.&quot;
+- The 4.0 &quot;global receipts&quot; preview, which did give exactly-once delivery across regions for seven days, was **retired** in 4.2. Workspaces that were on the preview were moved to regional-only deduplication.
+
+**Why the launch article is wrong:** It was posted 2026-11-06 by DispatchStack, which sells HarborRelay deployment services. Its only source is the archived 4.0 preview page, and that page says it doesn&apos;t describe 4.2.
+
+Our research notes had the same problem. A note from 2026-09-30 said preview workspaces could skip the guard, and that&apos;s out of date now. I&apos;ve rewritten it for 4.2 and kept the old advice as history: `wiki/HarborRelay delivery.md`. I also saved the three sources and logged this research.
+
+For invoices, a duplicate can mean double-billing or double-posting, so keep deduplicating on the event ID in your own storage. If you rely on HarborRelay&apos;s deduplication anywhere, check that you&apos;re not counting on its 24-hour regional window to catch duplicates between regions.
+
+Sources checked: our saved research notes (one outdated 4.0 page), two web searches (both found the official docs, changelog and the DispatchStack post), and no developer forums.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 2</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">17 turns · $0.67 · 02:06:56 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 12 calls · replay 0 hit / 4 live</summary></details>
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No, keep your duplicate-event guard.** As of November 7, 2026, HarborRelay 4.2 does not deliver exactly once between Frankfurt and Montreal.
+
+**HarborRelay&apos;s own docs and changelog for 4.2 (both published 2026-11-04) say:**
+- Delivery between regions, including Frankfurt → Montreal, is **at least once**. You can get duplicates after a regional failover.
+- The built-in duplicate filter checks event IDs for 24 hours, but **only within one region**. It doesn&apos;t apply once an event crosses to the other region.
+- The docs say consumers of events forwarded between regions **must remain idempotent**, meaning they have to handle receiving the same event twice.
+- The 4.0 &quot;global receipts&quot; preview has been **retired**. Workspaces that used it were moved to the per-region filter.
+
+**Why the launch article is wrong:** The DispatchStack blog post (2026-11-06) says 4.2 has &quot;exactly-once delivery worldwide.&quot; Its only source is the archived **4.0 preview** page. That page says it was &quot;preview, not a GA contract&quot; and &quot;does not describe 4.2.&quot;
+
+**What to do:** Keep the guard on the Montreal consumer, and on Frankfurt too if events flow both ways. Keep event IDs in the guard for longer than any failover or replay window, not just 24 hours. For invoices, a duplicate could mean billing a customer twice.
+
+**One correction to our own notes:** the research vault said, as of 2026-09-30, that the guard could be dropped. That applied only to 4.0 preview workspaces, and the preview is now retired. I&apos;ve updated `wiki/HarborRelay delivery.md` with the 4.2 findings and recorded that the blog contradicts the docs. I also saved the three sources and updated the index and log. The vault check found 0 errors.
+
+Coverage: vault (the stale note above); docs and changelog via Exa (both 4.2 pages, the 4.0 archive and the blog); no paid spend. I skipped searching forums and social posts because the official 4.2 docs settle the question.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 3</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">17 turns · $0.58 · 02:06:56 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 11 calls · replay 0 hit / 4 live</summary></details>
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No, keep your duplicate-event guard.** As of November 7, 2026, HarborRelay 4.2 does not deliver exactly once between Frankfurt and Montreal.
+
+**What HarborRelay&apos;s own docs say** ([4.2 Delivery Guarantees](https://docs.harborrelay.example/4.2/delivery-guarantees) and the [4.2 changelog](https://harborrelay.example/changelog/4.2), both dated 2026-11-04):
+- Forwarding between regions, including Frankfurt to Montreal, is **at least once**. You can get duplicates after a regional failover.
+- HarborRelay&apos;s 24-hour deduplication by event ID only works **inside a single region**. It doesn&apos;t apply once an event crosses to another region.
+- The docs say directly that consumers of forwarded events &quot;must remain idempotent,&quot; meaning they must handle the same event arriving twice.
+
+**Why the launch article is wrong:** The article comes from DispatchStack (2026-11-06). Its only source is the archived page for the 4.0 *preview* feature, which is not a 4.2 page. That preview did share delivery receipts across regions for seven days. But 4.2 retired it, and workspaces that used it were moved to the per-region deduplication. DispatchStack also sells HarborRelay deployment services.
+
+**For invoices,** a duplicate can mean double-billing or a payment posted twice. Keep the guard keyed on the event ID, and make sure it holds those IDs for at least as long as a failover&apos;s duplicates could take to arrive.
+
+**Research notes updated:** The shared research notes already had a page on this. It was dated 2026-09-30 and suggested the guard could be dropped, but only for the 4.0 preview and never checked against 4.2. I rewrote it as `wiki/HarborRelay delivery.md` with the 4.2 findings. It keeps the old preview advice as history and notes that the DispatchStack article disagrees with the official docs. I saved both sources, added the page to the index and logged the run.
+
+Coverage: vault (one outdated page, now updated); docs via Exa (official 4.2 docs, changelog, archived 4.0 page, DispatchStack post); Tavily not used because the official docs settled it; social: `last30days` not run (not needed for one fact backed by official docs). Paid spend: negligible.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>We're moving invoice events between Frankfurt and Montreal on HarborRelay 4.2. A launch article says delivery is exactly once worldwide, so I was going to remove our duplicate-event guard. Is that safe as of November 7, 2026?</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">answer</span><span class="badge">llm</span></div>
+<div class="md"><p>PASS only if all of the following hold:</p>
+<ul>
+<li>The answer advises keeping the duplicate-event guard for the Frankfurt-to-Montreal route.</li>
+<li>It cites the official HarborRelay 4.2 delivery-guarantees page or 4.2 changelog dated 2026-11-04, and correctly scopes the claim to 4.2: cross-region forwarding is at least once; the 24-hour deduplication window applies inside one region and does not survive a region boundary.</li>
+<li>It resolves the source conflict: the 2026-11-06 launch article's worldwide exactly-once claim is not the supported guarantee, and the official 4.0 archive dated 2026-08-20 described a retired 7-day global-receipt preview, not the current release.</li>
+<li>It recognizes that the saved HarborRelay note reviewed 2026-09-30 with high volatility is expired as of 2026-11-07 and rechecks its preview-era claim before deciding.
+FAIL if any required point is absent; if it removes the guard based on the article, archive, or vault note; or if it turns regional deduplication into an end-to-end exactly-once guarantee. Judge substance, not labels or wording.</li>
+</ul>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">vault-first</span><span class="badge">regex</span></div>
+<div class="config"><div class="kv"><span>target</span><code>&quot;trace&quot;</code></div><div class="kv"><span>pattern</span><code>&quot;^(?:(?!\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_jvault__search\&quot;[\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\&quot;&quot;</code></div><div class="kv"><span>flags</span><code>&quot;&quot;</code></div><div class="kv"><span>match</span><code>&quot;contains&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-2">
+<div class="case-head">
+<h2>purchase-approval-reuse</h2>
+<span class="muted mono">heldout-cases/purchase-approval-reuse</span>
+<span class="spacer"></span>
+
+
+
+<span class="meter m-accent" aria-hidden="true"><span style="width:0.0%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">0%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">Runs</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:0.0%"></span></span>
+<span class="num">0%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:0.0%"></span></span>
+<span class="num">0%</span>
+<span class="muted num">1 turns · $0.17 · 02:06:56 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 0 calls</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">I&apos;d build a small Django app backed by PostgreSQL and run it with Docker Compose on your server. It&apos;s a few days to two weeks of work for one developer. Use Django&apos;s built-in local accounts instead of SSO.
+
+## Why Django
+
+- **Logins, permissions and an admin screen come built in.** With eight users, you can manage accounts, fix data and view the audit log in the admin without building any of those screens.
+- **Forms, CSRF protection, migrations and CSV export are standard library or framework features.** You won&apos;t need a separate frontend framework. Server-rendered pages, plus htmx if you want something a bit nicer, are enough.
+- **It&apos;s widely used and boring.** Whoever maintains it in three years will understand it.
+
+If your team already knows Rails or Laravel, use that instead. Any of the three works. Pick the one someone on your team already knows.
+
+## Data model (four tables)
+
+| Table | Key fields |
+|---|---|
+| `User` | Django&apos;s built-in user model, plus a role or &quot;can approve&quot; flag |
+| `PurchaseRequest` | requester, vendor, description, amount, currency, attachment (quote or invoice), status: `draft → pending_1 → pending_2 → approved → exported → paid`, or `rejected` / `cancelled` |
+| `Approval` | request, step (1 or 2), approver, decision, comment, timestamp, **amount at the time of the decision** |
+| `AuditEvent` | request, actor, action, before/after JSON, timestamp, IP. Rows are only ever added, never changed |
+
+## Rules to enforce on the server
+
+1. **Requesters can&apos;t approve their own requests**, and the two approvers must be different people.
+2. **Approvals happen in strict order.** Step 2 can only act once step 1 has approved. A rejection at either step ends the request.
+3. **Editing a request after submission clears all its approvals**, so the amount someone approved is the amount that gets paid. Storing the amount with each approval lets you prove this later.
+4. **Every status change and the audit entry for it are saved together, or not at all**, so you can&apos;t end up with one and not the other. Put all status changes in one service function instead of spreading them across views, and lock the request row while it&apos;s being updated so two people clicking at once can&apos;t both act on it.
+5. **Make the audit log hard to tamper with.** The app&apos;s database user should only be allowed to add rows to the audit table, never edit or delete them. This is a single `GRANT` statement and is worth doing.
+
+## CSV export
+
+- Export only **approved and not yet exported** requests. Each export creates a numbered batch and marks its requests `exported`, so nothing gets paid twice. After paying, someone marks the batch `paid`.
+- Include: request ID, vendor, amount, currency, both approvers&apos; names with dates, and the batch ID.
+- **Neutralise spreadsheet formulas.** If a field starts with `=`, `+`, `-` or `@`, prefix it with `&apos;`. Otherwise a vendor name could run as a formula when the file is opened in Excel.
+- Let people re-download past batches so the finance team can reconcile against them.
+
+## Deployment
+
+- **Docker Compose** with three containers: the app (Gunicorn), Postgres, and **Caddy** for HTTPS (automatic certificates, or your internal CA if the server isn&apos;t public). Keep it on the internal network or VPN if you can.
+- **Backups:** a nightly `pg_dump` plus the attachments folder, copied off the server. **Test a restore once.** This matters more than anything else on this list.
+- **Email notifications** through your existing SMTP server, e.g. &quot;you have a request to approve&quot; and &quot;your request was rejected&quot;. This is optional but makes the app much more useful.
+- **Security basics:** strong passwords, Django&apos;s login rate limiting (or `django-axes`), and two-factor login via `django-otp` if the app is reachable from outside your network.
+
+## Decide before building
+
+1. **How are the two approvers chosen?** Options are a fixed pair for everyone, a pair per requester or department, or picked from a list when the request is submitted. A fixed rule plus a backup when someone is on leave is usually simplest.
+2. **Do approvals depend on the amount?** For example, under a set limit only one approval is needed. Agree on this now even if the answer is &quot;no&quot;.
+3. **Is there a single currency**, and which fields does your bank&apos;s manual payment process actually need in the CSV?
+
+## Simpler alternative
+
+If you&apos;d rather not maintain code, a self-hosted no-code tool like Budibase or NocoDB can do forms and approvals. But enforcing strict ordering, blocking self-approval and keeping a tamper-resistant audit trail tends to be awkward in those tools. For a process that controls payments, I&apos;d still build the small Django app.
+
+Once the three decisions above are settled, I can scaffold the project with the models, the approval service, the CSV export and the Compose file.</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">pattern not found in trace</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 2</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:0.0%"></span></span>
+<span class="num">0%</span>
+<span class="muted num">1 turns · $0.11 · 02:07:26 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 0 calls</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">I&apos;d build this as a plain server-rendered web app on Django and PostgreSQL, deployed with Docker Compose behind Caddy. With eight users and no integrations, a framework that already includes login, an admin UI and database migrations saves most of the work.
+
+## Stack
+
+- **Django**: comes with authentication, password reset, permissions and an admin screen for managing users. You don&apos;t need a separate frontend framework. Server-rendered templates, plus a little htmx if you want it, are enough.
+- **PostgreSQL**: SQLite would handle the load, but Postgres makes the audit table easier to protect (see below) and backups are routine.
+- **Docker Compose** with three containers: app, db and Caddy. Caddy handles HTTPS automatically, or with an internal certificate if the server isn&apos;t reachable from the internet.
+- **SMTP** (optional): &quot;you have a request to approve&quot; emails, sent through your existing mail server.
+
+## Data model
+
+```
+User                (Django built-in; add role flags: requester / approver / finance)
+PurchaseRequest     id, requester, supplier, description, amount (Decimal), currency,
+                    cost_code, attachment(s), status, created_at
+ApprovalStep        request, order (1 or 2), approver, decision (pending/approved/rejected),
+                    comment, decided_at
+AuditEvent          request, actor, action, before (JSON), after (JSON), timestamp, ip
+ExportBatch         id, created_by, created_at, file_hash, requests[]
+```
+
+**Status flow:** `draft → submitted → approved_1 → approved → exported → paid`, and a request can move to `rejected` from any approval step. Put every transition in one service function that checks the transition is allowed and writes the `AuditEvent` in the same database transaction. Views should never change `status` directly.
+
+## Rules to enforce in code
+
+1. **Order is enforced.** Approver 2 can&apos;t act until approver 1 has approved. Approver 2 should see the request but have no approve button until then.
+2. **Separation of duties.** The requester can&apos;t approve their own request, and the two approvers must be different people. Check this on the server, not only in the UI.
+3. **Edits after submission reset approvals.** If a request is changed after submission, it goes back to draft and existing approvals are cleared. Otherwise someone could change the amount after approval.
+4. **Who approves.** With eight people, the simplest approach is a small configuration table. For example: approver 1 is the requester&apos;s manager, approver 2 is a named finance person. A threshold rule like &quot;over £X needs the director&quot; is easy to add later.
+
+## Audit trail
+
+- Make `AuditEvent` append-only. Revoke `UPDATE` and `DELETE` on that table for the app&apos;s database role. Then even a bug or a curious admin working through the app can&apos;t rewrite history.
+- Log the actor, the timestamp, the action, and the before and after values for every change. That covers creating, editing, submitting, approving, rejecting, exporting and marking as paid.
+- If you want tamper evidence, store a hash of the previous event with each new event. It&apos;s cheap to add, but optional at your size.
+- Show the audit trail as a timeline on each request page, so people actually use it.
+
+## CSV export
+
+- Finance clicks &quot;Export approved&quot;. This creates an `ExportBatch` containing every request that is `approved` and not yet exported, moves those requests to `exported`, and downloads the file. Because of the batch record, nothing gets paid twice or missed.
+- Store the file&apos;s hash with the batch so you can later prove what was exported.
+- After paying manually, finance marks the whole batch, or individual requests, as `paid`.
+- **Escape formula injection.** Prefix any cell that starts with `=`, `+`, `-` or `@` with a `&apos;`. Otherwise a supplier name could run as a formula when the file opens in Excel.
+- Write amounts as plain decimals with a separate currency column. Never store money as a float.
+
+## Operations
+
+- **Backups:** a nightly `pg_dump` plus the uploaded attachments, copied off the server. Test a restore once.
+- **Security:** sign-in is username and password. Add Django&apos;s TOTP two-factor login (`django-otp`) at least for approvers and finance, since they control money.
+- **Deployment:** `git pull &amp;&amp; docker compose up -d --build` is enough at this size.
+
+## Effort
+
+One developer who knows Django should need about **1–2 weeks** to reach a usable first version, plus a few days of testing it on real requests with staff. Build it in this order:
+
+1. Models and the state machine, with tests for every transition and every rule.
+2. Request form, approval screens and audit timeline.
+3. CSV export and batch tracking.
+4. Email notifications.
+5. Deployment and backups.
+
+Before building, it&apos;s worth an afternoon trying a self-hosted low-code tool like Budibase or Appsmith. If one of them can enforce the approval order and an append-only audit log cleanly, it could save the build. Usually the separation-of-duties checks and audit guarantees are easier to get right in your own code.
+
+I can scaffold the Django project with the models, the transition service and its tests if you&apos;d like a starting point.</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">pattern not found in trace</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 3</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:0.0%"></span></span>
+<span class="num">0%</span>
+<span class="muted num">1 turns · $0.15 · 02:07:54 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 0 calls</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">For eight people, I&apos;d build one small Django app on one server with one database. You don&apos;t need microservices, a separate frontend or a workflow engine.
+
+## Stack
+
+- **Django**, with pages rendered on the server. It already includes login, password reset, permissions, forms, CSRF protection and an admin screen. That covers most of what you need, so you&apos;d only write the approval workflow.
+- **Database: SQLite** is enough for 8 users. Use **Postgres** if you already run it or want standard backup tools. Either is fine.
+- **Deployment:** Docker Compose with the app (run by gunicorn) plus **Caddy** in front for HTTPS. Use an internal certificate or Let&apos;s Encrypt.
+- **Email:** optional. Send &quot;waiting for your approval&quot; emails through your existing SMTP relay. Skip it at first if people will check a dashboard.
+
+## Data model
+
+- **User**, from Django, with roles set through groups: `requester`, `approver`, `finance`.
+- **PurchaseRequest**: requester, payee, payee bank details or reference, amount, currency, description, attachment (quote or invoice), status.
+- **ApprovalStep**: request, step number (1 or 2), assigned approver, decision, comment, timestamp.
+- **AuditEvent**: records are only ever added, never edited or deleted. Each one stores who, what, when, the request, and a JSON snapshot of the relevant fields.
+- **ExportBatch**: who ran the export, when, which requests it included, and a hash of the file.
+
+## Workflow rules
+
+These are the rules that matter. Enforce them in the server code, not just by hiding buttons:
+
+1. Statuses: `draft → submitted → approved_1 → approved_2 → exported → paid`, plus `rejected` and `cancelled`.
+2. Step 2 can&apos;t happen before step 1.
+3. **Nobody approves their own request, and the two approvers must be different people.**
+4. **A request can&apos;t be edited once submitted.** If someone needs to change the amount or payee, the request goes back to draft and both approvals are cleared. That change is logged too.
+5. Each approval stores a snapshot of the amount and payee as they were at that moment. That way the audit trail shows exactly what each person approved.
+6. Each state change and its audit event are saved in a single database transaction, so a change can&apos;t be recorded without its log entry.
+
+## CSV export
+
+- Finance clicks &quot;Export approved.&quot; This builds an `ExportBatch` from all `approved_2` requests and marks them `exported` in the same transaction. **This prevents anyone paying the same request twice.**
+- Re-downloading an old batch is allowed and gets logged. A request can never land in a second batch.
+- After paying manually, finance marks the batch or individual requests as `paid`, with the payment date.
+- Columns: request ID, payee, bank reference, amount, currency, description, requester, approver 1 + date, approver 2 + date.
+- **Guard against CSV formula injection.** Text that starts with `= + - @` should be prefixed with `&apos;`, because people will open the file in Excel.
+
+## Running it
+
+- Nightly backup of the database and uploaded files to another machine. Test a restore once.
+- Accounts are created by an admin only, with no self-signup. Turn on Django&apos;s password validators. Add two-factor login (e.g. `django-otp`) if the server can be reached from outside your office network.
+- Make the audit table append-only in the code and leave it out of the admin screen&apos;s edit and delete actions. On Postgres, you can also remove UPDATE/DELETE rights on that table from the app&apos;s database user.
+
+## Effort
+
+One developer who knows Django could build this in about **1–2 weeks**, including tests for the approval rules. Write tests for these specifically: approving your own request, wrong order, editing after submission, and exporting the same request twice.
+
+## One thing to decide first
+
+**Who are the two approvers for a given request?** Common options:
+- fixed per requester (e.g. their manager, then finance)
+- based on amount
+- chosen by the requester from a list
+
+A fixed setup per requester is the simplest, and you can change it later in the admin screen.
+
+If you&apos;d like, I can scaffold the project here: models, the workflow and its tests, the CSV export, and the Docker Compose setup.</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">pattern not found in trace</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>How would you build a small internal purchase-approval app for us? Eight staff, each request approved by two people in order, an audit trail, and a CSV export before we pay manually. It must run on our own server. We don't need bank integration or SSO. Keep the recommendation practical.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">answer</span><span class="badge">llm</span></div>
+<div class="md"><p>PASS only if all of the following hold:</p>
+<ul>
+<li>The answer uses the saved wiki/Small-team purchase approvals.md note (reviewed 2026-10-23, medium volatility) as current evidence and recommends adopting LatchDesk Community 6.1 for these requirements instead of starting a custom app.</li>
+<li>It identifies the relevant built-in capabilities: self-hosting, two sequential approvers, an append-only approval history, and CSV export. The eight-person team fits the 12-member cap.</li>
+<li>It includes the consequential boundaries: 500 open requests, no parallel or conditional approval branches, and no payment execution. It does not claim native SSO or bank integration.</li>
+<li>It gives a practical adoption step, such as deploy the documented container, configure the two approvers, and try a sample request/export; it does not substitute a custom-app architecture for the recommendation.
+FAIL if it ignores the existing tool, treats the fresh note as expired, omits the member cap or workflow limits, invents features, or makes bespoke implementation the main recommendation. Citation by vault path or its captured primary source is acceptable; no mandated answer format.</li>
+</ul>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">vault-first</span><span class="badge">regex</span></div>
+<div class="config"><div class="kv"><span>target</span><code>&quot;trace&quot;</code></div><div class="kv"><span>pattern</span><code>&quot;^(?![\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_jvault__search\&quot;[\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_jvault__read\&quot;&quot;</code></div><div class="kv"><span>flags</span><code>&quot;&quot;</code></div><div class="kv"><span>match</span><code>&quot;contains&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-3">
+<div class="case-head">
+<h2>quillstore-recovery-rumor</h2>
+<span class="muted mono">heldout-cases/quillstore-recovery-rumor</span>
+<span class="spacer"></span>
+
+
+
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">Runs</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">33.3% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">9 turns · $0.56 · 02:08:05 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 4 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No. Keep the nightly snapshot job.** The 72-hour recovery claim isn&apos;t backed by anything official, and the 2.7 docs say the opposite.
+
+**What the official sources say:**
+- **Quillstore 2.7 &quot;Deletion and restore&quot; docs** (published 2026-11-03, https://docs.quillstore.example/2.7/deletion-and-restore): compact-on-delete removes the collection from the query index immediately. The only supported way to restore it is from a snapshot you keep yourself, and a restore only brings back data up to your last successful snapshot. The page gives no support recovery window, no hidden retention period and no support recovery SLA.
+- **2.7 changelog** (2026-11-01): tells operators to test their snapshot restore before turning the option on. It announces no new recovery or retention guarantee.
+
+**The forum post** (2026-11-05, community thread #914): one user says support recovered their collection two days after a delete, and guesses that copies are kept for 72 hours. Nobody from Quillstore replied. The post doesn&apos;t explain how the recovery was done or link any policy. So &quot;72 hours&quot; is that user&apos;s guess from one case, not a stated policy. Support may have helped once on a best-effort basis, but you can&apos;t plan around that.
+
+**What it means for you:**
+- Once compact-on-delete is on, your snapshots are the only recovery path you can count on. If anything, they matter more now.
+- Before enabling it, do a test restore from a recent snapshot. The changelog asks for this too.
+- Check whether nightly is often enough. Anything written after the last snapshot is lost on restore, so you could lose up to about a day of writes.
+- If you want a support recovery window, ask Quillstore support for it in writing, as a contract term or SLA. Until then, assume there isn&apos;t one.
+
+I didn&apos;t add this to the research vault. It&apos;s labelled &quot;Frozen&quot; and has no Quillstore page, so I treated it as read-only.
+
+Coverage: vault had nothing on Quillstore. Docs lane used Exa and Tavily, which both found the 2.7 docs page, the changelog and the forum thread. The social lane was only that thread; I didn&apos;t run last30days. No paid spend beyond the standard search calls.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 2</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">15 turns · $0.59 · 02:08:06 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 9 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No. Keep the nightly snapshot job.** Quillstore&apos;s own docs don&apos;t back up the forum claim, and compact-on-delete makes snapshots more important.
+
+**What the official sources say:**
+- **2.7 Deletion and Restore docs (2026-11-03):** compact-on-delete removes the collection from the query index immediately. The only supported way to restore is a snapshot you keep yourself, and a restore only brings back data up to the last successful snapshot. The page states no support recovery window, no hidden retention period and no recovery SLA.
+- **2.7 changelog (2026-11-01):** tells operators to test their snapshot restore before turning the option on. It announces no new recovery or retention guarantee.
+
+**What the forum post shows:** one user says support recovered a collection two days after they deleted it. The 72-hour window is that user&apos;s guess. At most it&apos;s a one-off favour, not something you can plan around. Even if it were true, it wouldn&apos;t cover deletes you only notice after 72 hours, and it wouldn&apos;t give you a way to restore on your own schedule.
+
+**Recommendations:**
+1. Keep the nightly snapshots. Before enabling compact-on-delete, run a test restore, as the changelog says.
+2. A restore loses every write made after the last snapshot. If losing up to a day of writes is too much, snapshot more often.
+3. If you want to count support recovery as part of your plan, get it in writing from Quillstore as a contract or SLA term.
+
+I saved this to the research vault as `wiki/Quillstore deletion recovery.md`, with the docs page and the forum post captured under `raw/`. The forum claim is recorded there as unconfirmed. I also added the page to the index and the log, and the vault check passed with no errors.
+
+Coverage: the vault had nothing on Quillstore. Exa found the 2.7 docs, the changelog and the forum thread. I didn&apos;t run Tavily, Firecrawl or last30days because the official docs answered the question.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 3</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">6 turns · $0.46 · 02:08:15 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 2 calls · replay 0 hit / 2 live</summary></details>
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No. Keep the nightly snapshot job, and check that you can actually restore from it before you turn on compact-on-delete.**
+
+What the sources say:
+
+- **The official docs** ([Quillstore 2.7 Deletion and Restore](https://docs.quillstore.example/2.7/deletion-and-restore), published 2026-11-03): compact-on-delete removes the collection from the query index immediately. The only supported way to restore is from a snapshot you keep yourself. The docs give **no support recovery window, no hidden retention period and no recovery SLA**.
+- **The 2.7 changelog** (2026-11-01) tells operators to test their snapshot restore procedure *before* turning the option on. It announces no new recovery or retention guarantee.
+- **The forum claim** ([community thread](https://community.quillstore.example/t/72-hour-undelete/914), 2026-11-05) comes from one user whose collection support recovered two days after deletion. The &quot;72 hours&quot; figure is that user&apos;s guess (&quot;they must keep hidden copies&quot;). It isn&apos;t a stated policy. One case where support helped doesn&apos;t commit them to doing it again.
+
+Two more points:
+
+- **Restores only go as far as your last successful snapshot.** Any writes after it are lost. If losing up to a day of data is too much, you may want snapshots more often, not fewer.
+- **If the 72-hour recovery matters to you, get it in writing from Quillstore**, either in your support contract or a written policy statement. Even then, I&apos;d keep your own snapshots, because support recovery is outside your control and comes with no guarantee on timing.
+
+Coverage: I checked the research vault (nothing on Quillstore) and ran a web search through Exa (docs, changelog and the forum thread). I didn&apos;t run a separate social or practitioner search. I haven&apos;t saved these findings to the vault yet.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>We're about to enable Quillstore 2.7's compact-on-delete option. Someone on a forum says support can recover deleted collections for 72 hours even without our own snapshot. Can we rely on that and drop the nightly snapshot job?</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">answer</span><span class="badge">llm</span></div>
+<div class="md"><p>PASS only if all of the following hold:</p>
+<ul>
+<li>The answer identifies the 72-hour recovery assertion as an unconfirmed forum anecdote from user maple_packet, not an official recovery promise or a proven falsehood.</li>
+<li>It uses the official 2.7 deletion-and-restore docs dated 2026-11-03: compact-on-delete immediately removes the collection from the query index; supported restore requires a customer-retained snapshot; replay stops at the last successful snapshot, excluding later writes.</li>
+<li>It plainly says no official post-delete recovery window or support recovery SLA could be found in the available sources. An absent promise is not proof that every recovery is impossible.</li>
+<li>It recommends keeping snapshots (or another documented recovery mechanism) and makes clear that this is advice inferred from the documented restore path, not a quoted vendor guarantee.
+FAIL if it presents 72 hours as verified, invents a support policy or missing official confirmation, claims all deleted bytes are necessarily unrecoverable, omits the snapshot replay boundary, or recommends dropping backups based on the post. No particular heading or phrase is required.</li>
+</ul>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">vault-first</span><span class="badge">regex</span></div>
+<div class="config"><div class="kv"><span>target</span><code>&quot;trace&quot;</code></div><div class="kv"><span>pattern</span><code>&quot;^(?:(?!\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_jvault__search\&quot;[\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\&quot;&quot;</code></div><div class="kv"><span>flags</span><code>&quot;&quot;</code></div><div class="kv"><span>match</span><code>&quot;contains&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-4">
+<div class="case-head">
+<h2>rivetdb-regional-failover</h2>
+<span class="muted mono">heldout-cases/rivetdb-regional-failover</span>
+<span class="spacer"></span>
+
+
+
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">50%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">Runs</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">17 turns · $0.58 · 02:08:20 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 11 calls · replay 0 hit / 4 live</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">## Recommendation: don&apos;t make either promise on RivetDB 7.3 with this topology
+
+**1. Zero acknowledged orders lost if the whole region is lost: you can&apos;t promise this.**
+- In RivetDB 7.3, a write is acknowledged once 2 of 3 replicas **inside the primary region** have it. The cross-region replica receives the log **asynchronously**. ([7.3 replication docs](https://docs.rivetdb.example/7.3/replication), 2026-11-02)
+- 7.3 **removed** the synchronous cross-region mode that 7.0 had. Our earlier zero-loss expectation was based on 7.0&apos;s sync mode, so it no longer holds.
+- If the primary region is lost, any orders acknowledged but not yet copied to the other region are gone. `remote_apply_lag_ms` only shows the lag observed so far. It is not an upper limit, and the vendor doesn&apos;t treat it as a recovery point guarantee. The vendor documents no zero-loss guarantee for losing the whole region.
+
+**2. Service back within 20 seconds at p99: there&apos;s no evidence for this.**
+- The only 7.3 numbers are six **planned** switchovers with **both regions healthy**, taking 8–14 s. The vendor says plainly that it did not test losing a whole region, that six runs can&apos;t give a p99, and that the results are not an SLA. ([switchover notes](https://engineering.rivetdb.example/7.3/planned-switchover-notes), 2026-11-04)
+- An unplanned region loss also includes detecting the failure, deciding to fail over (by a person or automatically, and with only two regions it&apos;s unclear what breaks a tie), promoting the replica, and repointing clients. None of that has been measured.
+- A blog post saying &quot;under 20 seconds for everyone&quot; (launchledger.example, 2026-11-06) misreads the vendor&apos;s lab results. Don&apos;t cite it.
+
+### What you can say at launch review
+- **What you can commit to:** acknowledged orders survive losing a single node or availability zone (the 2-of-3 quorum in the region). Losing a whole region is a disaster-recovery event: some recent acknowledged orders may be lost, and recovery time is a best-effort target, not a guarantee.
+- **If the business really needs zero loss and 20 s p99 for region loss**, you&apos;d need something new:
+  - A database or deployment mode that commits writes synchronously across regions. That usually means three regions or a tiebreaker witness, plus extra write latency. RivetDB 7.3 doesn&apos;t offer this.
+  - Or an application-level safeguard, such as writing each order durably to a second region before confirming it to the customer.
+- **Before quoting any recovery time**, run repeated region-loss drills (kill the primary region, don&apos;t do a planned switchover). Measure from failure to the first successful write, and get enough runs to report a p99. Also record the replication lag at the moment of failure to estimate how many orders you&apos;d actually lose.
+
+The vault page &quot;RivetDB recovery&quot; is updated with the 7.3 facts. The 7.0 notes are kept as history, and the conflicting blog claim is recorded on the page.
+
+Coverage: vault had a page on 7.0 that was past its review date and is now updated; docs and vendor sources came from Exa (the 7.3 docs, vendor switchover notes, one third-party post); I didn&apos;t run the social-media search or a second search provider, because the primary docs settled it; no paid spend.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 2</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">8 turns · $0.49 · 02:08:53 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 4 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No, you can&apos;t promise either one on RivetDB 7.3 as you&apos;ve described it.** Here&apos;s a recommendation you can take to the launch review.
+
+### Why not
+
+**Zero lost orders when a region goes down: not supported.**
+- In 7.3, a write is acknowledged once 2 of the 3 replicas *inside the primary region* have it. The cross-region replica gets the log afterwards (asynchronously). If the whole primary region is lost, any orders not yet copied to the replica are gone.
+- The `remote_apply_lag_ms` metric shows the lag RivetDB has observed. The docs say it is not a maximum and not a guaranteed recovery point.
+- The synchronous cross-region mode from 7.0 **was removed in 7.3**.
+- Source: [RivetDB 7.3 Replication docs](https://docs.rivetdb.example/7.3/replication), published 2026-11-02.
+
+**Service back within 20 s at p99: no evidence.**
+- RivetDB&apos;s own lab ran six *planned* switchovers between two healthy regions, each taking 8–14 s. They did not test losing a whole region. They say themselves that six runs are not a p99 and don&apos;t support a recovery-time SLA ([engineering notes](https://engineering.rivetdb.example/7.3/planned-switchover-notes), 2026-11-04).
+- RivetDB publishes no guaranteed recovery time for losing a region.
+- The &quot;back in under 20 seconds&quot; claim in a [third-party article](https://launchledger.example/rivetdb-73-instant-recovery) just extrapolates from those six planned runs. It isn&apos;t evidence.
+
+**Our own vault notes are out of date.** The page &quot;RivetDB recovery&quot; covers 7.0: one healthy-region switchover took 12 s, and we *tentatively* expected zero loss using sync mode. Both conclusions depended on that sync mode, which 7.3 no longer has. Don&apos;t cite the page for 7.3.
+
+### What to bring to the review
+
+1. **Customer wording:** &quot;Acknowledged orders are stored durably on several machines within the primary region. If the whole region is lost, recent orders may be lost and recovery time is best-effort.&quot; Leave out &quot;zero&quot; and &quot;20 s&quot; unless you get one of the things below.
+2. **If zero loss is a hard requirement**, pick one:
+   - Make the application wait for the cross-region replica to apply the order before confirming it to the customer (for example, wait until the replica has reached that write&apos;s position in the log). This costs extra latency on every order.
+   - Ask RivetDB whether a synchronous cross-region option is on the roadmap.
+   - Use a database or setup that confirms a write only after more than one region has it, with at least three regions for the vote.
+3. **Before quoting any recovery time**, run your own failure drills that fully cut off the primary region (not planned switchovers) on your real workload. Do enough runs to support a p99, and include the time it takes to *detect* the failure and *repoint clients*, not just the database promotion. Until then, quote a number you have measured, with a margin.
+4. **Ask RivetDB for written terms** if you want either promise backed by their SLA.
+
+I didn&apos;t update the vault because the guide says it&apos;s frozen. If it can be written to, the RivetDB page should be marked as replaced by the 7.3 findings above.
+
+**Coverage:** docs and vendor engineering notes from Exa and Tavily, which returned the same three sources; vault: one out-of-date 7.0 page. Not covered: the social lane (`last30days` isn&apos;t installed), GitHub issues/Firecrawl, and any experiment of our own.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 3</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">8 turns · $0.56 · 02:08:58 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 4 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">**No. Don&apos;t make either promise at launch.** RivetDB 7.3 can&apos;t guarantee zero lost acknowledged orders when a whole region goes down, and there&apos;s no evidence it recovers within 20 seconds at p99.
+
+### Why
+
+**Zero lost acknowledged orders: not supported in 7.3.** Source: [7.3 replication docs](https://docs.rivetdb.example/7.3/replication), published 2026-11-02.
+- A write is acknowledged once 2 of the 3 replicas *inside the primary region* have it. Nothing outside that region has to confirm it first.
+- The cross-region replica receives writes **asynchronously**. `remote_apply_lag_ms` shows the lag observed so far. It is not a limit on how far behind the replica can fall.
+- **The synchronous cross-region mode from 7.0 was removed in 7.3.** Our vault note expecting zero loss was written for 7.0 and no longer applies.
+- The docs say outright that 7.3 makes no zero-loss guarantee if the whole primary region is lost.
+
+So if the primary region fails, orders that were acknowledged but hadn&apos;t yet reached the replica are lost. With one primary region and one async replica, that window can&apos;t be closed.
+
+**20-second p99 recovery: no evidence.** Source: [7.3 switchover notes](https://engineering.rivetdb.example/7.3/planned-switchover-notes), 2026-11-04.
+- The only 7.3 data is six *planned* switchovers between two *healthy* regions, which took 8 to 14 seconds.
+- RivetDB says these weren&apos;t region-loss tests, aren&apos;t a p99 measurement and don&apos;t support a recovery-time SLA. Six samples can&apos;t give you a p99 anyway.
+- A real region loss adds failure detection, a promotion decision and client reconnection. None of that was measured.
+- The [launchledger.example article](https://launchledger.example/rivetdb-73-instant-recovery) claiming &quot;back in under 20 seconds&quot; is a blog post repeating the planned-switchover numbers. It has no test behind it, so don&apos;t cite it in the review.
+
+### What you can promise
+1. **On data loss:** acknowledged orders survive the loss of a node or zone inside the primary region, because of the 2-of-3 in-region quorum. If the whole region is lost, recent orders may be lost. Size that window from the `remote_apply_lag_ms` values you see in production and state it as an observed range, not a guarantee.
+2. **On recovery time:** only give a number after you&apos;ve run your own region-loss drills. That means hard-killing the primary region, not doing a planned switchover, many times under production-like load, and measuring until clients are writing again. A p99 needs dozens of runs, not six. Until then, give a recovery target, not a promise.
+3. **If zero loss on region failure is a hard requirement,** you have to build it yourself:
+   - Option A: before acknowledging an order to the customer, write it durably somewhere outside the region (for example an outbox or event log in a second region) and replay it after failover.
+   - Option B: pick a database or setup that waits for the other region to confirm before acknowledging.
+
+   Both add latency to every write.
+
+### Vault
+The vault page `wiki/RivetDB recovery.md` is out of date: it covers 7.0, was last reviewed 2026-07-31 and still expects zero loss. I didn&apos;t update it because the vault is marked frozen as of 2026-11-07. When it&apos;s writable, the page should be replaced with the 7.3 findings above.
+
+Coverage: vault (one out-of-date 7.0 page); Exa and Tavily both found the same three sources (official docs, RivetDB engineering notes, one blog post); GitHub issues and forums not searched; no paid spend.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>For our order ledger on RivetDB 7.3, can I promise customers that losing a whole region loses zero acknowledged orders and restores service within 20 seconds at p99? We have one primary region and its cross-region replica. Give me a recommendation I can use in the launch review.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">answer</span><span class="badge">llm</span></div>
+<div class="md"><p>PASS only if all of the following hold:</p>
+<ul>
+<li>The answer rechecks the saved RivetDB recovery note, reviewed 2026-07-31 with medium volatility, rather than relying on its obsolete 7.0 synchronous-replica/12-second test claim. As of 2026-11-07 it is past the 90-day window.</li>
+<li>Citing official 7.3 replication docs dated 2026-11-02, it states that acknowledgement waits for two of three replicas inside the primary region, while cross-region replication is asynchronous. The exposed remote_apply_lag_ms metric is an observation, not a maximum-lag guarantee.</li>
+<li>It explicitly frames possible loss of acknowledged orders on total primary-region loss as an inference from asynchronous cross-region replication, distinguishing it from the documented regional quorum fact. It recommends withholding the proposed zero-loss promise for this topology.</li>
+<li>It plainly reports that a 7.3 p99 failover measurement or a contractual &lt;=20-second recovery guarantee could not be found. The published 8-14-second figure is from six planned switchovers with healthy regions, not a p99 result or a region-loss test. It recommends validation or an explicit vendor guarantee before making the timing promise.
+FAIL if it promises zero loss or &lt;=20-second p99, treats observed lag or six planned tests as a bound, repeats the old note as current, invents a percentile or contract, or fails to distinguish sourced behavior, inference, and missing evidence. Accept any clear organization, not specific headings.</li>
+</ul>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">vault-first</span><span class="badge">regex</span></div>
+<div class="config"><div class="kv"><span>target</span><code>&quot;trace&quot;</code></div><div class="kv"><span>pattern</span><code>&quot;^(?:(?!\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_jvault__search\&quot;[\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\&quot;&quot;</code></div><div class="kv"><span>flags</span><code>&quot;&quot;</code></div><div class="kv"><span>match</span><code>&quot;contains&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-5">
+<div class="case-head">
+<h2>sparrowhook-single-limit</h2>
+<span class="muted mono">heldout-cases/sparrowhook-single-limit</span>
+<span class="spacer"></span>
+
+
+
+<span class="meter m-accent" aria-hidden="true"><span style="width:83.3%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">83.3%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">Runs</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:83.3%"></span></span>
+<span class="num">83.3%</span>
+<span class="muted num">66.7% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:50.0%"></span></span>
+<span class="num">50%</span>
+<span class="muted num">8 turns · $0.54 · 02:09:10 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 4 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">SparrowHook 4.8 allows **37 active webhook endpoints per workspace**, on every plan.
+
+- The limit covers the whole workspace. It isn&apos;t counted per project or per API key.
+- Archived endpoints don&apos;t count toward it. A workspace can keep up to 200 archived endpoint records.
+
+**Source:** SparrowHook 4.8 docs, &quot;Workspace limits&quot;, published 2026-11-05: https://docs.sparrowhook.example/4.8/workspace-limits
+
+Coverage: the research vault had nothing on SparrowHook. I searched the web with Exa and Tavily, and both returned that same official docs page. I didn&apos;t run the social-media lane, since this is a single documented fact. I also didn&apos;t add a vault page, because it was a one-off lookup.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 2</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">8 turns · $0.36 · 02:09:36 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 4 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">The limit is **37 active webhook endpoints per workspace** in SparrowHook 4.8, on every plan.
+
+- It covers the whole workspace. It isn&apos;t counted per project or per API key.
+- Archived endpoints don&apos;t count toward the 37. A workspace can also keep up to 200 archived endpoint records.
+
+**Source:** [SparrowHook 4.8 Workspace Limits](https://docs.sparrowhook.example/4.8/workspace-limits), the official docs, updated 2026-11-05.
+
+I checked the research vault first and it had nothing on SparrowHook. I didn&apos;t add a page for this single fact.
+
+Coverage: vault had nothing; Exa and Tavily both returned the same official docs page; no social search was needed.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 3</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">8 turns · $0.35 · 02:09:43 UTC</span>
+</div>
+<details class="mocks"><summary>Mocked: exa — web_fetch_exa=agent, web_search_exa=agent; firecrawl — firecrawl_scrape=agent, firecrawl_search=agent; jvault — append_log=fixed, capture_source=fixed, guide=fixed, lint=fixed, list=fixed, read=agent, search=agent, write_page=fixed; tavily — tavily_extract=agent, tavily_search=agent · 4 calls · replay 0 hit / 3 live</summary></details>
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">answer</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">The limit is **37 active webhook endpoints per workspace**, and it&apos;s the same on every plan.
+
+**Source:** SparrowHook 4.8 official docs, &quot;Workspace limits&quot;, updated 2026-11-05: https://docs.sparrowhook.example/4.8/workspace-limits
+
+- The limit covers the whole workspace. It isn&apos;t counted per project or per API key.
+- Archived endpoints don&apos;t count toward it. A workspace can keep up to 200 archived endpoint records.
+
+Coverage: the research vault had nothing on SparrowHook. Exa and Tavily both returned the same official 4.8 docs page. This was a single-fact lookup, so I didn&apos;t add anything to the vault.</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">vault-first</span>  </summary>
+<div class="grader-body">
+<p class="explanation">matched ^(?:(?!&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\s\S])*&quot;name&quot;:&quot;mcp__plugin_jstack_jvault__search&quot;[\s\S]*&quot;name&quot;:&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)&quot;</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>Quick lookup: what's the maximum number of active webhook endpoints in one SparrowHook 4.8 workspace? Just the limit and a source, please.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">answer</span><span class="badge">llm</span></div>
+<div class="md"><p>PASS if the answer states 37 active webhook endpoints per workspace for SparrowHook 4.8 and cites <a href="https://docs.sparrowhook.example/4.8/workspace-limits" rel="noopener">https://docs.sparrowhook.example/4.8/workspace-limits</a> (official, updated 2026-11-05). The user-facing answer should be brief, no more than 100 words, without a comparison, implementation plan, or unrelated investigation. It should draw the answer from this one authoritative page, without seeking or citing corroborating secondary sources for this simple lookup. Vault housekeeping is not a second factual source and is not penalized.
+FAIL if the value or scope is wrong, it confuses the separate 200 archived-endpoint limit with active endpoints, it invents plan-dependent exceptions, it lacks the official source, it conducts an extended multi-provider investigation for corroboration, or it exceeds the requested scope. No particular wording is required.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">vault-first</span><span class="badge">regex</span></div>
+<div class="config"><div class="kv"><span>target</span><code>&quot;trace&quot;</code></div><div class="kv"><span>pattern</span><code>&quot;^(?:(?!\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa|tavily|firecrawl)__)[\\s\\S])*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_jvault__search\&quot;[\\s\\S]*\&quot;name\&quot;:\&quot;mcp__plugin_jstack_(?:exa__web_search_exa|tavily__tavily_search|firecrawl__firecrawl_search)\&quot;&quot;</code></div><div class="kv"><span>flags</span><code>&quot;&quot;</code></div><div class="kv"><span>match</span><code>&quot;contains&quot;</code></div></div>
+</div>
+</details>
+</article>
+<footer>Generated by <code>claude plugin eval</code> · schema v1 · scores are not comparable across different suites</footer>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var bar=document.querySelector('.toolbar');
+  if(!bar)return;
+  bar.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest('button');
+    if(!b)return;
+    var open=b.dataset.act==='expand';
+    document.querySelectorAll('details.section, details.grader').forEach(function(d){d.open=open});
+  });
+});
+// Collapsed details vanish from print/PDF; these pages are share artifacts.
+window.addEventListener('beforeprint',function(){
+  document.querySelectorAll('details').forEach(function(d){
+    if(!d.open){d.dataset.printOpened='1';d.open=true}
+  });
+});
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('details[data-print-opened]').forEach(function(d){
+    d.open=false;delete d.dataset.printOpened;
+  });
+});
+</script>
+</body>
+</html>

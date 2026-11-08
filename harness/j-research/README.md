@@ -40,4 +40,26 @@ Findings: without the skill, Sonnet answered "current" questions from memory in 
 
 `--case '*-lane'`, 2 runs each, Sonnet: multi-lane 1.00 (2/2), empty-lane 1.00 (2/2), $1.17 including judging. No regression from adding the lane brief. This does not show the brief helps: the earlier multi-lane 0.50 was a harness rejection, not a wrong answer, and the run traces were cleaned up before I could check whether the agent delegated lanes to subagents.
 
+## Readiness pass, jstack c94d800 (2026-11-08)
+
+Same harness, traces kept (`--keep-temp`), mean score per variant. Core cases are mine; held-out cases (`source/heldout-cases/`, 5 cases) were written by GPT-6.1 Sol from a behaviour list, without reading the skill, and graded on substance.
+
+| Suite | Model | Runs per case | Tools only | j-research |
+|---|---|---|---|---|
+| Core (8) | Sonnet | 5 | 0.62 (39 runs) | 0.98 (40 runs) |
+| Core (8) | Opus | 3 | 0.71 | 0.93 |
+| Held-out (5) | Sonnet | 3 | 0.10 | 0.53 |
+| Held-out (5) | Opus | 3 | 0.13 | 0.60 |
+
+Findings:
+
+- **The gain holds on cases the author did not write**, on both models: vault reuse and re-checks, primary over marketing and social sources, and saying what was not found.
+- **Triggering is the main weakness.** On held-out prompts j-research fired in 10/15 Sonnet runs and 12/15 Opus runs. It never fired on "How would you build a small internal purchase-approval app for us?" (0/6): both models designed a custom app from memory instead of finding the existing tool in the vault. When it fired on Sonnet, held-out mean was 0.80.
+- **Subagents were never used**: 0 delegations in 94 with-skill runs, so the lane brief is untested by behaviour.
+- **Opus needs the skill less**: without it Opus already reuses fresh vault pages (1.00); the skill's gain on Opus is re-checking stale pages (0.25 to 1.00), compiling (0.61 to 0.91) and the scope stop (0.67 to 1.00).
+- Known case defects: `lookup-control` scores 0.50 on Opus with and without the skill because the frozen page claims Node 24 is Active LTS in November 2026 and Opus rightly doubts it; `rivetdb-regional-failover` scores 0.50 on every run because its answer grader requires every point stated explicitly (answers read as correct; grader left unchanged to avoid tuning after the fact); `compile-into-vault` loses 0.09 because agents omit spend for free mocked calls.
+- Cost reported by the harness for this pass: about $69.
+
+Not changed after seeing held-out results: the skill, its description, and the held-out graders (except rewriting the held-out vault-first regexes, which were invalid JavaScript, before any run).
+
 Limits: 2 runs per case, one agent model, frozen mock web, graders partly judged by a model, cases written by the skill's author.

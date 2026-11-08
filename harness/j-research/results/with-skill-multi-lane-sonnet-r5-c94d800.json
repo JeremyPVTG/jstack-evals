@@ -1,0 +1,780 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T02:01:02.871Z",
+  "durationSeconds": 105,
+  "costUsd": 2.0686146999999995,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build/with-skill",
+    "ablation": "none",
+    "modelOverride": "sonnet",
+    "caseFilter": "multi-lane",
+    "tagFilters": [
+      "core"
+    ],
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "multi-lane",
+      "dir": "evals/multi-lane",
+      "source": "prose",
+      "promptMarkdown": "Is Drizzle ORM v1 production ready? I want to know what breaks before I upgrade.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer covers the v1 breaking changes (relational queries v2 default, drizzle-kit push renamed sync, driver versions), the open enum migration issue #5120 with its data-loss risk, the self-relation bug fixed in 1.0.3, separates what sources state from its own inference, and ends with a line listing the lanes or providers searched.\nFAIL if it misses issue #5120, or has no coverage line, or mixes inference with cited fact without saying so.",
+          "config": {
+            "criteria": "PASS if the answer covers the v1 breaking changes (relational queries v2 default, drizzle-kit push renamed sync, driver versions), the open enum migration issue #5120 with its data-loss risk, the self-relation bug fixed in 1.0.3, separates what sources state from its own inference, and ends with a line listing the lanes or providers searched.\nFAIL if it misses issue #5120, or has no coverage line, or mixes inference with cited fact without saying so.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "exa",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "mcp__plugin_jstack_exa__",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "second-provider",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "mcp__plugin_jstack_(tavily|firecrawl)__",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 0.3933398,
+            "judgeCostUsd": 0.036935199999999946,
+            "durationSeconds": 49,
+            "startedAt": "2026-11-08T02:01:02.913Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-LPNjrR/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 5,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.27518000000000004,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** Yes, for most apps, if you review every generated migration and move to 1.0.3 or later. One open data-loss bug on enum changes is the main reason to be careful.\n\nThe vault had nothing on Drizzle, so everything below comes from fresh sources.\n\n**What breaks** (from the [official upgrade guide](https://orm.drizzle.team/docs/upgrade-v1); v1.0 shipped 2026-09-15):\n1. **Relational queries v2 is now the default.** If you use `db.query.*` with relations, test those paths first. I didn't find a list of the specific API differences, so read the guide's migration section.\n2. **`drizzle-kit push` is now `drizzle-kit sync`.** Update any scripts, CI jobs and docs that call `push`.\n3. **Postgres driver minimums:** node-postgres 9+ or postgres.js 4+. Check your lockfile.\n\n**Known problems in v1:**\n- **Enum migrations can destroy data.** [Issue #5120](https://github.com/drizzle-team/drizzle-orm/issues/5120) (opened 2026-10-03, still open, 61 comments): when you change an enum, the generated migration drops and recreates the column. The workaround is to hand-edit the migration before you apply it. If you edit enums often, this is the biggest risk.\n- **Self-relation nesting bug, fixed.** [Issue #5188](https://github.com/drizzle-team/drizzle-orm/issues/5188): relational queries v2 returned wrong nesting with self-relations. It was fixed in 1.0.3 (2026-10-29), so don't pin to 1.0.0–1.0.2.\n\n**Production evidence:** it's thin. [One team's write-up](https://blog.example-dev.io/drizzle-v1-in-production) reports a month in production: \"solid, but review every generated migration.\" That's a single post, and I couldn't verify who wrote it or how big their system is.\n\n**Upgrade plan:**\n1. Upgrade to 1.0.3 or later, not 1.0.0.\n2. Check your driver versions.\n3. Rename `push` to `sync` in your scripts.\n4. Run your relational-query tests, especially any with self-relations.\n5. Read every generated migration. Check for `DROP COLUMN` on any enum change, and test against a copy of production data first.\n\n**Not covered:** I didn't read the full migration guide beyond the three breaking changes listed. I also didn't check other dialects (MySQL, SQLite), so ask me if you use one of those. Which database and driver are you on, and do you use relational queries heavily? That would tell me how much of this applies to you.\n\nI haven't saved this to the vault. My vault-write tools aren't loaded yet. I can do that if you want it recorded.\n\n**Coverage:** vault (no matches); docs (Exa and Tavily, official upgrade guide); GitHub issues (Exa and Tavily, #5120 and #5188); practitioner reports (one blog post). Social: `last30days` isn't installed, so that lane is missing."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 0.35019350000000005,
+            "judgeCostUsd": 0.056541600000000025,
+            "durationSeconds": 60,
+            "startedAt": "2026-11-08T02:01:02.913Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-dFnAjH/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.16492920000000003,
+                "replay": {
+                  "hits": 0,
+                  "misses": 4
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** Drizzle v1 is usable in production if you upgrade carefully. It is not a drop-in upgrade. It was released 2026-09-15, and the latest patch I found is 1.0.3 (2026-10-29), so go to 1.0.3 or later.\n\n**What breaks** (from the [official upgrade guide](https://orm.drizzle.team/docs/upgrade-v1)):\n- **Relational queries v2 is now the default.** Check any code that uses `db.query.*` and its relations.\n- **`drizzle-kit push` is now `drizzle-kit sync`.** Update your scripts and CI.\n- **Postgres driver minimums.** You need node-postgres 9+ or postgres.js 4+.\n\n**Known issues:**\n- **Enum migrations can lose data (open, [#5120](https://github.com/drizzle-team/drizzle-orm/issues/5120)).** When you edit an enum, the generated migration drops and recreates the column. The workaround is to hand-edit the migration. Review every generated migration before you apply it.\n- **Self-relation nesting bug (fixed in 1.0.3, [#5188](https://github.com/drizzle-team/drizzle-orm/issues/5188)).** Relational queries v2 returned wrong nesting for self-relations.\n\n**How solid the evidence is:** The upgrade guide and the GitHub issues are primary sources. The one production report I found, [\"We ran Drizzle v1 in production for a month\"](https://blog.example-dev.io/drizzle-v1-in-production), says \"solid, but review every generated migration.\" I only retrieved its headline, and it is a single account.\n\n**Not verified:**\n- Whether the guide lists more breaking changes than the three above.\n- MySQL and SQLite specifics.\n- Compatibility of the ecosystem packages, such as drizzle-zod.\n\n**Before you upgrade:**\n1. Run it on a staging copy of your database.\n2. Check `drizzle-kit sync` against your existing migration history.\n3. Test your relational queries.\n4. Check your enums, since they are the main data-loss risk.\n\nI saved this to the vault as [[Drizzle ORM v1]], with the three sources in `raw/`. Lint passed with no errors.\n\n**Coverage:**\n- **Docs:** Exa and Tavily both returned the upgrade guide.\n- **Issues:** Tavily and Exa returned both GitHub issues. I did not use Firecrawl.\n- **Practitioner reports:** one blog post, headline only.\n- **Social:** `last30days` wasn't available, so that lane is missing.\n- **Vault:** it had no prior Drizzle page.\n- **Cost:** no paid calls.\n\nIf you tell me which database and driver you use, and whether you use relational queries or enums, I can narrow this to the parts that affect you. I can also check your repo for them."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 19,
+            "costUsd": 0.5354089,
+            "judgeCostUsd": 0.04013680000000003,
+            "durationSeconds": 61,
+            "startedAt": "2026-11-08T02:01:02.913Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-v4Khjl/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 14,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.3565892,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** Drizzle v1 is usable in production, but it isn't a drop-in upgrade. Pin to 1.0.3 or later and review every generated migration. This is my inference from the sources below. There's no official \"production ready\" statement in what I found.\n\n**What breaks** (official upgrade guide, v1.0 released 2026-09-15):\n- **Relational queries v2 is now the default.**\n- **`drizzle-kit push` is renamed `drizzle-kit sync`.** Update any scripts or CI that call `push`.\n- **Postgres drivers need updating.** You need node-postgres 9+ or postgres.js 4+.\n\n**Known issues:**\n- **Enum migrations can lose data.** Editing an enum generates a migration that drops and recreates the column (issue #5120). It's still open with 61 comments. The workaround is to hand-edit the generated migration. This is the biggest risk.\n- **Self-relation nesting bug.** Relational queries v2 returned the wrong nesting for self-relations (issue #5188). It's fixed in 1.0.3 (2026-10-29), so don't pin anything earlier.\n\n**Production evidence:** One team reported running v1 for a month: \"solid, but review every generated migration\" (2026-10-18). I could only retrieve the headline of that post, so it's anecdotal.\n\n**Before you upgrade:**\n1. Pin `drizzle-orm` to 1.0.3 or later.\n2. Check your Postgres driver version.\n3. Rename `push` to `sync` in your scripts.\n4. Run your relational queries against a copy of your data, since v2 is now the default.\n5. Don't ship auto-generated migrations unreviewed, especially for enum changes.\n\n**Gaps:**\n- I only got the three breaking changes from the upgrade guide, so there may be other relational-queries v2 differences. Read the full guide before upgrading.\n- I didn't cover practitioner sentiment on social platforms, because `last30days` isn't installed.\n\nI saved the details to the vault at `wiki/Drizzle ORM v1.md`. It's marked high volatility, so it needs re-checking within 30 days.\n\n**Coverage:** Docs lane: Exa found and fetched the upgrade guide. Issues lane: Exa and Tavily both returned #5120 and #5188, and Exa fetched #5120 in full. Practitioner lane: one blog post, headline only. Social lane: missing."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 21,
+            "costUsd": 0.5160327999999998,
+            "judgeCostUsd": 0.0827083999999999,
+            "durationSeconds": 67,
+            "startedAt": "2026-11-08T02:01:02.913Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-CFizgK/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 14,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.2784288,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** Yes, with caveats. Drizzle v1.0 went stable on 2026-09-15 and 1.0.3 shipped 2026-10-29. I'd upgrade, but only to 1.0.3 or later, and I'd review every generated migration before running it.\n\n**What breaks** (from the [official upgrade guide](https://orm.drizzle.team/docs/upgrade-v1)):\n- **Relational queries v2 is now the default.** If you use `db.query.*` with relations, test these first.\n- **`drizzle-kit push` is now `drizzle-kit sync`.** Update any scripts and CI that call it.\n- **PostgreSQL drivers have a minimum version.** You need node-postgres 9+ or postgres.js 4+.\n\nThe guide text I could retrieve was short. It didn't list the exact relational-query API changes, so read the full guide before you start.\n\n**Known issues:**\n- **Enum migrations can lose data (still open).** [#5120](https://github.com/drizzle-team/drizzle-orm/issues/5120) (opened 2026-10-03, 61 comments) reports that changing an enum generates a migration that drops and recreates the column. The workaround is to hand-edit the migration. This is the main production risk.\n- **Self-relation nesting bug (fixed).** [#5188](https://github.com/drizzle-team/drizzle-orm/issues/5188) returned wrong nesting for self-relations in relational queries v2. It was fixed in 1.0.3.\n\n**Practitioner evidence:** One [blog post](https://blog.example-dev.io/drizzle-v1-in-production) (2026-10-18) reports a month in production: \"solid, but review every generated migration.\" That is a single source, and I could only retrieve its summary line.\n\n**Suggested upgrade path:**\n1. Pin 1.0.3 or later.\n2. Check your driver versions.\n3. Rename `push` to `sync` in your scripts.\n4. Run your relational-query tests, especially any self-referencing relations.\n5. Diff every generated migration, and check enum changes in particular.\n\n**Not covered:** I didn't sweep Reddit, HN or X because `last30days` isn't installed. Wider complaints may exist that I haven't seen.\n\nI saved this to your vault as [[Drizzle ORM v1]], with four raw sources, an index entry and a log line. Lint reported no errors or warnings.\n\n**Coverage:**\n- **Docs:** Exa found and fetched the official guide.\n- **Recent and dated:** Tavily returned the same four results.\n- **Code and issues:** Firecrawl wasn't queried. The issues came through Exa and Tavily.\n- **Social:** missing (`last30days` not installed).\n- **Paid spend:** none beyond search credits."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 19,
+            "costUsd": 0.2736396999999998,
+            "judgeCostUsd": 0.0213935999999999,
+            "durationSeconds": 56,
+            "startedAt": "2026-11-08T02:01:52.099Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-ddmgy6/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 14,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.1159465999999999,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer:** Mostly yes, with one real hazard. Drizzle v1.0 shipped 2026-09-15 and the latest patch I found is 1.0.3 (2026-10-29). The query layer looks usable in production. The migration generator has an open bug that can cause data loss, so read every generated migration before you apply it.\n\n**What breaks on upgrade** (from the [official upgrade guide](https://orm.drizzle.team/docs/upgrade-v1)):\n- **Relational queries v2 is now the default.** Check any code that uses relational queries.\n- **`drizzle-kit push` is now `drizzle-kit sync`.** Update your scripts and CI.\n- **Postgres drivers must be node-postgres 9+ or postgres.js 4+.**\n\nThe guide has a 0.x to 1.0 migration section. The text I retrieved listed only these three changes, so read the full page before you start.\n\n**Known issues:**\n- **Open: [#5120](https://github.com/drizzle-team/drizzle-orm/issues/5120).** A migration generated for an enum change drops and recreates the column, which loses data. The issue has 61 comments and is still open. The workaround is to hand-edit the generated migration.\n- **Fixed: [#5188](https://github.com/drizzle-team/drizzle-orm/issues/5188).** Relational queries v2 returned the wrong nesting for self-relations. The fix is in 1.0.3, so upgrade to at least that version.\n\n**How much to trust this:** The evidence is thin. It rests on the docs, two issues, and one [blog post](https://blog.example-dev.io/drizzle-v1-in-production) from a team that ran v1 in production for a month (\"solid, but review every generated migration\"). I didn't run any tests myself. I also don't know whether #5120 affects every database dialect, or how v1 behaves with MySQL, SQLite or edge runtimes.\n\n**Before you upgrade:**\n1. Pin 1.0.3 or later.\n2. Try it on a staging copy of your database first.\n3. Check your schema for enums. If you change one, check the generated SQL by hand.\n4. Check where you use relational queries, especially self-relations.\n\nI saved the sources and a summary page to the vault ([[Drizzle ORM v1]]).\n\n**Coverage:** Docs and issues came from Exa and Tavily, and both returned the same sources. The social lane is missing because `last30days` isn't installed. I didn't use Firecrawl. No paid calls."
+              },
+              {
+                "name": "exa",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_exa__",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "second-provider",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(tavily|firecrawl)__",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}

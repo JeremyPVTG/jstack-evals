@@ -1,0 +1,827 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.319",
+  "startedAt": "2026-11-08T01:59:18.683Z",
+  "durationSeconds": 104,
+  "costUsd": 2.5499971999999995,
+  "partial": false,
+  "suite": {
+    "root": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build/with-skill",
+    "ablation": "none",
+    "modelOverride": "sonnet",
+    "caseFilter": "vault-stale",
+    "tagFilters": [
+      "core"
+    ],
+    "threshold": 0,
+    "concurrency": 4,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "/Users/jeremy/.t3/scratch/2026-11-07-i-want-to-create-my-5da7159b/jstack-evals/harness/j-research/build/with-skill"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "vault-stale",
+      "dir": "evals/vault-stale",
+      "source": "prose",
+      "promptMarkdown": "Is Bun ready to replace Node for our API server? Check what's changed lately.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 900,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "answer",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "PASS if the answer says the earlier vault page (Bun 1.1) was out of date, reports Bun 1.4 changes (node:cluster supported, about 99% of Node tests), and warns about the open keep-alive memory issue (#31877, fix targeted for 1.4.2).\nFAIL if it repeats the old 1.1 verdict, or omits the open memory issue.",
+          "config": {
+            "criteria": "PASS if the answer says the earlier vault page (Bun 1.1) was out of date, reports Bun 1.4 changes (node:cluster supported, about 99% of Node tests), and warns about the open keep-alive memory issue (#31877, fix targeted for 1.4.2).\nFAIL if it repeats the old 1.1 verdict, or omits the open memory issue.",
+            "focus": "last_message"
+          }
+        },
+        {
+          "name": "read-vault",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__search",
+            "min": 1
+          }
+        },
+        {
+          "name": "searched-web",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "updated-page",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "mcp__plugin_jstack_jvault__write_page",
+            "min": 1
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 20,
+            "costUsd": 0.4771411000000001,
+            "judgeCostUsd": 0.022137800000000096,
+            "durationSeconds": 51,
+            "startedAt": "2026-11-08T01:59:18.733Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-Z4lk0m/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.319468,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Not quite yet. Bun is close, but one open bug blocks a long-running API server. I'd wait for Bun 1.4.2 or run a monitored canary first.**\n\n**What changed since the vault's last Bun review (1.1, April):**\n- **Bun 1.4.0 (2026-10-02):**\n  - `node:cluster` is now supported and `worker_threads` is complete, so the old blockers are gone.\n  - About 99.1% of Node's test suite passes, up from about 95%.\n  - It adds a built-in Postgres pool.\n  - The default idle timeout in `Bun.serve()` changed from 10s to 30s, which is a breaking change.\n  - The pass rate and the Postgres pool come from Bun's own release blog, so they are vendor claims.\n- **Open bug ([oven-sh/bun #31877](https://github.com/oven-sh/bun/issues/31877), opened 2026-10-20):**\n  - Memory grows under sustained HTTP keep-alive load in 1.4.0.\n  - Maintainers reproduced it and are targeting a fix in 1.4.2.\n  - I found no sign that 1.4.2 has shipped.\n- **Practitioner report (one Reddit post, snippet only, unverified):** an Express API moved to Bun 1.4 saw about 30% lower p95 latency. Another commenter in the thread hit the memory bug.\n- **Node for comparison:** Node 24 is the Active LTS line (v24.11.0, 2026-10-28), so staying put is a safe choice.\n\n**Recommendation:**\n1. Wait for 1.4.2 and confirm #31877 is closed.\n2. Then load-test your real workload and run a canary with memory monitoring.\n\nMy search of `package.json` files found no Express, Fastify, Prisma or similar dependencies, so I couldn't check your own stack. Compatibility with your actual dependencies is the part I haven't verified.\n\nI updated the vault page [[Bun runtime]] and saved two raw sources: the 1.4 release blog and the issue.\n\n**Coverage:**\n- **Vault:** the existing Bun page was stale, so I used it only as history.\n- **Docs (Exa):** returned the 1.4 blog, the issue and the Node release page.\n- **Recent breadth (Tavily):** returned the same set, and a follow-up search for a 1.4.2 release found nothing.\n- **Social:** `last30days` wasn't available, so the only community evidence is the Reddit snippets above.\n- **Code/issues (Firecrawl):** not queried."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 18,
+            "costUsd": 0.6035206999999998,
+            "judgeCostUsd": 0.02669419999999989,
+            "durationSeconds": 58,
+            "startedAt": "2026-11-08T01:59:18.733Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-QbE8iS/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.4483039999999999,
+                "replay": {
+                  "hits": 0,
+                  "misses": 5
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Almost, but not yet. Wait for the fix to a memory leak, then canary it.** The two blockers from earlier this year are gone, but one new bug matters for an API server.\n\n**What changed (Bun 1.4.0, 2026-10-02)**\n- `node:cluster` is now supported and `worker_threads` is complete. Both were gaps in Bun 1.1 in April.\n- 99.1% of Node's test suite passes, up from about 95%.\n- There's a new built-in Postgres pool.\n- `Bun.serve()` default idle timeout went from 10s to 30s. That is a breaking change, so check anything that depends on the old value.\n\n**The blocker**\n- Issue [#31877](https://github.com/oven-sh/bun/issues/31877) reports memory growing under sustained HTTP keep-alive load in 1.4.0. It was opened 2026-10-20 and is still open.\n- Maintainers reproduced it and are targeting a fix in 1.4.2. I couldn't confirm whether 1.4.2 has shipped.\n- A long-running API server with keep-alive connections is exactly where this would hurt.\n\n**Anecdotal evidence**\n- One Reddit post says moving an Express API to 1.4 cut p95 latency by 30%. A commenter on the same thread hit the memory issue.\n- That's a single unverified post, so treat it as a lead, not a benchmark.\n\n**Recommended path**\n1. Wait for a Bun release that fixes #31877.\n2. Run a canary on your own traffic, watching memory over several hours.\n3. Compare against Node 24, the Active LTS line (v24.11.0, 2026-10-28).\n\n**What I couldn't check**\n- I searched your repo for a `package.json` and found nothing, so I couldn't check your dependencies. Native addons such as `sharp`, `bcrypt` or gRPC are the usual places Bun compatibility breaks, and a test suite pass rate won't show that. If you point me at the API server's repo, I can check.\n\nI updated the vault page `wiki/Bun runtime.md`, which was stale, and saved three sources. Lint passed with no errors.\n\nCoverage: the vault page was the only prior source. Exa gave the release blog, the issue and the Reddit post. Tavily confirmed the same pages and the Node release status. I didn't run the social lane because `last30days` isn't installed, and I didn't run a benchmark."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.75,
+            "passed": false,
+            "turns": 15,
+            "costUsd": 0.6260091,
+            "judgeCostUsd": 0.02253000000000005,
+            "durationSeconds": 52,
+            "startedAt": "2026-11-08T01:59:18.733Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-XXkwab/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 7,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.48112,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer: not yet for a production API server, but it's close.** I'd pilot it on one low-risk service, not replace Node across the board. This rests on one open bug and a few sources I haven't verified (see Gaps).\n\n**What changed since our vault page (Bun 1.1, May 2026)**\n- **Bun 1.4 shipped 2026-10-02** ([blog](https://bun.com/blog/bun-v1.4)). Both blockers from the vault page are gone: `node:cluster` is now supported and `worker_threads` is complete.\n- **Node compatibility:** 99.1% of Node's test suite passes, up from about 95%.\n- **Postgres:** there is a new built-in Postgres pool.\n- **Breaking change:** the `Bun.serve()` default idle timeout went from 10s to 30s. Check this against any load balancer or proxy timeouts you have.\n\n**What still argues against switching**\n- **Open memory bug:** [oven-sh/bun#31877](https://github.com/oven-sh/bun/issues/31877) reports memory growth under sustained HTTP keep-alive load in 1.4.0. It was opened 2026-10-20 and has 42 upvotes. Maintainers reproduced it and are targeting a fix in 1.4.2. This is the exact workload an API server runs. I found no release notes confirming 1.4.1 or 1.4.2 has shipped, so treat it as unfixed until you see otherwise.\n- **Limited field evidence:** one [r/node thread](https://www.reddit.com/r/node/comments/bun14) (2026-10-12) reports an Express API on Bun 1.4 with p95 latency down 30%. Another commenter in that thread hit the memory bug in production. This is anecdotal and I only saw the snippets.\n- **Node is solid:** Node 24 is Active LTS, and v24.11.0 came out 2026-10-28 ([release schedule](https://nodejs.org/en/about/previous-releases)). Staying on it costs you nothing.\n\n**Suggested path**\n1. Wait for a Bun release that closes #31877, then confirm it with a soak test.\n2. Run your real dependencies and load profile on Bun in staging. Pay attention to native addons and the new idle timeout.\n3. Canary one service, with Node as the instant rollback.\n\n**Gaps**\n- I couldn't check your codebase. My search of `package.json` files in the working directory found no matches, so I don't know your framework or native dependencies. Those are what decide compatibility, so tell me the stack or point me at the repo and I'll check.\n- The social lane is missing because `last30days` isn't installed, so practitioner coverage is thin.\n- I read search highlights, not the full Bun 1.4 post or the issue thread.\n\n**Vault:** `wiki/Bun runtime.md` was stale (reviewed 2026-05-10, high volatility) and its \"not ready\" verdict reflected Bun 1.1. I haven't updated it yet. I can capture these sources, update the page and log the run if you want.\n\n**Coverage:** vault (found the stale page); Exa (blog, issue, Reddit, Node releases); Tavily (the same results, dated); Firecrawl developer index (only the one issue); social lane not searched; no paid calls."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": false,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 0x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 19,
+            "costUsd": 0.5677499999999998,
+            "judgeCostUsd": 0.01584759999999985,
+            "durationSeconds": 59,
+            "startedAt": "2026-11-08T01:59:18.733Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-393OQ3/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 12,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.419604,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Nearly, but not yet for a long-running API server. Wait for Bun 1.4.2, or canary it first.** I've updated the vault page `wiki/Bun runtime.md`.\n\n**What changed since the vault's last review (Bun 1.1, April):**\n- **Bun 1.4 (2026-10-02):** `node:cluster` is now supported and `worker_threads` is complete. These were the two blockers in the old verdict.\n- **Node compatibility:** 99.1% of Node's test suite passes, up from about 95%.\n- **Postgres:** there is a new built-in Postgres pool.\n- **Breaking change:** the default `Bun.serve()` idle timeout went from 10s to 30s.\n\n**What still blocks a switch:**\n- **Memory growth:** Issue #31877 (opened 2026-10-20, still open) reports memory growing under sustained HTTP keep-alive load in 1.4.0. Maintainers reproduced it and are targeting a fix in 1.4.2. I found no sign that 1.4.2 has shipped.\n- **Why it matters:** that is the traffic pattern a production API server sees.\n\n**Evidence quality:**\n- **Primary sources:** the release notes and the GitHub issue.\n- **Forum lead only:** one r/node post says an Express API moved to Bun 1.4 and p95 latency dropped 30%. Another commenter in that thread hit the memory issue.\n- **Node side:** Node 24 is the Active LTS (v24.11.0, 2026-10-28), so staying on it is a safe default.\n\n**What I didn't check:**\n- **Your dependencies:** I searched your working directory and found no `package.json` or lockfile, so I couldn't check your stack. Native addons and DB drivers are the usual compatibility risks.\n- **Load testing:** I didn't run any, so the memory behavior on your traffic is untested.\n\n**Suggested next step:** run a canary on Bun 1.4.x behind your load balancer. Replay realistic keep-alive traffic and watch RSS over several hours. If you point me at the repo, I can check your dependencies for Bun compatibility.\n\n**Vault changes:** I saved two sources to `raw/`, rewrote the Bun page with the current verdict, kept the old verdict as history, added a log line, and lint passes.\n\n**Coverage:**\n- **Vault:** the existing page was stale, so I re-verified it.\n- **Exa:** the Bun release post, the GitHub issue, and the Node release page.\n- **Tavily:** dated confirmation of the same sources, plus the 1.4.2 check.\n- **Social lane:** `last30days` isn't installed, so that lane is missing. The r/node post came from web search only.\n- **Paid spend:** none."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 20,
+            "costUsd": 0.2755763,
+            "judgeCostUsd": 0.010126800000000102,
+            "durationSeconds": 52,
+            "startedAt": "2026-11-08T02:00:10.192Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-cS6T0u/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "mocks": {
+              "servers": [
+                {
+                  "server": "exa",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "web_fetch_exa",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "web_search_exa",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "firecrawl",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "firecrawl_scrape",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "firecrawl_search",
+                      "responder": "agent"
+                    }
+                  ]
+                },
+                {
+                  "server": "jvault",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "append_log",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "capture_source",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "guide",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "lint",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "list",
+                      "responder": "fixed"
+                    },
+                    {
+                      "tool": "read",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "search",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "write_page",
+                      "responder": "fixed"
+                    }
+                  ]
+                },
+                {
+                  "server": "tavily",
+                  "kind": "shadow",
+                  "tools": [
+                    {
+                      "tool": "tavily_extract",
+                      "responder": "agent"
+                    },
+                    {
+                      "tool": "tavily_search",
+                      "responder": "agent"
+                    }
+                  ]
+                }
+              ],
+              "warnings": [],
+              "calls": {
+                "total": 13,
+                "errors": 0,
+                "unmocked": [],
+                "costUsd": 0.13514379999999993,
+                "replay": {
+                  "hits": 0,
+                  "misses": 6
+                }
+              }
+            },
+            "graders": [
+              {
+                "name": "answer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "**Short answer: not yet. It's close, and one open bug is what's blocking.**\n\n**What changed**\n- **Bun 1.4 (2026-10-02):**\n  - `node:cluster` is now supported and `worker_threads` is complete. Those were the two main gaps in our vault notes from May (Bun 1.1).\n  - 99.1% of Node's test suite passes, up from about 95%. That figure is from Bun's own release notes.\n  - It adds a built-in Postgres pool.\n  - **Breaking change:** the `Bun.serve()` default idle timeout went from 10s to 30s.\n- **Open bug:** memory grows under sustained HTTP keep-alive load in 1.4.0 (oven-sh/bun#31877, opened 2026-10-20, 42 thumbs-ups).\n  - Maintainers reproduced it and are targeting a fix in 1.4.2.\n  - I found no sign that 1.4.2 has shipped yet, so check the issue yourself.\n  - For a long-running API server this is the real blocker.\n- **Field report:** one Reddit post says an Express API moved to Bun 1.4 saw p95 latency drop 30%. A commenter on that post hit the memory bug in production. That's one anecdote, not a benchmark.\n- **Node baseline:** Node 24 is the Active LTS line (v24.11.0, 2026-10-28), so staying on Node carries no pressure.\n\n**My recommendation**\n- Wait for 1.4.2 and confirm #31877 is closed.\n- Then canary Bun behind your load balancer with memory alerts, and keep Node as the fallback.\n\n**What I couldn't check:** I found no `package.json` in this directory, so I couldn't check your dependencies. Native addons, your ORM or database driver, and gRPC are where Bun compatibility problems usually show up. Tell me where the API server lives and I'll check.\n\nI updated the vault page `wiki/Bun runtime.md`. It had gone stale, with its last review on 2026-05-10. I also saved three sources and logged the run, and lint came back clean.\n\n**Coverage:**\n- **Vault:** the old Bun page, which was stale.\n- **Tavily and Exa:** the 1.4 release notes, the GitHub issue, the Reddit post and the Node release schedule.\n- **Social lane:** `last30days` isn't installed, so practitioner coverage is just that one Reddit post.\n- **Firecrawl:** not used.\n- **Spend:** no paid calls."
+              },
+              {
+                "name": "read-vault",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__search called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "searched-web",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched mcp__plugin_jstack_(exa|tavily|firecrawl)__\\w+",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "updated-page",
+                "passed": true,
+                "weight": 1,
+                "explanation": "mcp__plugin_jstack_jvault__write_page called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.95,
+        "passRate": 0.8
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 0.95,
+    "overallPassRate": 0.8
+  }
+}
