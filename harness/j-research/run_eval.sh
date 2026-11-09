@@ -5,7 +5,7 @@
 # keys are removed; TYPESAFE_API_KEY is kept only when KEEP_TYPESAFE=1 (for builds with the hook).
 set -u
 target=$1; name=$2; model=$3; runs=$4; cap=$5; shift 5
-drop=(-u CLAUDE_CONFIG_DIR -u EXA_API_KEY -u FIRECRAWL_API_KEY -u OPENROUTER_API_KEY -u TAVILY_API_KEY)
+drop=(-u CLAUDE_CONFIG_DIR -u ANTHROPIC_BASE_URL -u ANTHROPIC_AUTH_TOKEN -u EXA_API_KEY -u FIRECRAWL_API_KEY -u OPENROUTER_API_KEY -u TAVILY_API_KEY)
 [ "${KEEP_TYPESAFE:-0}" = 1 ] || drop+=(-u TYPESAFE_API_KEY)
 pass=()  # plugin evals forward only allowlisted and EVAL_* variables; the hook reads EVAL_TYPESAFE_API_KEY
 [ "${KEEP_TYPESAFE:-0}" = 1 ] && pass=(bash -c 'export EVAL_TYPESAFE_API_KEY="$TYPESAFE_API_KEY"; exec "$@"' _)
