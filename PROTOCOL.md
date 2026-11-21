@@ -1,6 +1,6 @@
 # Evaluating jstack
 
-Status: evaluation design, not benchmark results. Initial model trials are not yet run.
+Status: the design these harnesses follow. Results are in each harness folder and summarised in the README; this is not a benchmark.
 
 ## Decision
 
