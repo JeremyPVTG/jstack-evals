@@ -1,6 +1,6 @@
 # jstack-evals
 
-Behavioural evaluations for [jstack](https://github.com/JeremyPVTG/jstack), a set of agent skills for research, scoping, building and review. Each harness runs the same cases with and without a skill, on Claude Sonnet 5.5 and Opus 5.5, so the score gap is the skill's contribution. Results that showed no gain are kept and reported as such.
+Behavioural evaluations for [jstack](https://github.com/JeremyPVTG/jstack), a set of agent skills for research, scoping, building and review. Each harness runs the same cases with and without a skill, on Claude Sonnet 5.5 and Opus 5.5, so the score gap is the skill's contribution.
 
 ## Results
 
