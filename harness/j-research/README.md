@@ -14,13 +14,13 @@ Triggering (should-trigger runs that invoked j-research; false triggers on non-r
 
 | Description | Tuning set | Held-out | False triggers |
 |---|---|---|---|
-| A, jstack a4c547a | 5/22 | 2/12 | 0/8, 0/8 |
+| A, jstack 13e1bc2 | 5/22 | 2/12 | 0/8, 0/8 |
 | B, "depends on current information" | 19/22 | 7/12 | 0/8, 0/8 |
-| C, directive (adopted in jstack 1fa56a6) | 21/22 | 11/12 | 0/8, 0/8 |
+| C, directive (adopted in jstack 6a0d4d8) | 21/22 | 11/12 | 0/8, 0/8 |
 
 Core cases, mean score per case:
 
-| Case | Tools only | j-research a4c547a | j-research 1fa56a6 |
+| Case | Tools only | j-research 13e1bc2 | j-research 6a0d4d8 |
 |---|---|---|---|
 | build-stops-for-scope | 1.00 | 1.00 | 1.00 |
 | compile-into-vault | 0.00 | 0.36 | 0.91 |
@@ -36,13 +36,13 @@ Core cases, mean score per case:
 
 Findings: without the skill, Sonnet answered "current" questions from memory in one turn and never searched; with the old description the skill rarely triggered, so most of its value was invisible; the directive description fixed triggering without false triggers. Costs: about $1.1 to $1.6 per 16-run core pass, $1 per trigger pass.
 
-### Lane brief re-check, jstack c94d800 (2026-11-08)
+### Lane brief re-check, jstack e095936 (2026-11-08)
 
 `--case '*-lane'`, 2 runs each, Sonnet: multi-lane 1.00 (2/2), empty-lane 1.00 (2/2), $1.17 including judging. No regression from adding the lane brief. This does not show the brief helps: the earlier multi-lane 0.50 was a harness rejection, not a wrong answer, and the run traces were cleaned up before I could check whether the agent delegated lanes to subagents.
 
-## Shipped: jstack d93de69 (2026-11-08)
+## Shipped: jstack ba87dac (2026-11-08)
 
-Hill-climbed under a protocol agreed by a three-model council (Claude Opus 5.5, GPT-6.1 Sol, GLM 5.3): `../../docs/decisions/2026-11-08-j-research-hill-climb-protocol.md`; every candidate and decision is in `climb/log.md`. Changes since c94d800: description fires on build, choice and reliance questions; an every-run checklist (vault first, answer only from what was read, cite with dates); open vault pages with the read tool before citing them; one-source lookups; and `scripts/research_hook.py`, an optional UserPromptSubmit hook (TypeSafe Jev) that reminds the agent to use the skill.
+Hill-climbed under a protocol agreed by a three-model council (Claude Opus 5.5, GPT-6.1 Sol, GLM 5.3): `../../docs/decisions/2026-11-08-j-research-hill-climb-protocol.md`; every candidate and decision is in `climb/log.md`. Changes since e095936: description fires on build, choice and reliance questions; an every-run checklist (vault first, answer only from what was read, cite with dates); open vault pages with the read tool before citing them; one-source lookups; and `scripts/research_hook.py`, an optional UserPromptSubmit hook (TypeSafe Jev) that reminds the agent to use the skill.
 
 Mean score, with skill vs the same tools without it:
 
@@ -57,7 +57,7 @@ Mean score, with skill vs the same tools without it:
 
 Not shown by these numbers: live-web behaviour (all search tools are frozen fixtures), subagent delegation (never used in 100+ runs), and the owner's full T3 environment. Hook vs no hook was not separated on the test set.
 
-## Readiness pass, jstack c94d800 (2026-11-08)
+## Readiness pass, jstack e095936 (2026-11-08)
 
 Same harness, traces kept (`--keep-temp`), mean score per variant. Core cases are mine; held-out cases (`source/heldout-cases/`, 5 cases) were written by GPT-6.1 Sol from a behaviour list, without reading the skill, and graded on substance.
 

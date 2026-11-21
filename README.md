@@ -39,7 +39,7 @@ Pin records the subject's full commit, tree and tracked file hashes, and refuses
 
 ## Notes on the recorded transcripts
 
-Transcripts contain local paths from the machine that ran them. In `harness/j-build/results/staged-*.json`, the loaded text of a private comparison skill was replaced with a marked redaction on 2026-11-21; scores and the rest of each transcript are unchanged.
+Transcripts contain local paths from the machine that ran them. Run logs keep the jstack commit IDs from before the 2026-11-21 history rewrite; [docs/jstack-commit-ids.md](docs/jstack-commit-ids.md) maps them to current IDs. In `harness/j-build/results/staged-*.json`, the loaded text of a private comparison skill was replaced with a marked redaction on 2026-11-21; scores and the rest of each transcript are unchanged.
 
 ## Design
 

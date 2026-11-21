@@ -10,7 +10,7 @@ The eval sessions have no subagent tool, so the review stage cannot run here; ag
 
 ## Result (2026-11-07), 3 runs per probe
 
-| Probe | Sonnet: staged-build -> j-build (d93de69 branch 045cb6a) | Opus: staged-build -> j-build |
+| Probe | Sonnet: staged-build -> j-build (ba87dac branch 7b0011c) | Opus: staged-build -> j-build |
 |---|---|---|
 | small-typo, short small-path report | 1/3 -> 3/3 | 0/3 -> 1/3 |
 | small-typo, fixed with fresh run | 3/3 -> 3/3 | 3/3 -> 3/3 |
