@@ -432,8 +432,11 @@ class WrapperDrift(unittest.TestCase):
 
     @staticmethod
     def j_build_wrapper():
+        """(env part up to claude, the rest) of the j-build harness command after the eval-secrets.sh prefix."""
         script = (ROOT / 'harness' / 'j-build' / 'run_eval.sh').read_text().replace('\\\n', ' ')
-        tokens = shlex.split(next(line for line in script.splitlines() if 'infisical' in line))
+        line = next(line for line in script.splitlines() if 'eval-secrets.sh' in line and not line.lstrip().startswith('#'))
+        tokens = shlex.split(line)
+        tokens = tokens[next(i for i, t in enumerate(tokens) if t.endswith('eval-secrets.sh')) + 1:]
         end = tokens.index('claude') + 1
         return tokens[:end], tokens[end:]
 
@@ -443,24 +446,24 @@ class WrapperDrift(unittest.TestCase):
         self.assertEqual(rest[3:3 + len(FLAGS)], FLAGS)
         self.assertEqual(run.EVAL_FLAGS[:len(FLAGS)], FLAGS)
 
-    def test_the_example_has_the_wrapper_shape_with_placeholders_for_every_local_value(self):
-        wrapper, _ = self.j_build_wrapper()
-        example = json.loads((run.HERE / 'wrapper.example.json').read_text())['argv']
-        self.assertEqual(len(example), len(wrapper))
-        differ = [(mine, local) for mine, local in zip(example, wrapper) if mine != local]
-        self.assertTrue(differ)
-        for mine, _ in differ:
-            self.assertRegex(mine, r'^<[^<>]+>$')
-        self.assertEqual(example[-1], 'claude')
+    def test_the_example_is_the_secrets_prefix_plus_the_harness_env_with_placeholders(self):
+        env_part, _ = self.j_build_wrapper()
+        example = json.loads((run.HERE / 'wrapper.example.json').read_text())
+        self.assertEqual(example['argv'], example['secrets_argv'] + env_part)
+        self.assertEqual(example['secrets_argv'][-1], '--')
+        self.assertTrue(any(a.startswith('<') and a.endswith('>') for a in example['secrets_argv']))
 
-    def test_the_local_wrapper_matches_the_j_build_harness(self):
+    def test_the_local_wrapper_is_its_secrets_prefix_plus_the_harness_env(self):
         if not run.WRAPPER_FILE.exists():
             self.skipTest('no wrapper.local.json on this machine')
-        wrapper, _ = self.j_build_wrapper()
-        self.assertEqual(json.loads(run.WRAPPER_FILE.read_text())['argv'], wrapper)
+        env_part, _ = self.j_build_wrapper()
+        local = json.loads(run.WRAPPER_FILE.read_text())
+        self.assertEqual(local['argv'], local['secrets_argv'] + env_part)
 
-    def test_tracked_driver_files_name_no_local_path_or_secret_route(self):
-        for path in (SCRIPT, run.HERE / 'wrapper.example.json'):
+    def test_tracked_harness_files_name_no_local_path_or_secret_route(self):
+        paths = [SCRIPT, run.HERE / 'wrapper.example.json', ROOT / 'harness' / 'eval-secrets.sh']
+        paths += sorted((ROOT / 'harness').glob('*/run_eval.sh')) + sorted((ROOT / 'harness').glob('*/build.sh'))
+        for path in paths:
             text = path.read_text()
             self.assertNotRegex(text, r'/Users/|/home/', path)
             self.assertNotRegex(text, r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', path)
