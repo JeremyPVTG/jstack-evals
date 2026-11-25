@@ -194,6 +194,67 @@ class GateDecision(GateFixture):
         self.assertEqual(both['outcome'], 'rejected')
 
 
+class IncumbentReuse(GateFixture):
+    def first_attempt(self):
+        miss = {'candidate': {'holdout': 'holdout-fail-2of5'}}
+        return self.manifest(self.full_gate(opus=miss, sonnet=miss), file='attempt-1.json')
+
+    def second_attempt(self, **fields):
+        results = self.candidate('opus') + self.candidate('sonnet')
+        return self.manifest(results, file='attempt-2.json', attempt=2,
+                             reuse_incumbent_from='attempt-1.json', **fields)
+
+    def test_second_attempt_uses_the_stored_incumbent_runs_and_counts_only_new_runs(self):
+        self.first_attempt()
+        out = self.decide(self.second_attempt())
+        self.assertEqual(out['outcome'], 'accepted')
+        self.assertEqual(out['per_model']['opus']['target_incumbent'], '0/5')
+        self.assertEqual(out['per_model']['sonnet']['max_control_drop'], 0)
+        self.assertTrue(out['incumbent_reused'])
+        self.assertEqual(out['runs'], 32)
+        self.assertAlmostEqual(out['cost_usd'], 16.0)
+        self.assertEqual(out['reused_runs'], 22)
+
+    def test_reuse_is_refused_when_a_frozen_case_changed_since_the_previous_attempt(self):
+        self.first_attempt()
+        with open(self.cases / 'fresh-receipts' / 'prompt.md', 'a') as prompt:
+            prompt.write('Also bump the version.\n')
+        out = self.decide(self.second_attempt())  # frozen again with the edited case
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertFalse(out['incumbent_reused'])
+        self.assertIn('fresh-receipts changed since the previous attempt', ' '.join(out['reasons']))
+
+    def test_reuse_is_refused_when_the_incumbent_commit_changed(self):
+        self.first_attempt()
+        path = self.second_attempt(revisions={'incumbent': 'c' * 40, 'candidate': CANDIDATE_SHA})
+        with self.assertRaisesRegex(gate.ManifestError, 'incumbent commit changed'):
+            self.decide(path)
+
+
+class Reproduce(GateFixture):
+    def reproduce(self, opus, sonnet):
+        results = self.runs('incumbent', 'opus', opus) + self.runs('incumbent', 'sonnet', sonnet)
+        return self.decide(self.manifest(results, mode='reproduce'))
+
+    def test_failure_is_reproduced_when_the_incumbent_fails_on_every_model(self):
+        out = self.reproduce('reproduce-fail-1of3', 'reproduce-fail-1of3')
+        self.assertEqual(out['outcome'], 'reproduced')
+        self.assertEqual(out['mode'], 'reproduce')
+        self.assertEqual(out['per_model'], {
+            'opus': {'target_incumbent': '1/3', 'reproduced': True},
+            'sonnet': {'target_incumbent': '1/3', 'reproduced': True}})
+        self.assertIsNone(out['skill_growth_pct'])
+        self.assertEqual(out['runs'], 6)
+        self.assertAlmostEqual(out['cost_usd'], 3.0)
+
+    def test_two_of_three_passes_on_any_model_means_not_reproduced(self):
+        out = self.reproduce('reproduce-pass-2of3', 'reproduce-fail-1of3')
+        self.assertEqual(out['outcome'], 'not_reproduced')
+        self.assertFalse(out['per_model']['opus']['reproduced'])
+        self.assertTrue(out['per_model']['sonnet']['reproduced'])
+        self.assertIn('opus (2/3)', out['reasons'][0])
+
+
 class CaseHash(unittest.TestCase):
     def test_hash_covers_files_by_relative_path_and_skips_results_and_pycache(self):
         with tempfile.TemporaryDirectory() as temp:

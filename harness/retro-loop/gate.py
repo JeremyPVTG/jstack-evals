@@ -16,9 +16,10 @@ import stat
 import sys
 from pathlib import Path
 
-TARGET_RUNS, HOLDOUT_RUNS, CONTROL_RUNS = 5, 5, 3
+TARGET_RUNS, HOLDOUT_RUNS, CONTROL_RUNS, REPRODUCE_RUNS = 5, 5, 3, 3
 MAX_INCUMBENT_TARGET, MIN_HOLDOUT = 1, 3
 MAX_CONTROL_DROP, MAX_GROWTH_PCT = 1, 20
+NOT_REPRODUCED_AT = 2  # incumbent target passes out of REPRODUCE_RUNS, on any model
 SKIPPED_DIRS = {'results', '__pycache__'}
 
 
@@ -84,6 +85,8 @@ def collect(entries, base):
 def planned(m):
     """(condition, case name, runs) that each model must have for this decision."""
     cases = m['cases']
+    if m['mode'] == 'reproduce':
+        return [('incumbent', cases['target']['name'], REPRODUCE_RUNS)]
     target, controls = cases['target']['name'], [c['name'] for c in cases['controls']]
     return ([('incumbent', target, TARGET_RUNS)] + [('incumbent', c, CONTROL_RUNS) for c in controls]
             + [('candidate', target, TARGET_RUNS), ('candidate', cases['holdout']['name'], HOLDOUT_RUNS)]
@@ -151,27 +154,87 @@ def model_result(m, groups, model):
     }
 
 
+def reproduce_result(m, groups, model):
+    passes = tally(groups, 'incumbent', model, m['cases']['target']['name'], REPRODUCE_RUNS)['passes']
+    return {'target_incumbent': f'{passes}/{REPRODUCE_RUNS}', 'reproduced': passes < NOT_REPRODUCED_AT}
+
+
+def reproduced(models, per_model):
+    """Reproduced only if the incumbent fails the target on every model."""
+    passing = [f"{model} ({per_model[model]['target_incumbent']})" for model in models
+               if not per_model[model]['reproduced']]
+    if passing:
+        return 'not_reproduced', [f"Incumbent passed the target on {' and '.join(passing)}: "
+                                  'the case does not capture the failure.']
+    figures = ', '.join(f"{model} {per_model[model]['target_incumbent']}" for model in models)
+    return 'reproduced', [f'Failure reproduced: incumbent passed the target {figures}.']
+
+
+def stored_incumbent(m, base, seen):
+    """Incumbent result entries from the previous attempt, and reasons when a frozen case changed since then.
+
+    Reuse needs the same incumbent commit and the same frozen case hashes.
+    Entry paths come back absolute, so they read the same from any manifest.
+    """
+    ref = m.get('reuse_incumbent_from')
+    if not ref:
+        return [], []
+    path = (base / ref).resolve()
+    if path in seen:
+        raise ManifestError(f'reuse_incumbent_from loops back to {ref}')
+    prev = load_json(path, 'previous manifest')
+    if prev.get('mode') != 'gate':
+        raise ManifestError(f'reuse_incumbent_from {ref} is not a gate manifest')
+    if prev['revisions']['incumbent'] != m['revisions']['incumbent']:
+        raise ManifestError(f'incumbent commit changed since {ref}: run the incumbent again instead of reusing its runs')
+    old, new = frozen_hashes(prev), frozen_hashes(m)
+    changed = sorted(name for name in set(old) | set(new) if old.get(name) != new.get(name))
+    if changed:
+        return [], [f'Frozen case {name} changed since the previous attempt ({ref}): incumbent runs not reused; '
+                    'treated as gaming the eval.' for name in changed]
+    entries = [dict(e, path=str(path.parent / e['path']),
+                    checker=str(path.parent / e['checker']) if e.get('checker') else None)
+               for e in prev['results'] if e['condition'] == 'incumbent']
+    earlier, refused = stored_incumbent(prev, path.parent, seen | {path})
+    return entries + earlier, refused
+
+
+def frozen_hashes(m):
+    return {case['name']: case['sha256'] for case in all_cases(m)}
+
+
 def decide(manifest_path):
     manifest_path = Path(manifest_path)
     m = load_json(manifest_path, 'manifest')
     base = manifest_path.parent
+    reused, refused = stored_incumbent(m, base, {manifest_path.resolve()})
     groups, count, cost = collect(m['results'], base)
-    per_model = {model: model_result(m, groups, model) for model in m['models']}
-    inc_size = (base / m['skill_md']['incumbent']).stat().st_size
-    cand_size = (base / m['skill_md']['candidate']).stat().st_size
-    growth = (cand_size - inc_size) * 100 / inc_size
+    stored, reused_count, _ = collect(reused, base)
+    for key, runs in stored.items():
+        groups.setdefault(key, []).extend(runs)
+    reproduce = m['mode'] == 'reproduce'
+    if reproduce:
+        per_model = {model: reproduce_result(m, groups, model) for model in m['models']}
+        growth = None
+    else:
+        per_model = {model: model_result(m, groups, model) for model in m['models']}
+        inc_size = (base / m['skill_md']['incumbent']).stat().st_size
+        cand_size = (base / m['skill_md']['candidate']).stat().st_size
+        growth = (cand_size - inc_size) * 100 / inc_size
     retry_used = bool(m.get('infra_retry_used', False))
     out = {
         'mode': m['mode'],
         'outcome': None,
         'reasons': [],
         'per_model': per_model,
-        'skill_growth_pct': round(growth, 1),
+        'skill_growth_pct': None if growth is None else round(growth, 1),
         'runs': count,
         'cost_usd': round(cost, 4),
         'infra_retry_used': retry_used,
+        'incumbent_reused': bool(reused),
+        'reused_runs': reused_count,
     }
-    changed = frozen_case_changes(m, base)
+    changed = frozen_case_changes(m, base) + refused
     faults = infra_faults(m, groups)
     if changed:
         out.update(outcome='rejected', reasons=changed)
@@ -181,6 +244,8 @@ def decide(manifest_path):
     elif faults:
         out.update(outcome='inconclusive',
                    reasons=['Second infrastructure fault this attempt: ' + ' '.join(faults)])
+    elif reproduce:
+        out.update(zip(('outcome', 'reasons'), reproduced(m['models'], per_model)))
     elif growth > MAX_GROWTH_PCT:
         out.update(outcome='rejected', reasons=[f'SKILL.md grew {growth:.1f}% (limit {MAX_GROWTH_PCT}%).'])
     else:
