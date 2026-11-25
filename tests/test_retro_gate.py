@@ -145,6 +145,42 @@ class GateDecision(GateFixture):
         self.assertTrue(out['infra_retry_used'])
         self.assertIn('Second infrastructure fault', out['reasons'][0])
 
+    def break_one_run(self, results, condition, model, file_prefix, error='exit 1: API Error: 529 Overloaded',
+                      case_index=0):
+        entry = next(r for r in results if r['condition'] == condition and r['model'] == model
+                     and Path(r['path']).name[3:].startswith(file_prefix))
+        path = self.dir / entry['path']
+        data = json.loads(path.read_text())
+        data['cases'][case_index]['arms']['with'][0].update(passed=False, error=error, graders=[])
+        path.write_text(json.dumps(data))
+
+    def test_one_ungraded_run_in_a_target_or_holdout_case_is_an_infrastructure_fault(self):
+        for condition, prefix, case in (('candidate', 'target', TARGET), ('incumbent', 'target', TARGET),
+                                        ('candidate', 'holdout', HOLDOUT)):
+            with self.subTest(f'{condition} {prefix}'):
+                results = self.full_gate()
+                self.break_one_run(results, condition, 'sonnet', prefix)
+                out = self.decide(self.manifest(results, file=f'{condition}-{prefix}.json'))
+                self.assertEqual(out['outcome'], 'retry')
+                self.assertTrue(out['infra_retry_used'])
+                self.assertIn(f'sonnet {condition} {case}: 1 of 5', out['reasons'][0])
+
+    def test_one_ungraded_run_in_a_reproduce_target_is_an_infrastructure_fault(self):
+        results = self.runs('incumbent', 'opus', 'reproduce-fail-1of3') + self.runs('incumbent', 'sonnet',
+                                                                                    'reproduce-fail-1of3')
+        self.break_one_run(results, 'incumbent', 'opus', 'reproduce')
+        out = self.decide(self.manifest(results, mode='reproduce'))
+        self.assertEqual(out['outcome'], 'retry')
+        self.assertIn(f'opus incumbent {TARGET}: 1 of 3', out['reasons'][0])
+
+    def test_one_ungraded_control_run_of_three_is_not_an_infrastructure_fault(self):
+        results = self.full_gate()
+        self.break_one_run(results, 'candidate', 'opus', 'controls')
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'accepted')
+        self.assertFalse(out['infra_retry_used'])
+        self.assertEqual(out['per_model']['opus']['max_control_drop'], 1)
+
     def test_turn_limit_and_timeout_are_task_failures_not_infrastructure(self):
         results = self.full_gate()
         entry = next(r for r in results if r['condition'] == 'candidate' and r['model'] == 'opus'

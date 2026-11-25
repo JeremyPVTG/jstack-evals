@@ -14,6 +14,8 @@ judgeCostUsd above 0, makes the manifest malformed (exit 2).
 Gate rules, first match wins (ADR 0005 in jstack):
   a frozen case hash changed                    -> rejected
   infrastructure fault, retry not yet used      -> retry (attempt not used)
+    (any ungraded run in the target or holdout, more than a third of a
+     control's runs; a turn limit or timeout is a graded task failure)
   infrastructure fault, retry already used      -> inconclusive
   SKILL.md grew more than 20%                   -> rejected
   any model: a critical failure, or a control drops more than 1 of 3 -> rejected
@@ -195,12 +197,17 @@ def tally(groups, condition, model, case, runs):
 
 
 def infra_faults(m, groups):
-    """A case is faulty when more than a third of a condition's runs errored, were not graded or are missing."""
+    """Infrastructure faults, which go to the free retry instead of using up an attempt.
+
+    In the target or the soft holdout every run decides the outcome, so one run that errored, was not graded
+    or is missing is a fault. A control is faulty when more than a third of a condition's runs are.
+    """
+    decisive = {m['cases']['target']['name']} | ({m['cases']['holdout']['name']} if m['mode'] == 'gate' else set())
     reasons = []
     for model in m['models']:
         for condition, case, runs in planned(m):
             bad = tally(groups, condition, model, case, runs)['not_graded']
-            if bad * 3 > runs:
+            if bad and (case in decisive or bad * 3 > runs):
                 reasons.append(f'{model} {condition} {case}: {bad} of {runs} runs errored, '
                                'were not graded or are missing.')
     return reasons
