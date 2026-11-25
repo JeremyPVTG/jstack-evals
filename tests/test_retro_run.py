@@ -336,15 +336,96 @@ class Refusals(DriverFixture):
         self.assertIn('incumbent alone', self.refused('reproduce', '--candidate', 'loop-weak'))
 
 
-class Wrapper(unittest.TestCase):
-    def test_claude_runs_inside_the_same_wrapper_and_flags_as_the_j_build_harness(self):
+class Wrapper(DriverFixture):
+    """The command around claude (billing and secret routing) is local: an environment variable or a gitignored file."""
+
+    def fake(self):
+        return f'{shlex.quote(sys.executable)} {shlex.quote(str(FAKE_CLAUDE))}'
+
+    def drive_without_flag(self, env=None, local=None):
+        plan_file = self.root / 'plan.json'
+        plan_file.write_text(json.dumps(self.plan('reproduce')))
+        argv = self.argv('reproduce', str(plan_file))
+        i = argv.index('--claude-command')
+        del argv[i:i + 2]
+        out = io.StringIO()
+        environ = {k: v for k, v in os.environ.items() if k != run.WRAPPER_ENV}
+        with redirect_stdout(out), mock.patch.dict(os.environ, {**environ, **self.env, **(env or {})}, clear=True), \
+                mock.patch.object(run, 'WRAPPER_FILE', local or self.root / 'no-wrapper.local.json'):
+            code = run.main(argv)
+        return code, json.loads(out.getvalue())
+
+    def test_the_environment_variable_names_the_wrapper(self):
+        code, report = self.drive_without_flag(env={run.WRAPPER_ENV: self.fake()})
+        self.assertEqual(code, 0, report)
+        self.assertEqual(len(self.calls()), 2)
+
+    def test_the_local_wrapper_file_names_it_when_the_variable_is_unset(self):
+        local = self.root / 'wrapper.local.json'
+        local.write_text(json.dumps({'argv': [sys.executable, str(FAKE_CLAUDE)]}))
+        code, report = self.drive_without_flag(local=local)
+        self.assertEqual(code, 0, report)
+        self.assertEqual(len(self.calls()), 2)
+
+    def test_without_a_wrapper_nothing_runs(self):
+        code, report = self.drive_without_flag()
+        self.assertEqual(code, 1)
+        self.assertIn(run.WRAPPER_ENV, report['error'])
+        self.assertIn('wrapper.example.json', report['error'])
+        self.assertEqual(self.calls(), [])
+        self.assertFalse(self.runs.exists())
+
+    def test_a_local_wrapper_with_unfilled_placeholders_is_refused(self):
+        local = self.root / 'wrapper.local.json'
+        local.write_text((run.HERE / 'wrapper.example.json').read_text())
+        code, report = self.drive_without_flag(local=local)
+        self.assertEqual(code, 1)
+        self.assertIn('placeholder', report['error'])
+        self.assertEqual(self.calls(), [])
+
+
+class WrapperDrift(unittest.TestCase):
+    """run.py keeps the plain claude plugin eval flags; the j-build harness and the example keep the wrapper's shape."""
+
+    @staticmethod
+    def j_build_wrapper():
         script = (ROOT / 'harness' / 'j-build' / 'run_eval.sh').read_text().replace('\\\n', ' ')
         tokens = shlex.split(next(line for line in script.splitlines() if 'infisical' in line))
         end = tokens.index('claude') + 1
-        self.assertEqual(tokens[:end], run.CLAUDE)
-        self.assertEqual(tokens[end:end + 3], ['plugin', 'eval', '$target'])
-        self.assertEqual(tokens[end + 3:end + 3 + len(FLAGS)], FLAGS)
+        return tokens[:end], tokens[end:]
+
+    def test_claude_plugin_eval_flags_match_the_j_build_harness(self):
+        _, rest = self.j_build_wrapper()
+        self.assertEqual(rest[:3], ['plugin', 'eval', '$target'])
+        self.assertEqual(rest[3:3 + len(FLAGS)], FLAGS)
         self.assertEqual(run.EVAL_FLAGS[:len(FLAGS)], FLAGS)
+
+    def test_the_example_has_the_wrapper_shape_with_placeholders_for_every_local_value(self):
+        wrapper, _ = self.j_build_wrapper()
+        example = json.loads((run.HERE / 'wrapper.example.json').read_text())['argv']
+        self.assertEqual(len(example), len(wrapper))
+        differ = [(mine, local) for mine, local in zip(example, wrapper) if mine != local]
+        self.assertTrue(differ)
+        for mine, _ in differ:
+            self.assertRegex(mine, r'^<[^<>]+>$')
+        self.assertEqual(example[-1], 'claude')
+
+    def test_the_local_wrapper_matches_the_j_build_harness(self):
+        if not run.WRAPPER_FILE.exists():
+            self.skipTest('no wrapper.local.json on this machine')
+        wrapper, _ = self.j_build_wrapper()
+        self.assertEqual(json.loads(run.WRAPPER_FILE.read_text())['argv'], wrapper)
+
+    def test_tracked_driver_files_name_no_local_path_or_secret_route(self):
+        for path in (SCRIPT, run.HERE / 'wrapper.example.json'):
+            text = path.read_text()
+            self.assertNotRegex(text, r'/Users/|/home/', path)
+            self.assertNotRegex(text, r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', path)
+            self.assertNotRegex(text, r"--path', '/", path)
+
+    def test_the_local_wrapper_is_gitignored(self):
+        rel = run.WRAPPER_FILE.relative_to(ROOT)
+        self.assertEqual(subprocess.run(['git', '-C', str(ROOT), 'check-ignore', '-q', str(rel)]).returncode, 0)
 
 
 if __name__ == '__main__':

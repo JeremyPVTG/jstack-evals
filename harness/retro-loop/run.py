@@ -27,6 +27,11 @@ the same inputs reuses the saved results and pays for nothing twice. When a froz
 has changed, nothing is run: the gate rejects on the hashes alone. The jstack kill switch
 (loop.disabled) is checked before each paid invocation.
 
+The command that runs claude, with whatever routes billing and secrets on this machine, is not
+tracked: --claude-command, else $JSTACK_RETRO_CLAUDE (a shell-quoted command), else the "argv"
+list in harness/retro-loop/wrapper.local.json (gitignored; copy wrapper.example.json and fill in
+its placeholders). The driver adds `plugin eval` and its flags.
+
 Prints one JSON report. Exits 0 when the gate decided, 3 when the driver refused or stopped
 before deciding, and 1 on an error.
 """
@@ -48,14 +53,11 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import gate  # noqa: E402
 
-# The environment wrapper of harness/j-build/run_eval.sh: bill the Platform key at Infisical /research and keep the
-# owner's proxy and tool keys out of the runs. tests/test_retro_run.py fails when the two drift apart.
-CLAUDE = ['/Users/jeremy/.local/bin/infisical', 'run', '--silent', '--projectId', 'dbb4c6c1-6800-4479-8cfd-fd65c2d5966d',
-          '--env', 'prod', '--path', '/research', '--',
-          'env', '-u', 'CLAUDE_CONFIG_DIR', '-u', 'ANTHROPIC_BASE_URL', '-u', 'ANTHROPIC_AUTH_TOKEN', '-u', 'EXA_API_KEY',
-          '-u', 'FIRECRAWL_API_KEY', '-u', 'OPENROUTER_API_KEY', '-u', 'TAVILY_API_KEY', '-u', 'TYPESAFE_API_KEY',
-          'claude']
-EVAL_FLAGS = ['--ablation', 'none', '--threshold', '0', '--trust-plugin', '--no-publish', '--keep-temp', '--scaffold',
+# The command that runs claude, with its billing and secret routing, is local to the machine: --claude-command, then
+# $JSTACK_RETRO_CLAUDE, then wrapper.local.json (gitignored, copied from wrapper.example.json). The flags stay here.
+WRAPPER_ENV = 'JSTACK_RETRO_CLAUDE'
+WRAPPER_FILE = HERE / 'wrapper.local.json'
+EVAL_FLAGS =['--ablation', 'none', '--threshold', '0', '--trust-plugin', '--no-publish', '--keep-temp', '--scaffold',
               '-j', '4']
 # The j-build harness grant. Without it agents cannot run tests or write receipts, which voided the first reproduce run.
 TOOLS = ['--allow-tools', 'Write', 'Edit', 'Bash']
@@ -191,6 +193,25 @@ def build_plugin(jstack, rev, skill, cases, dest, description):
     os.replace(tmp, dest)
 
 
+def claude_command(given):
+    """argv that runs claude: --claude-command, then $JSTACK_RETRO_CLAUDE, then the argv in wrapper.local.json."""
+    text = given or os.environ.get(WRAPPER_ENV)
+    if text:
+        return shlex.split(text)
+    if not WRAPPER_FILE.is_file():
+        raise DriverError(f'no eval wrapper: set ${WRAPPER_ENV} to the command that runs claude, or copy '
+                          f'{WRAPPER_FILE.with_name("wrapper.example.json")} to {WRAPPER_FILE.name} beside it and '
+                          'fill it in (--claude-command overrides both)')
+    data = read_json(str(WRAPPER_FILE), 'eval wrapper')
+    argv = data.get('argv') if isinstance(data, dict) else None
+    if not (isinstance(argv, list) and argv and all(isinstance(a, str) and a for a in argv)):
+        raise DriverError(f'{WRAPPER_FILE} needs "argv": the command that runs claude, as a list of strings')
+    unfilled = [a for a in argv if a.startswith('<') and a.endswith('>')]
+    if unfilled:
+        raise DriverError(f"{WRAPPER_FILE} still has placeholders to fill in: {', '.join(unfilled)}")
+    return argv
+
+
 def read_results(path, case):
     """(runs, cost) from one claude plugin eval --json file that must hold exactly this case."""
     data = json.loads(path.read_text())
@@ -227,6 +248,7 @@ class Driver:
         checker = Path(args.checker).expanduser().resolve()
         if not checker.is_file():
             raise DriverError(f'--checker {args.checker} is not a file')
+        self.claude = claude_command(args.claude_command)
         if mode == 'gate' and holdout_dir is None:
             raise Refused('a gate needs --holdout-dir: the soft holdout runs for the candidate')
         if mode == 'reproduce' and (args.candidate or args.reuse_incumbent_from):
@@ -282,8 +304,7 @@ class Driver:
             build_plugin(jstack, revisions[condition], skill, sources, run_dir / plugins[condition],
                          f'retro loop finding {finding}')
 
-        self.claude = shlex.split(args.claude_command) if args.claude_command else CLAUDE
-        records = [] if changed else alternate(planned, args.models, bool(previous))
+        records =[] if changed else alternate(planned, args.models, bool(previous))
         self.report['invocations'] = records
         spent = 0.0
         for record in records:
@@ -424,7 +445,8 @@ def parser():
     p.add_argument('--run-root', help=f'parent of per-finding run directories (default: $JSTACK_RETRO_RUNS or {RUN_ROOT})')
     p.add_argument('--run-dir', help='exact run directory, instead of one named from the inputs')
     p.add_argument('--kill-switch', help=f'stop file (default: {KILL_SWITCH} in the jstack checkout)')
-    p.add_argument('--claude-command', help='command that replaces the Infisical-wrapped claude, such as a fake for tests')
+    p.add_argument('--claude-command', help=f'command that runs claude (default: ${WRAPPER_ENV}, then the argv in '
+                   f'{WRAPPER_FILE.name}), such as a fake for tests')
     return p
 
 
