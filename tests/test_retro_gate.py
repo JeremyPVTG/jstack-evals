@@ -279,6 +279,55 @@ class Reproduce(GateFixture):
         self.assertIn('opus (2/3)', out['reasons'][0])
 
 
+class HoldoutDir(GateFixture):
+    """The soft holdout lives apart from the other cases, out of the implementer's reach."""
+
+    def move_holdout(self):
+        (self.dir / 'holdout').mkdir()
+        shutil.move(str(self.cases / HOLDOUT), str(self.dir / 'holdout' / HOLDOUT))
+
+    def reproduce_runs(self):
+        return self.runs('incumbent', 'opus', 'reproduce-fail-1of3') + self.runs('incumbent', 'sonnet', 'reproduce-fail-1of3')
+
+    def test_gate_rechecks_the_holdout_under_holdout_dir(self):
+        path = self.manifest(self.full_gate(), holdout_dir='holdout')
+        self.move_holdout()
+        self.assertEqual(self.decide(path)['outcome'], 'accepted')
+
+    def test_holdout_changed_in_holdout_dir_is_rejected(self):
+        path = self.manifest(self.full_gate(), holdout_dir='holdout')
+        self.move_holdout()
+        with open(self.dir / 'holdout' / HOLDOUT / 'prompt.md', 'a') as prompt:
+            prompt.write('Status: complete is fine.\n')
+        out = self.decide(path)
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertIn(f'{HOLDOUT} changed after freezing', out['reasons'][0])
+
+    def test_without_holdout_dir_the_holdout_is_looked_for_under_case_dir(self):
+        path = self.manifest(self.full_gate())
+        self.move_holdout()
+        out = self.decide(path)
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertIn(f'{HOLDOUT} is missing from cases', out['reasons'][0])
+
+    def test_reproduce_needs_no_holdout_anywhere(self):
+        path = self.manifest(self.reproduce_runs(), mode='reproduce')  # names the holdout, as the frozen cases do
+        shutil.rmtree(self.cases / HOLDOUT)
+        self.assertEqual(self.decide(path)['outcome'], 'reproduced')
+
+    def test_reproduce_still_rechecks_the_controls(self):
+        path = self.manifest(self.reproduce_runs(), mode='reproduce', holdout_dir='no-such-dir')
+        with open(self.cases / 'fresh-receipts' / 'prompt.md', 'a') as prompt:
+            prompt.write('Also bump the version.\n')
+        out = self.decide(path)
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertIn('fresh-receipts changed after freezing', out['reasons'][0])
+
+    def test_gate_with_a_holdout_dir_that_is_not_a_directory_is_malformed(self):
+        with self.assertRaisesRegex(gate.ManifestError, 'holdout_dir'):
+            self.decide(self.manifest(self.full_gate(), holdout_dir='no-such-dir'))
+
+
 class Command(GateFixture):
     def run_gate(self, *args):
         return subprocess.run([sys.executable, str(SCRIPT), *map(str, args)], capture_output=True, text=True)

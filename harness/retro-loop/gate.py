@@ -20,6 +20,11 @@ Gate rules, first match wins (ADR 0005 in jstack):
 Reproduce mode: 3 incumbent target runs per model; 2 or more passes on any
 model -> not_reproduced, otherwise reproduced. The hash and infrastructure
 rules apply first in both modes.
+
+Frozen case hashes are rechecked under `case_dir`, except the soft holdout,
+which is rechecked under `holdout_dir` when the manifest names one. Reproduce
+mode rechecks the target and controls only: the holdout is not needed before
+its gate runs.
 """
 import hashlib
 import json
@@ -95,6 +100,10 @@ def validate(m, base):
     need(len({c['name'] for c in named}) == len(named), 'case names must be distinct')
     need(isinstance(m.get('case_dir'), str) and (base / m['case_dir']).is_dir(),
          f"case_dir {m.get('case_dir')!r} is not a directory")
+    holdout_dir = m.get('holdout_dir')
+    need(holdout_dir is None or isinstance(holdout_dir, str), 'holdout_dir must be a path or null')
+    if is_gate and holdout_dir is not None:
+        need((base / holdout_dir).is_dir(), f'holdout_dir {holdout_dir!r} is not a directory')
     revisions, skill_md = m.get('revisions') or {}, m.get('skill_md') or {}
     need(isinstance(revisions.get('incumbent'), str), 'revisions.incumbent is required')
     if is_gate:
@@ -343,11 +352,16 @@ def compare(models, per_model):
 
 
 def frozen_case_changes(m, base):
-    case_dir = base / m['case_dir']
+    """Reasons for each frozen case that is missing or changed. Reproduce mode never needs the holdout."""
+    cases = m['cases']
+    checked = [(cases['target'], m['case_dir'])] + [(c, m['case_dir']) for c in cases.get('controls', [])]
+    if m['mode'] == 'gate':
+        checked.insert(1, (cases['holdout'], m.get('holdout_dir') or m['case_dir']))
     reasons = []
-    for case in all_cases(m):
+    for case, where in checked:
+        case_dir = base / where
         if not (case_dir / case['name']).is_dir():
-            reasons.append(f"Frozen case {case['name']} is missing from {m['case_dir']}: treated as gaming the eval.")
+            reasons.append(f"Frozen case {case['name']} is missing from {where}: treated as gaming the eval.")
             continue
         actual = case_hash(case_dir / case['name'])
         if actual != case['sha256']:
