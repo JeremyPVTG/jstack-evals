@@ -237,7 +237,7 @@ class Reproduce(DriverFixture):
 
 
 class Gate(DriverFixture):
-    def test_gate_alternates_conditions_and_runs_what_gate_py_plans(self):
+    def test_gate_pairs_conditions_in_the_seeded_order_and_runs_what_gate_py_plans(self):
         code, report = self.drive('gate')
         self.assertEqual(code, 0, report)
         self.assertEqual(report['decision']['outcome'], 'accepted')
@@ -247,15 +247,17 @@ class Gate(DriverFixture):
         calls = self.calls()
         seen = [(self.condition_of(manifest, c), self.flag(c, '--model'), Path(c[2]).parent.name,
                  int(self.flag(c, '--runs'))) for c in calls]
-        expected = []
-        for case, runs in [(TARGET, 5)] + [(name, 3) for name in CONTROLS]:
-            for model in ('opus', 'sonnet'):
-                expected += [('incumbent', model, case, runs), ('candidate', model, case, runs)]
-        expected += [('candidate', 'opus', HOLDOUT, 5), ('candidate', 'sonnet', HOLDOUT, 5)]
-        self.assertEqual(seen, expected)
+        pairs = [(case, model) for case in [TARGET] + CONTROLS for model in ('opus', 'sonnet')]
+        self.assertEqual([(case, model) for _, model, case, _ in seen[:2 * len(pairs):2]], pairs)
+        for i in range(0, 2 * len(pairs), 2):
+            self.assertEqual({seen[i][0], seen[i + 1][0]}, {'incumbent', 'candidate'})
+            self.assertEqual(seen[i][1:], seen[i + 1][1:])
+        self.assertEqual(seen[2 * len(pairs):], [('candidate', 'opus', HOLDOUT, 5), ('candidate', 'sonnet', HOLDOUT, 5)])
         planned = sorted((cond, model, case, runs) for model in ('opus', 'sonnet')
                          for cond, case, runs in gate.planned(manifest))
         self.assertEqual(sorted(seen), planned)
+        replay = run.alternate(gate.planned(manifest), manifest['models'], False, manifest['order_seed'])
+        self.assertEqual([(r['condition'], r['model'], r['case'], r['runs']) for r in replay], seen)
         self.assertTrue(all(self.flag(c, '--allow-tools', 3) == ['Write', 'Edit', 'Bash'] for c in calls))
 
         run_dir = Path(report['run_dir'])
@@ -275,6 +277,19 @@ class Gate(DriverFixture):
         self.assertEqual({tuple(v) for v in index.values()}, {('case',)})
         key = json.loads(Path(judges['key']).read_text())
         self.assertEqual({v['condition'] for v in key.values()}, {'incumbent', 'candidate'})
+
+    def test_the_order_seed_is_recorded_stable_for_the_same_inputs_and_settable(self):
+        _, first = self.drive('gate')
+        _, again = self.drive('gate')
+        seed = self.manifest(first)['order_seed']
+        self.assertIsInstance(seed, int)
+        self.assertEqual(self.manifest(again)['order_seed'], seed)
+        self.calls()
+        code, seeded = self.drive('gate', '--seed', '7')
+        self.assertEqual(code, 0, seeded)
+        self.assertEqual(self.manifest(seeded)['order_seed'], 7)
+        self.assertNotEqual(seeded['run_dir'], first['run_dir'])
+        self.assertEqual(len(self.calls()), 14)  # a new run directory: 4 target, 8 control and 2 holdout invocations
 
     def test_second_attempt_runs_only_the_candidate_against_the_saved_incumbent(self):
         code, first = self.drive('gate', '--candidate', 'loop-weak')
@@ -299,6 +314,34 @@ class Gate(DriverFixture):
         self.assertEqual(code, 3)
         self.assertIn('incumbent differs', report['refused'])
         self.assertEqual(self.calls(), [])
+
+
+class ConditionOrder(unittest.TestCase):
+    """docs/hill-climb.md: randomize condition order. Each case and model keeps its pair adjacent."""
+
+    PLANNED = [('incumbent', 'stale', 5), ('incumbent', 'control', 3), ('candidate', 'stale', 5),
+               ('candidate', 'holdout', 5), ('candidate', 'control', 3)]
+
+    def firsts(self, seed):
+        order = run.alternate(self.PLANNED, ['opus', 'sonnet'], False, seed)
+        return [order[i]['condition'] for i in range(0, 8, 2)], order
+
+    def test_the_seed_decides_which_condition_of_each_pair_runs_first(self):
+        seen = set()
+        for seed in range(20):
+            firsts, order = self.firsts(seed)
+            self.assertEqual(order, self.firsts(seed)[1])
+            for i in range(0, 8, 2):
+                self.assertEqual({order[i]['condition'], order[i + 1]['condition']}, {'incumbent', 'candidate'})
+                self.assertEqual((order[i]['case'], order[i]['model']), (order[i + 1]['case'], order[i + 1]['model']))
+            seen.update(firsts)
+        self.assertEqual(seen, {'incumbent', 'candidate'})
+        self.assertNotEqual(len({tuple(self.firsts(seed)[0]) for seed in range(20)}), 1)
+
+    def test_a_reused_incumbent_leaves_only_candidate_invocations(self):
+        order = run.alternate(self.PLANNED, ['opus'], True, 3)
+        self.assertEqual([(r['condition'], r['case']) for r in order],
+                         [('candidate', 'stale'), ('candidate', 'control'), ('candidate', 'holdout')])
 
 
 class Refusals(DriverFixture):

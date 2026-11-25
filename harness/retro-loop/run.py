@@ -15,7 +15,9 @@ For each condition the driver builds a plugin named jstack from `git archive <re
 skills/<owning skill>` of the jstack checkout, plus the frozen cases that condition runs. The
 soft holdout goes into the candidate's plugin only, and only in gate mode. It runs `claude
 plugin eval` once per case, model and condition, with the run counts gate.py plans (target 5,
-holdout 5, controls 3, reproduce 3), alternating incumbent and candidate. Each invocation gets
+holdout 5, controls 3, reproduce 3), with each case and model's incumbent and candidate side by
+side in a random order drawn from a seed (--seed, or one drawn from the step's inputs), which the
+manifest records as order_seed so the order can be given again. Each invocation gets
 what is left of the budget as --max-cost-usd. Then it runs the checker on each results file,
 copies the traces, writes manifest.json, asks gate.py for the decision and, in gate mode,
 writes a bundle of traces for the advisory judges with the condition hidden. The runner
@@ -159,13 +161,18 @@ def previous_attempt(value, finding, skill):
     return path, prev
 
 
-def alternate(planned, models, reuse):
-    """One invocation per case, model and condition: case by case, model by model, incumbent then candidate."""
+def alternate(planned, models, reuse, seed):
+    """One invocation per case, model and condition: case by case, model by model, the two conditions side by side.
+
+    Which condition of a pair runs first is drawn from random.Random(seed), so the order is random and the seed
+    recorded in the manifest gives it again.
+    """
+    draw = random.Random(seed)
     cases = list(dict.fromkeys(case for _, case, _ in planned))
     order = []
     for case in cases:
         for model in models:
-            for condition in ('incumbent', 'candidate'):
+            for condition in draw.sample(('incumbent', 'candidate'), 2):
                 if reuse and condition == 'incumbent':
                     continue
                 order += [{'condition': condition, 'model': model, 'case': case, 'runs': runs}
@@ -265,10 +272,13 @@ class Driver:
                 raise Refused(f'the candidate is the incumbent ({incumbent[:12]}): nothing to compare')
         revisions = {'incumbent': incumbent, 'candidate': candidate}
         checker_sha = hashlib.sha256(checker.read_bytes()).hexdigest()
-        key = digest(json.dumps({
-            'mode': mode, 'finding': finding, 'attempt': plan['attempt'], 'retry': plan['infra_retry_used'],
-            'models': args.models, 'revisions': revisions, 'cases': cases, 'checker': checker_sha,
-            'reuse': str(previous[0]) if previous else None}, sort_keys=True))
+        inputs = {'mode': mode, 'finding': finding, 'attempt': plan['attempt'], 'retry': plan['infra_retry_used'],
+                  'models': args.models, 'revisions': revisions, 'cases': cases, 'checker': checker_sha,
+                  'reuse': str(previous[0]) if previous else None}
+        if args.seed is not None:
+            inputs['seed'] = args.seed
+        key = digest(json.dumps(inputs, sort_keys=True))
+        seed = args.seed if args.seed is not None else int(key[:8], 16)  # same inputs, same order
         run_dir = self.run_dir(plan, key)
         for repo in (top, ROOT):
             if inside(run_dir, repo):
@@ -289,6 +299,7 @@ class Driver:
             'results': [], 'reuse_incumbent_from': str(previous[0]) if previous else None,
             'checker': {'path': str(checker), 'sha256': checker_sha},
             'max_cost_usd': plan['max_cost_usd'],
+            'order_seed': seed,
             'runner': 'claude plugin eval ' + ' '.join(EVAL_FLAGS + TOOLS),
             'evals_revision': git(ROOT, 'rev-parse', 'HEAD').strip(),
         }
@@ -304,7 +315,7 @@ class Driver:
             build_plugin(jstack, revisions[condition], skill, sources, run_dir / plugins[condition],
                          f'retro loop finding {finding}')
 
-        records =[] if changed else alternate(planned, args.models, bool(previous))
+        records = [] if changed else alternate(planned, args.models, bool(previous), seed)
         self.report['invocations'] = records
         spent = 0.0
         for record in records:
@@ -442,6 +453,8 @@ def parser():
     p.add_argument('--candidate', help="gate: jstack revision under test (default: the plan's loop branch)")
     p.add_argument('--reuse-incumbent-from', help="gate: the previous attempt's manifest.json, to run only the candidate")
     p.add_argument('--models', nargs='+', default=['opus', 'sonnet'])
+    p.add_argument('--seed', type=int, help='seed for the condition order (default: drawn from the inputs, so the '
+                   'same inputs give the same order); recorded in the manifest as order_seed')
     p.add_argument('--run-root', help=f'parent of per-finding run directories (default: $JSTACK_RETRO_RUNS or {RUN_ROOT})')
     p.add_argument('--run-dir', help='exact run directory, instead of one named from the inputs')
     p.add_argument('--kill-switch', help=f'stop file (default: {KILL_SWITCH} in the jstack checkout)')
