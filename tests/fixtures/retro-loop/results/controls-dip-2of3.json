@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.331",
+  "startedAt": "2026-11-25T10:30:00.000Z",
+  "durationSeconds": 90,
+  "costUsd": 3.0,
+  "partial": false,
+  "suite": {"root": "/tmp/retro-loop/build", "ablation": "none", "modelOverride": null, "threshold": 0, "concurrency": 4, "plugins": [{"name": "jstack", "version": "0.0.0", "path": "/tmp/retro-loop/build"}]},
+  "cases": [
+    {
+      "name": "fresh-receipts",
+      "dir": "evals/fresh-receipts",
+      "source": "mixed",
+      "promptMarkdown": "Use the j-build skill. Wrap up this change and confirm it is done.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 30,
+      "graders": [{"name": "status", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "Status: complete", "flags": "", "match": "contains"}}],
+      "arms": {
+        "with": [
+          {"score": 1, "passed": true, "turns": 7, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 30, "startedAt": "2026-11-25T10:30:00.000Z", "error": null, "tracePath": "/private/tmp/e-cv01/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: complete", "withOnly": false, "scored": true}]},
+          {"score": 0, "passed": false, "turns": 13, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 55, "startedAt": "2026-11-25T10:30:00.000Z", "error": null, "tracePath": "/private/tmp/e-cv02/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": false, "weight": 1, "explanation": "pattern not found", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 6, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 29, "startedAt": "2026-11-25T10:30:00.000Z", "error": null, "tracePath": "/private/tmp/e-cv03/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: complete", "withOnly": false, "scored": true}]}
+        ]
+      },
+      "aggregates": {"score": 0.6666666666666666, "passRate": 0.6666666666666666}
+    },
+    {
+      "name": "one-stale-lens",
+      "dir": "evals/one-stale-lens",
+      "source": "mixed",
+      "promptMarkdown": "Use the j-build skill. Wrap up this change and confirm it is done.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 30,
+      "graders": [{"name": "status", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "security", "flags": "", "match": "contains"}}],
+      "arms": {
+        "with": [
+          {"score": 1, "passed": true, "turns": 8, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 36, "startedAt": "2026-11-25T10:30:00.000Z", "error": null, "tracePath": "/private/tmp/e-cv04/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched security", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 9, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 38, "startedAt": "2026-11-25T10:30:00.000Z", "error": null, "tracePath": "/private/tmp/e-cv05/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched security", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 8, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 35, "startedAt": "2026-11-25T10:30:00.000Z", "error": null, "tracePath": "/private/tmp/e-cv06/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched security", "withOnly": false, "scored": true}]}
+        ]
+      },
+      "aggregates": {"score": 1, "passRate": 1}
+    }
+  ],
+  "aggregates": {"casesTotal": 2, "casesPassed": 1, "overallScore": 0.8333333333333334, "overallPassRate": 0.8333333333333334}
+}

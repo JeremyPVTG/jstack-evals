@@ -1,0 +1,213 @@
+"""The retro loop gate command, over small recorded result files.
+
+Each test freezes the fixture cases, writes a manifest that points at copies
+of recorded `claude plugin eval` result files, and checks the decision the
+gate returns. Every run in the fixtures costs $0.50 (agent plus judge).
+"""
+import importlib.util
+import json
+from pathlib import Path
+import shutil
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / 'harness' / 'retro-loop' / 'gate.py'
+FIXTURES = Path(__file__).resolve().parent / 'fixtures' / 'retro-loop'
+spec = importlib.util.spec_from_file_location('retro_gate', SCRIPT)
+gate = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(gate)
+
+TARGET, HOLDOUT, CONTROLS = 'stale-receipts', 'stale-receipts-reworded', ['fresh-receipts', 'one-stale-lens']
+MODELS = ['opus', 'sonnet']
+INCUMBENT_SHA, CANDIDATE_SHA = 'a' * 40, 'b' * 40
+
+
+class GateFixture(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.dir = Path(temp.name)
+        self.cases = self.dir / 'cases'
+        shutil.copytree(FIXTURES / 'cases', self.cases)
+        self.copies = 0
+        self.skill('incumbent', 1000)
+        self.skill('candidate', 1080)
+
+    def skill(self, condition, size):
+        (self.dir / f'SKILL-{condition}.md').write_text('x' * size)
+
+    def copy(self, kind, name):
+        """Copy one recorded file next to the manifest, as a runner would save it."""
+        self.copies += 1
+        target = self.dir / 'runs' / f'{self.copies:02d}-{name}.json'
+        target.parent.mkdir(exist_ok=True)
+        shutil.copy(FIXTURES / kind / f'{name}.json', target)
+        return str(target.relative_to(self.dir))
+
+    def runs(self, condition, model, *names, checker=None):
+        return [{'condition': condition, 'model': model, 'path': self.copy('results', name),
+                 'checker': self.copy('checkers', checker) if checker and name.startswith('target') else None}
+                for name in names]
+
+    def incumbent(self, model, target='target-fail-0of5', controls='controls-pass-3of3'):
+        return self.runs('incumbent', model, target, controls)
+
+    def candidate(self, model, target='target-pass-5of5', holdout='holdout-pass-4of5',
+                  controls='controls-pass-3of3', checker=None):
+        return self.runs('candidate', model, target, holdout, controls, checker=checker)
+
+    def freeze(self, name):
+        return {'name': name, 'sha256': gate.case_hash(self.cases / name)}
+
+    def manifest(self, results, file='manifest.json', mode='gate', **fields):
+        body = {
+            'mode': mode,
+            'finding': 21,
+            'owning_skill': 'j-build',
+            'attempt': 1,
+            'infra_retry_used': False,
+            'models': MODELS,
+            'revisions': {'incumbent': INCUMBENT_SHA, 'candidate': CANDIDATE_SHA if mode == 'gate' else None},
+            'skill_md': {'incumbent': 'SKILL-incumbent.md',
+                         'candidate': 'SKILL-candidate.md' if mode == 'gate' else None},
+            'cases': {'target': self.freeze(TARGET), 'holdout': self.freeze(HOLDOUT),
+                      'controls': [self.freeze(name) for name in CONTROLS]},
+            'case_dir': 'cases',
+            'results': results,
+            'reuse_incumbent_from': None,
+        }
+        body.update(fields)
+        path = self.dir / file
+        path.write_text(json.dumps(body, indent=2))
+        return path
+
+    def full_gate(self, **per_model):
+        """Incumbent and candidate runs for both models; per_model overrides one model's files."""
+        results = []
+        for model in MODELS:
+            override = per_model.get(model, {})
+            results += self.incumbent(model, **override.get('incumbent', {}))
+            results += self.candidate(model, **override.get('candidate', {}))
+        return results
+
+    def decide(self, path):
+        return gate.decide(path)
+
+
+class GateDecision(GateFixture):
+    def test_candidate_that_fixes_the_target_on_both_models_is_accepted(self):
+        out = self.decide(self.manifest(self.full_gate()))
+        self.assertEqual(out['outcome'], 'accepted')
+        self.assertEqual(out['mode'], 'gate')
+        for model in MODELS:
+            self.assertEqual(
+                {k: out['per_model'][model][k] for k in
+                 ('target_candidate', 'target_incumbent', 'holdout', 'max_control_drop', 'critical', 'pass')},
+                {'target_candidate': '5/5', 'target_incumbent': '0/5', 'holdout': '4/5',
+                 'max_control_drop': 0, 'critical': 0, 'pass': True})
+        self.assertEqual(out['skill_growth_pct'], 8.0)
+        self.assertEqual(out['runs'], 54)
+        self.assertAlmostEqual(out['cost_usd'], 27.0)
+        self.assertFalse(out['infra_retry_used'])
+        self.assertTrue(out['reasons'])
+
+    def test_case_edited_after_freezing_is_rejected_whatever_the_scores(self):
+        path = self.manifest(self.full_gate())
+        with open(self.cases / TARGET / 'graders' / 'status.md', 'a') as grader:
+            grader.write('|Status: complete\n')
+        out = self.decide(path)
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertIn(TARGET, out['reasons'][0])
+        self.assertIn('changed after freezing', out['reasons'][0])
+
+    def test_first_infrastructure_fault_asks_for_a_retry_that_uses_no_attempt(self):
+        # opus candidate target: one run errored, one skipped its paid grader (2 of 5 not graded)
+        results = self.full_gate(opus={'candidate': {'target': 'target-infra-2of5'}})
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'retry')
+        self.assertTrue(out['infra_retry_used'])
+        self.assertIn('opus candidate stale-receipts: 2 of 5', out['reasons'][0])
+
+    def test_second_infrastructure_fault_in_the_same_attempt_is_inconclusive(self):
+        results = self.full_gate(opus={'candidate': {'target': 'target-infra-2of5'}})
+        out = self.decide(self.manifest(results, infra_retry_used=True))
+        self.assertEqual(out['outcome'], 'inconclusive')
+        self.assertTrue(out['infra_retry_used'])
+        self.assertIn('Second infrastructure fault', out['reasons'][0])
+
+    def test_skill_md_growth_above_twenty_percent_is_rejected(self):
+        self.skill('candidate', 1201)
+        out = self.decide(self.manifest(self.full_gate()))
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertEqual(out['skill_growth_pct'], 20.1)
+        self.assertIn('SKILL.md grew 20.1%', out['reasons'][0])
+
+    def test_skill_md_growth_of_exactly_twenty_percent_is_allowed(self):
+        self.skill('candidate', 1200)
+        self.assertEqual(self.decide(self.manifest(self.full_gate()))['outcome'], 'accepted')
+
+    def test_critical_failure_on_one_model_rejects_rather_than_disagrees(self):
+        # The checker fails one opus target run the harness passed, and marks it critical.
+        results = self.full_gate(opus={'candidate': {'checker': 'target-critical'}})
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertEqual(out['per_model']['opus']['critical'], 1)
+        self.assertEqual(out['per_model']['opus']['target_candidate'], '4/5')
+        self.assertTrue(out['per_model']['sonnet']['pass'])
+        self.assertTrue(any('opus: 1 critical failure' in r and 'without rerunning' in r for r in out['reasons']))
+
+    def test_control_dropping_two_runs_of_three_on_one_model_rejects(self):
+        results = self.full_gate(sonnet={'candidate': {'controls': 'controls-drop-1of3'}})
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertEqual(out['per_model']['sonnet']['max_control_drop'], 2)
+        self.assertIn('sonnet: control fresh-receipts dropped from 3/3 to 1/3', ' '.join(out['reasons']))
+
+    def test_control_dipping_one_run_of_three_is_allowed(self):
+        results = self.full_gate(sonnet={'candidate': {'controls': 'controls-dip-2of3'}})
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'accepted')
+        self.assertEqual(out['per_model']['sonnet']['max_control_drop'], 1)
+
+    def test_target_miss_on_one_model_is_inconclusive(self):
+        results = self.full_gate(sonnet={'candidate': {'target': 'target-pass-4of5'}})
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'inconclusive')
+        self.assertEqual([out['per_model'][m]['pass'] for m in MODELS], [True, False])
+        self.assertIn('Models disagree', out['reasons'][0])
+        self.assertIn('sonnet: candidate passed the target 4/5, needs 5/5', out['reasons'][0])
+
+    def test_holdout_miss_on_both_models_is_rejected(self):
+        miss = {'candidate': {'holdout': 'holdout-fail-2of5'}}
+        out = self.decide(self.manifest(self.full_gate(opus=miss, sonnet=miss)))
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertEqual(out['reasons'], ['opus: soft holdout 2/5, needs 3/5.', 'sonnet: soft holdout 2/5, needs 3/5.'])
+
+    def test_incumbent_above_one_of_five_is_baseline_drift_and_fails_that_model(self):
+        drift = {'incumbent': {'target': 'target-drift-2of5'}}
+        one = self.decide(self.manifest(self.full_gate(opus=drift)))
+        self.assertEqual(one['outcome'], 'inconclusive')
+        self.assertEqual(one['per_model']['opus']['target_incumbent'], '2/5')
+        self.assertIn('opus: incumbent passed the target 2/5 (baseline drifted)', one['reasons'][0])
+        both = self.decide(self.manifest(self.full_gate(opus=drift, sonnet=drift), file='both.json'))
+        self.assertEqual(both['outcome'], 'rejected')
+
+
+class CaseHash(unittest.TestCase):
+    def test_hash_covers_files_by_relative_path_and_skips_results_and_pycache(self):
+        with tempfile.TemporaryDirectory() as temp:
+            case = Path(temp)
+            (case / 'sub' / 'results').mkdir(parents=True)
+            (case / '__pycache__').mkdir()
+            (case / 'a.txt').write_text('x')
+            (case / 'sub' / 'b.txt').write_text('y')
+            (case / 'sub' / 'results' / 'run.json').write_text('{}')
+            (case / '__pycache__' / 'c.pyc').write_text('cache')
+            # printf 'a.txt\0x\0sub/b.txt\0y\0' | shasum -a 256
+            expected = '052e7ec91c38c2224809ba91adeb47bd42870f97a8db4d768614244afebe98a6'
+            self.assertEqual(gate.case_hash(case), expected)
+
+
+if __name__ == '__main__':
+    unittest.main()
