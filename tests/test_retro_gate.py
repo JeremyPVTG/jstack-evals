@@ -8,6 +8,8 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -120,6 +122,13 @@ class GateDecision(GateFixture):
         self.assertEqual(out['outcome'], 'rejected')
         self.assertIn(TARGET, out['reasons'][0])
         self.assertIn('changed after freezing', out['reasons'][0])
+
+    def test_case_deleted_after_freezing_is_rejected(self):
+        path = self.manifest(self.full_gate())
+        shutil.rmtree(self.cases / 'one-stale-lens')
+        out = self.decide(path)
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assertIn('one-stale-lens is missing', out['reasons'][0])
 
     def test_first_infrastructure_fault_asks_for_a_retry_that_uses_no_attempt(self):
         # opus candidate target: one run errored, one skipped its paid grader (2 of 5 not graded)
@@ -253,6 +262,48 @@ class Reproduce(GateFixture):
         self.assertFalse(out['per_model']['opus']['reproduced'])
         self.assertTrue(out['per_model']['sonnet']['reproduced'])
         self.assertIn('opus (2/3)', out['reasons'][0])
+
+
+class Command(GateFixture):
+    def run_gate(self, *args):
+        return subprocess.run([sys.executable, str(SCRIPT), *map(str, args)], capture_output=True, text=True)
+
+    def test_decide_prints_one_json_decision_and_exits_zero(self):
+        done = self.run_gate('decide', self.manifest(self.full_gate()))
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(json.loads(done.stdout)['outcome'], 'accepted')
+
+    def test_decide_exits_nonzero_with_nothing_on_stdout_for_a_malformed_manifest(self):
+        done = self.run_gate('decide', self.manifest(self.full_gate(), mode='promote'))
+        self.assertNotEqual(done.returncode, 0)
+        self.assertEqual(done.stdout, '')
+        self.assertIn('mode', done.stderr)
+
+    def test_hash_prints_the_sha256_the_gate_rechecks(self):
+        done = self.run_gate('hash', self.cases / TARGET)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(done.stdout.strip(), gate.case_hash(self.cases / TARGET))
+
+    def test_malformed_manifests_are_refused(self):
+        target_twice = self.full_gate() + self.runs('candidate', 'opus', 'target-pass-5of5')
+        bad_checker = self.full_gate()  # [-3] is the sonnet candidate target: 3 runs against 5 checker entries
+        bad_checker[-3].update(path=self.copy('results', 'reproduce-fail-1of3'),
+                               checker=self.copy('checkers', 'target-critical'))
+        cases = {
+            'gate without a holdout': (self.full_gate(), {'cases': {'target': self.freeze(TARGET), 'controls': []}}),
+            'result for a model not in the manifest': (self.full_gate() + self.runs('candidate', 'haiku', 'target-pass-5of5'), {}),
+            'candidate result in reproduce mode': (self.full_gate(), {'mode': 'reproduce'}),
+            'missing result file': ([dict(self.full_gate()[0], path='runs/none.json')] + self.full_gate()[1:], {}),
+            'missing case directory': (self.full_gate(), {'case_dir': 'no-cases'}),
+            'more runs than planned': (target_twice, {}),
+            'checker entries that do not match the runs': (bad_checker, {}),
+            'reuse in reproduce mode': (self.runs('incumbent', 'opus', 'reproduce-fail-1of3'),
+                                        {'mode': 'reproduce', 'reuse_incumbent_from': 'manifest.json'}),
+        }
+        for i, (name, (results, fields)) in enumerate(cases.items()):
+            with self.subTest(name):
+                with self.assertRaises(gate.ManifestError):
+                    self.decide(self.manifest(results, file=f'malformed-{i}.json', **fields))
 
 
 class CaseHash(unittest.TestCase):

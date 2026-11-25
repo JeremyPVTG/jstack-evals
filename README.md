@@ -21,9 +21,11 @@ Every table above links to its own limits. Common ones: cases are mostly written
 ## Layout
 
 - `harness/<skill>/`: `source/` holds cases, fixtures and graders; `build.sh` assembles a plugin with or without the skill; `run_eval.sh` runs one pass with `claude plugin eval`; `results/` holds the raw JSON, including full agent transcripts.
+- `harness/retro-loop/gate.py`: the retro improvement loop's gate (jstack#18). `decide MANIFEST` reads recorded `claude plugin eval` results and checker output and returns accepted, rejected, inconclusive or retry (reproduced or not_reproduced in reproduce mode) with reasons per model. `hash CASE_DIR` prints the sha256 a frozen case is checked against. It calls no model.
 - `experiments/`: one-off questions with their own data and scripts.
 - `docs/decisions/`: protocols agreed before a run (for example the j-research hill-climb rules).
 - `scripts/subject.py`: pins the exact jstack commit under test.
+- `tests/`: checks for the pinning tool, for doc links and for the retro loop gate. They do not measure model performance.
 
 ## Reproduce
 
