@@ -24,11 +24,13 @@ rules apply first in both modes.
 import hashlib
 import json
 import os
+import re
 import stat
 import sys
 from pathlib import Path
 
 TARGET_RUNS, HOLDOUT_RUNS, CONTROL_RUNS, REPRODUCE_RUNS = 5, 5, 3, 3
+TASK_FAILURE = re.compile(r'maximum number of turns|timed out|timeout', re.I)
 MAX_INCUMBENT_TARGET, MIN_HOLDOUT = 1, 3
 MAX_CONTROL_DROP, MAX_GROWTH_PCT = 1, 20
 NOT_REPRODUCED_AT = 2  # incumbent target passes out of REPRODUCE_RUNS, on any model
@@ -139,7 +141,10 @@ def collect(entries, base):
             for i, run in enumerate(runs):
                 count += 1
                 cost += (run.get('costUsd') or 0) + (run.get('judgeCostUsd') or 0)
-                graded = not run.get('error') and bool(run.get('graders')) and not run.get('skippedPaidGraders')
+                # A turn limit or timeout is the task's own failure (PROTOCOL.md), so it counts as graded and failed.
+                task_failure = bool(TASK_FAILURE.search(str(run.get('error') or '')))
+                graded = task_failure or (not run.get('error') and bool(run.get('graders'))
+                                          and not run.get('skippedPaidGraders'))
                 check = checks[i] if checks is not None else {'pass': True}
                 groups.setdefault((entry['condition'], entry['model'], case['name']), []).append(
                     (bool(run.get('passed')) and graded and bool(check.get('pass')), graded,

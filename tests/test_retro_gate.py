@@ -145,6 +145,21 @@ class GateDecision(GateFixture):
         self.assertTrue(out['infra_retry_used'])
         self.assertIn('Second infrastructure fault', out['reasons'][0])
 
+    def test_turn_limit_and_timeout_are_task_failures_not_infrastructure(self):
+        results = self.full_gate()
+        entry = next(r for r in results if r['condition'] == 'candidate' and r['model'] == 'opus'
+                     and 'target' in r['path'])
+        path = self.dir / entry['path']
+        data = json.loads(path.read_text())
+        runs = data['cases'][0]['arms']['with']
+        for run, error in zip(runs, ['Reached maximum number of turns (40)', 'Run timed out after 600s']):
+            run.update(passed=False, error=error, graders=[])
+        path.write_text(json.dumps(data))
+        out = self.decide(self.manifest(results))
+        self.assertEqual(out['outcome'], 'inconclusive')
+        self.assertFalse(out['infra_retry_used'])
+        self.assertEqual(out['per_model']['opus']['target_candidate'], '3/5')
+
     def test_skill_md_growth_above_twenty_percent_is_rejected(self):
         self.skill('candidate', 1201)
         out = self.decide(self.manifest(self.full_gate()))
