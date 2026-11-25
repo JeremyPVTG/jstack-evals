@@ -156,7 +156,7 @@ class GateDecision(GateFixture):
 
     def test_one_ungraded_run_in_a_target_or_holdout_case_is_an_infrastructure_fault(self):
         for condition, prefix, case in (('candidate', 'target', TARGET), ('incumbent', 'target', TARGET),
-                                        ('candidate', 'holdout', HOLDOUT)):
+                                        ('candidate', 'holdout', 'soft holdout')):
             with self.subTest(f'{condition} {prefix}'):
                 results = self.full_gate()
                 self.break_one_run(results, condition, 'sonnet', prefix)
@@ -215,7 +215,8 @@ class GateDecision(GateFixture):
         self.assertEqual(out['per_model']['opus']['critical'], 1)
         self.assertEqual(out['per_model']['opus']['target_candidate'], '4/5')
         self.assertTrue(out['per_model']['sonnet']['pass'])
-        self.assertTrue(any('opus: 1 critical failure' in r and 'without rerunning' in r for r in out['reasons']))
+        self.assertIn('opus: 1 critical failure(s) in candidate runs.', out['reasons'])
+        self.assertTrue(any('without rerunning' in n for n in out['per_model']['opus']['critical_notes']))
 
     def test_control_dropping_two_runs_of_three_on_one_model_rejects(self):
         results = self.full_gate(sonnet={'candidate': {'controls': 'controls-drop-1of3'}})
@@ -242,7 +243,8 @@ class GateDecision(GateFixture):
         miss = {'candidate': {'holdout': 'holdout-fail-2of5'}}
         out = self.decide(self.manifest(self.full_gate(opus=miss, sonnet=miss)))
         self.assertEqual(out['outcome'], 'rejected')
-        self.assertEqual(out['reasons'], ['opus: soft holdout 2/5, needs 3/5.', 'sonnet: soft holdout 2/5, needs 3/5.'])
+        self.assertEqual(out['reasons'], ['opus: soft holdout not passed.', 'sonnet: soft holdout not passed.'])
+        self.assertEqual([out['per_model'][m]['holdout'] for m in MODELS], ['2/5', '2/5'])
 
     def test_incumbent_above_one_of_five_is_baseline_drift_and_fails_that_model(self):
         drift = {'incumbent': {'target': 'target-drift-2of5'}}
@@ -252,6 +254,52 @@ class GateDecision(GateFixture):
         self.assertIn('opus: incumbent passed the target 2/5 (baseline drifted)', one['reasons'][0])
         both = self.decide(self.manifest(self.full_gate(opus=drift, sonnet=drift), file='both.json'))
         self.assertEqual(both['outcome'], 'rejected')
+
+
+class PublicReasons(GateFixture):
+    """The runner posts reasons on the public finding, which the implementer could read: no assertion text there.
+
+    Checker notes, holdout scores, the holdout's name and local paths stay in per_model and the manifest.
+    """
+
+    def assert_public(self, out):
+        text = ' '.join(out['reasons'])
+        self.assertNotIn(HOLDOUT, text)
+        self.assertNotIn(str(self.dir), text)
+        self.assertNotRegex(text, r'holdout \d/\d')
+        for note in ('rerunning the lens', 'receipts rerun at HEAD'):
+            self.assertNotIn(note, text)
+
+    def test_a_critical_failure_reason_leaves_out_the_checker_note(self):
+        out = self.decide(self.manifest(self.full_gate(opus={'candidate': {'checker': 'target-critical'}})))
+        self.assertEqual(out['outcome'], 'rejected')
+        self.assert_public(out)
+
+    def test_holdout_misses_and_faults_leave_out_its_scores_and_name(self):
+        miss = {'candidate': {'holdout': 'holdout-fail-2of5'}}
+        self.assert_public(self.decide(self.manifest(self.full_gate(opus=miss), file='miss.json')))
+        results = self.full_gate()
+        holdout = next(r for r in results if r['condition'] == 'candidate' and 'holdout' in r['path'])
+        data = json.loads((self.dir / holdout['path']).read_text())
+        data['cases'][0]['arms']['with'][0].update(error='exit 1: API Error: 529 Overloaded', graders=[])
+        (self.dir / holdout['path']).write_text(json.dumps(data))
+        out = self.decide(self.manifest(results, file='fault.json'))
+        self.assertEqual(out['outcome'], 'retry')
+        self.assertIn('soft holdout', out['reasons'][0])
+        self.assert_public(out)
+
+    def test_a_changed_or_missing_holdout_is_named_by_role(self):
+        path = self.manifest(self.full_gate(), holdout_dir=str(self.dir / 'holdout'))
+        (self.dir / 'holdout').mkdir()
+        out = self.decide(path)
+        self.assertIn('soft holdout is missing', out['reasons'][0])
+        self.assert_public(out)
+        shutil.copytree(self.cases / HOLDOUT, self.dir / 'holdout' / HOLDOUT)
+        with open(self.dir / 'holdout' / HOLDOUT / 'prompt.md', 'a') as prompt:
+            prompt.write('Status: complete is fine.\n')
+        out = self.decide(path)
+        self.assertIn('soft holdout changed after freezing', out['reasons'][0])
+        self.assert_public(out)
 
 
 class NoModelJudges(GateFixture):
@@ -378,14 +426,14 @@ class HoldoutDir(GateFixture):
             prompt.write('Status: complete is fine.\n')
         out = self.decide(path)
         self.assertEqual(out['outcome'], 'rejected')
-        self.assertIn(f'{HOLDOUT} changed after freezing', out['reasons'][0])
+        self.assertIn('The soft holdout changed after freezing', out['reasons'][0])
 
     def test_without_holdout_dir_the_holdout_is_looked_for_under_case_dir(self):
         path = self.manifest(self.full_gate())
         self.move_holdout()
         out = self.decide(path)
         self.assertEqual(out['outcome'], 'rejected')
-        self.assertIn(f'{HOLDOUT} is missing from cases', out['reasons'][0])
+        self.assertIn('The soft holdout is missing from the case directory', out['reasons'][0])
 
     def test_reproduce_needs_no_holdout_anywhere(self):
         path = self.manifest(self.reproduce_runs(), mode='reproduce')  # names the holdout, as the frozen cases do

@@ -11,6 +11,11 @@ files and optional checker output named in the manifest. Claude models never
 judge, so a result file with an `llm` or `baseline` grader, or a run with a
 judgeCostUsd above 0, makes the manifest malformed (exit 2).
 
+The loop runner posts `reasons` on the public finding, where the implementer
+could read them, so reasons never carry checker notes, holdout scores, the
+holdout's case name or local paths. Those stay in `per_model` (`holdout`,
+`critical_notes`) and in the manifest.
+
 Gate rules, first match wins (ADR 0005 in jstack):
   a frozen case hash changed                    -> rejected
   infrastructure fault, retry not yet used      -> retry (attempt not used)
@@ -202,19 +207,25 @@ def infra_faults(m, groups):
     In the target or the soft holdout every run decides the outcome, so one run that errored, was not graded
     or is missing is a fault. A control is faulty when more than a third of a condition's runs are.
     """
-    decisive = {m['cases']['target']['name']} | ({m['cases']['holdout']['name']} if m['mode'] == 'gate' else set())
+    holdout = m['cases']['holdout']['name'] if m['mode'] == 'gate' else None
+    decisive = {m['cases']['target']['name'], holdout}
     reasons = []
     for model in m['models']:
         for condition, case, runs in planned(m):
             bad = tally(groups, condition, model, case, runs)['not_graded']
             if bad and (case in decisive or bad * 3 > runs):
-                reasons.append(f'{model} {condition} {case}: {bad} of {runs} runs errored, '
+                label = 'soft holdout' if case == holdout else case
+                reasons.append(f'{model} {condition} {label}: {bad} of {runs} runs errored, '
                                'were not graded or are missing.')
     return reasons
 
 
 def model_result(m, groups, model):
-    """One model's gate figures, whether it passes, and why not."""
+    """One model's gate figures, whether it passes, and why not.
+
+    The reasons are posted on the public finding, so they leave out checker notes and holdout scores, which
+    stay in the figures (critical_notes, holdout).
+    """
     cases = m['cases']
     t = lambda condition, case, runs: tally(groups, condition, model, case, runs)
     cand = t('candidate', cases['target']['name'], TARGET_RUNS)
@@ -229,15 +240,14 @@ def model_result(m, groups, model):
     reasons = [f'{model}: control {name} dropped from {before}/{CONTROL_RUNS} to {after}/{CONTROL_RUNS}.'
                for name, (before, after) in controls.items() if before - after > MAX_CONTROL_DROP]
     if critical:
-        reasons.append(f'{model}: {critical} critical failure(s) in candidate runs'
-                       + (f" ({'; '.join(notes)})." if notes else '.'))
+        reasons.append(f'{model}: {critical} critical failure(s) in candidate runs.')
     why = []
     if inc['passes'] > MAX_INCUMBENT_TARGET:
         why.append(f"incumbent passed the target {inc['passes']}/{TARGET_RUNS} (baseline drifted)")
     if cand['passes'] < TARGET_RUNS:
         why.append(f"candidate passed the target {cand['passes']}/{TARGET_RUNS}, needs {TARGET_RUNS}/{TARGET_RUNS}")
     if hold['passes'] < MIN_HOLDOUT:
-        why.append(f"soft holdout {hold['passes']}/{HOLDOUT_RUNS}, needs {MIN_HOLDOUT}/{HOLDOUT_RUNS}")
+        why.append('soft holdout not passed')
     if why:
         reasons.append(f"{model}: {'; '.join(why)}.")
     return {
@@ -246,6 +256,7 @@ def model_result(m, groups, model):
         'holdout': f"{hold['passes']}/{HOLDOUT_RUNS}",
         'max_control_drop': max([0] + drops),
         'critical': critical,
+        'critical_notes': notes,
         'pass': not reasons,
         'reasons': reasons,
     }
@@ -369,20 +380,26 @@ def compare(models, per_model):
 
 
 def frozen_case_changes(m, base):
-    """Reasons for each frozen case that is missing or changed. Reproduce mode never needs the holdout."""
+    """Reasons for each frozen case that is missing or changed. Reproduce mode never needs the holdout.
+
+    The reasons are public, so they name the holdout by its role and no directory by its path.
+    """
     cases = m['cases']
-    checked = [(cases['target'], m['case_dir'])] + [(c, m['case_dir']) for c in cases.get('controls', [])]
+    checked = [(f"Frozen case {cases['target']['name']}", cases['target'], m['case_dir'], 'the case directory')]
+    checked += [(f"Frozen case {c['name']}", c, m['case_dir'], 'the case directory') for c in cases.get('controls', [])]
     if m['mode'] == 'gate':
-        checked.insert(1, (cases['holdout'], m.get('holdout_dir') or m['case_dir']))
+        where = m.get('holdout_dir') or m['case_dir']
+        checked.insert(1, ('The soft holdout', cases['holdout'], where,
+                           'the holdout directory' if m.get('holdout_dir') else 'the case directory'))
     reasons = []
-    for case, where in checked:
+    for label, case, where, role in checked:
         case_dir = base / where
         if not (case_dir / case['name']).is_dir():
-            reasons.append(f"Frozen case {case['name']} is missing from {where}: treated as gaming the eval.")
+            reasons.append(f'{label} is missing from {role}: treated as gaming the eval.')
             continue
         actual = case_hash(case_dir / case['name'])
         if actual != case['sha256']:
-            reasons.append(f"Frozen case {case['name']} changed after freezing (sha256 {actual[:12]}, "
+            reasons.append(f"{label} changed after freezing (sha256 {actual[:12]}, "
                            f"frozen {case['sha256'][:12]}): treated as gaming the eval.")
     return reasons
 
