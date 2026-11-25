@@ -7,7 +7,9 @@ Usage:
 
 The manifest and output shapes are the retro loop contract (jstack#17, #18).
 No model is called: the decision comes from `claude plugin eval --json` result
-files and optional checker output named in the manifest.
+files and optional checker output named in the manifest. Claude models never
+judge, so a result file with an `llm` or `baseline` grader, or a run with a
+judgeCostUsd above 0, makes the manifest malformed (exit 2).
 
 Gate rules, first match wins (ADR 0005 in jstack):
   a frozen case hash changed                    -> rejected
@@ -40,6 +42,7 @@ MAX_INCUMBENT_TARGET, MIN_HOLDOUT = 1, 3
 MAX_CONTROL_DROP, MAX_GROWTH_PCT = 1, 20
 NOT_REPRODUCED_AT = 2  # incumbent target passes out of REPRODUCE_RUNS, on any model
 SKIPPED_DIRS = {'results', '__pycache__'}
+MODEL_GRADERS = {'llm', 'baseline'}  # claude plugin eval grader types a Claude model scores
 
 
 class ManifestError(ValueError):
@@ -143,13 +146,20 @@ def collect(entries, base):
         for case in result['cases']:
             runs = (case.get('arms') or {}).get('with')
             need(isinstance(runs, list), f"{entry['path']}: case {case.get('name')!r} has no arms.with runs")
+            judged = sorted({g.get('type') for g in case.get('graders') or [] if g.get('type') in MODEL_GRADERS})
+            need(not judged, f"{entry['path']}: case {case.get('name')!r} has a model-judged grader "
+                 f"({', '.join(judged)}); Claude models never judge, so the gate takes deterministic graders only")
             checks = checker.get(case['name'])
             if checks is not None and len(checks) != len(runs):
                 raise ManifestError(f"checker {entry['checker']} has {len(checks)} entries for {case['name']}, "
                                     f"the result file has {len(runs)} runs")
             for i, run in enumerate(runs):
+                judge_cost = run.get('judgeCostUsd') or 0
+                need(isinstance(judge_cost, (int, float)) and judge_cost <= 0,
+                     f"{entry['path']}: case {case.get('name')!r} run {i + 1} has judgeCostUsd {judge_cost!r}: "
+                     'a model judged it, and Claude models never judge')
                 count += 1
-                cost += (run.get('costUsd') or 0) + (run.get('judgeCostUsd') or 0)
+                cost += run.get('costUsd') or 0
                 # A turn limit or timeout is the task's own failure (PROTOCOL.md), so it counts as graded and failed.
                 task_failure = bool(TASK_FAILURE.search(str(run.get('error') or '')))
                 graded = task_failure or (not run.get('error') and bool(run.get('graders'))

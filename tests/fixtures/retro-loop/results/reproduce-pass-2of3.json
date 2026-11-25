@@ -3,7 +3,7 @@
   "claudeVersion": "2.1.331",
   "startedAt": "2026-11-25T09:05:00.000Z",
   "durationSeconds": 72,
-  "costUsd": 1.35,
+  "costUsd": 1.5,
   "partial": false,
   "suite": {"root": "/tmp/retro-loop/build", "ablation": "none", "modelOverride": null, "threshold": 0, "concurrency": 3, "plugins": [{"name": "jstack", "version": "0.0.0", "path": "/tmp/retro-loop/build"}]},
   "cases": [
@@ -17,13 +17,13 @@
       "maxTurns": 30,
       "graders": [
         {"name": "status", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "Status: blocked", "flags": "", "match": "contains"}},
-        {"name": "reason", "type": "llm", "weight": 1, "graderMarkdown": "PASS if the report blocks because the receipts predate HEAD.", "config": {"criteria": "PASS if the report blocks because the receipts predate HEAD.", "focus": "last_message"}}
+        {"name": "reason", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "predate HEAD", "flags": "i", "match": "contains"}}
       ],
       "arms": {
         "with": [
-          {"score": 1, "passed": true, "turns": 10, "costUsd": 0.45, "judgeCostUsd": 0.05, "durationSeconds": 45, "startedAt": "2026-11-25T09:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-rp01/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "judge votes: PASS PASS PASS", "withOnly": false, "scored": true, "judgeVotes": [true, true, true]}]},
-          {"score": 0, "passed": false, "turns": 8, "costUsd": 0.45, "judgeCostUsd": 0.05, "durationSeconds": 36, "startedAt": "2026-11-25T09:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-rp02/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": false, "weight": 1, "explanation": "pattern not found", "withOnly": false, "scored": true}, {"name": "reason", "passed": false, "weight": 1, "explanation": "judge votes: FAIL FAIL FAIL", "withOnly": false, "scored": true, "judgeVotes": [false, false, false]}]},
-          {"score": 1, "passed": true, "turns": 11, "costUsd": 0.45, "judgeCostUsd": 0.05, "durationSeconds": 47, "startedAt": "2026-11-25T09:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-rp03/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "judge votes: PASS PASS PASS", "withOnly": false, "scored": true, "judgeVotes": [true, true, true]}]}
+          {"score": 1, "passed": true, "turns": 10, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 45, "startedAt": "2026-11-25T09:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-rp01/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 0, "passed": false, "turns": 8, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 36, "startedAt": "2026-11-25T09:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-rp02/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": false, "weight": 1, "explanation": "pattern not found", "withOnly": false, "scored": true}, {"name": "reason", "passed": false, "weight": 1, "explanation": "pattern not found", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 11, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 47, "startedAt": "2026-11-25T09:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-rp03/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]}
         ]
       },
       "aggregates": {"score": 0.6666666666666666, "passRate": 0.6666666666666666}

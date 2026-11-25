@@ -131,7 +131,7 @@ class GateDecision(GateFixture):
         self.assertIn('one-stale-lens is missing', out['reasons'][0])
 
     def test_first_infrastructure_fault_asks_for_a_retry_that_uses_no_attempt(self):
-        # opus candidate target: one run errored, one skipped its paid grader (2 of 5 not graded)
+        # opus candidate target: two runs hit API errors (2 of 5 not graded)
         results = self.full_gate(opus={'candidate': {'target': 'target-infra-2of5'}})
         out = self.decide(self.manifest(results))
         self.assertEqual(out['outcome'], 'retry')
@@ -216,6 +216,47 @@ class GateDecision(GateFixture):
         self.assertIn('opus: incumbent passed the target 2/5 (baseline drifted)', one['reasons'][0])
         both = self.decide(self.manifest(self.full_gate(opus=drift, sonnet=drift), file='both.json'))
         self.assertEqual(both['outcome'], 'rejected')
+
+
+class NoModelJudges(GateFixture):
+    """Claude models never judge: a result graded by a model makes the manifest malformed."""
+
+    def edit_first(self, results, edit):
+        path = self.dir / results[0]['path']
+        data = json.loads(path.read_text())
+        edit(data['cases'][0])
+        path.write_text(json.dumps(data))
+
+    def test_an_llm_or_baseline_grader_is_refused(self):
+        for kind in ('llm', 'baseline'):
+            with self.subTest(kind):
+                results = self.full_gate()
+                self.edit_first(results, lambda case: case['graders'].append(
+                    {'name': 'judge', 'type': kind, 'weight': 1, 'config': {'criteria': 'PASS if correct.'}}))
+                with self.assertRaisesRegex(gate.ManifestError, kind):
+                    self.decide(self.manifest(results, file=f'{kind}.json'))
+
+    def test_a_run_with_a_judge_cost_is_refused(self):
+        results = self.full_gate()
+        self.edit_first(results, lambda case: case['arms']['with'][0].update(judgeCostUsd=0.05))
+        with self.assertRaisesRegex(gate.ManifestError, 'judgeCostUsd'):
+            self.decide(self.manifest(results))
+
+    def test_reused_incumbent_runs_are_checked_too(self):
+        first = self.full_gate()
+        self.edit_first(first, lambda case: case['arms']['with'][0].update(judgeCostUsd=0.05))
+        self.manifest(first, file='attempt-1.json')
+        second = self.candidate('opus') + self.candidate('sonnet')
+        with self.assertRaisesRegex(gate.ManifestError, 'judgeCostUsd'):
+            self.decide(self.manifest(second, file='attempt-2.json', attempt=2, reuse_incumbent_from='attempt-1.json'))
+
+    def test_the_command_exits_2_on_a_model_judged_manifest(self):
+        results = self.full_gate()
+        self.edit_first(results, lambda case: case['graders'].append({'name': 'judge', 'type': 'llm', 'weight': 1}))
+        done = subprocess.run([sys.executable, str(SCRIPT), 'decide', str(self.manifest(results))],
+                              capture_output=True, text=True)
+        self.assertEqual((done.returncode, done.stdout), (2, ''))
+        self.assertIn('llm', done.stderr)
 
 
 class IncumbentReuse(GateFixture):
