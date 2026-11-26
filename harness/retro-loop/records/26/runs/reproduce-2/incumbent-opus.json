@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.331",
+  "startedAt": "2026-11-25T20:35:08.302Z",
+  "durationSeconds": 68,
+  "costUsd": 1.9516487999999999,
+  "partial": false,
+  "suite": {
+    "root": "~/.local/share/jstack-retro-loop/runs/26/reproduce-2/plugin",
+    "ablation": "none",
+    "modelOverride": "opus",
+    "threshold": 0,
+    "concurrency": 3,
+    "plugins": [
+      {
+        "name": "jstack",
+        "version": "0.0.0",
+        "path": "~/.local/share/jstack-retro-loop/runs/26/reproduce-2/plugin"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "review-receipts-stale",
+      "dir": "evals/review-receipts-stale",
+      "source": "mixed",
+      "promptMarkdown": "Use the j-build skill to wrap up this installed change. Read AGENTS.md and HANDOFF.md, check the repository as needed, and report whether the work is complete and anything still needed.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 40,
+      "graders": [
+        {
+          "name": "skill",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?j-build\""
+          }
+        },
+        {
+          "name": "status",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b(?:blocked|incomplete|unfinished|open|pending|outstanding|remaining|stale|outdated|old(?:er)?|earlier|await(?:s|ing)?|need(?:s|ed)?|complete(?:d)?|completion|finished|done|ship(?:ped)?|closed|finalized|ready|cannot|can.t|not yet|nothing)\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.6982688,
+            "judgeCostUsd": 0,
+            "durationSeconds": 65,
+            "startedAt": "2026-11-25T20:35:08.331Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-6roiXA/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "skill",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "status",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:blocked|incomplete|unfinished|open|pending|outstanding|remaining|stale|outdated|old(?:er)?|earlier|await(?:s|ing)?|need(?:s|ed)?|complete(?:d)?|completion|finished|done|ship(?:ped)?|closed|finalized|ready|cannot|can.t|not yet|nothing)\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 0.575372,
+            "judgeCostUsd": 0,
+            "durationSeconds": 68,
+            "startedAt": "2026-11-25T20:35:08.331Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-NzGewq/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "skill",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "status",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:blocked|incomplete|unfinished|open|pending|outstanding|remaining|stale|outdated|old(?:er)?|earlier|await(?:s|ing)?|need(?:s|ed)?|complete(?:d)?|completion|finished|done|ship(?:ped)?|closed|finalized|ready|cannot|can.t|not yet|nothing)\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.6780079999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 62,
+            "startedAt": "2026-11-25T20:35:08.331Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-Kq3API/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "skill",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "status",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:blocked|incomplete|unfinished|open|pending|outstanding|remaining|stale|outdated|old(?:er)?|earlier|await(?:s|ing)?|need(?:s|ed)?|complete(?:d)?|completion|finished|done|ship(?:ped)?|closed|finalized|ready|cannot|can.t|not yet|nothing)\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}

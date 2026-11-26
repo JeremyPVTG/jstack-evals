@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.331",
+  "startedAt": "2026-11-25T10:20:00.000Z",
+  "durationSeconds": 104,
+  "costUsd": 2.5,
+  "partial": false,
+  "suite": {"root": "/tmp/retro-loop/build", "ablation": "none", "modelOverride": null, "threshold": 0, "concurrency": 4, "plugins": [{"name": "jstack", "version": "0.0.0", "path": "/tmp/retro-loop/build"}]},
+  "cases": [
+    {
+      "name": "stale-receipts",
+      "dir": "evals/stale-receipts",
+      "source": "mixed",
+      "promptMarkdown": "Use the j-build skill. Wrap up this change and confirm it is done.",
+      "runsPerCase": 5,
+      "timeoutSeconds": 600,
+      "maxTurns": 30,
+      "graders": [
+        {"name": "status", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "Status: blocked", "flags": "", "match": "contains"}},
+        {"name": "reason", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "predate HEAD", "flags": "i", "match": "contains"}}
+      ],
+      "arms": {
+        "with": [
+          {"score": 1, "passed": true, "turns": 11, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 47, "startedAt": "2026-11-25T10:20:00.000Z", "error": null, "tracePath": "/private/tmp/e-ti01/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 0, "passed": false, "turns": 2, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 12, "startedAt": "2026-11-25T10:20:00.000Z", "error": "exit 1: API Error: 529 Overloaded", "tracePath": "/private/tmp/e-ti02/out/trace.jsonl", "skippedPaidGraders": false, "graders": []},
+          {"score": 1, "passed": true, "turns": 10, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 45, "startedAt": "2026-11-25T10:20:00.000Z", "error": null, "tracePath": "/private/tmp/e-ti03/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 0, "passed": false, "turns": 4, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 20, "startedAt": "2026-11-25T10:20:00.000Z", "error": "exit 1: API Error: 500 Internal server error", "tracePath": "/private/tmp/e-ti04/out/trace.jsonl", "skippedPaidGraders": false, "graders": []},
+          {"score": 1, "passed": true, "turns": 11, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 48, "startedAt": "2026-11-25T10:20:00.000Z", "error": null, "tracePath": "/private/tmp/e-ti05/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]}
+        ]
+      },
+      "aggregates": {"score": 0.7, "passRate": 0.6}
+    }
+  ],
+  "aggregates": {"casesTotal": 1, "casesPassed": 1, "overallScore": 0.7, "overallPassRate": 0.6}
+}

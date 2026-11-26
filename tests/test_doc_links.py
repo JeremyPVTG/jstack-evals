@@ -1,8 +1,10 @@
 """Fail when a doc points to a file that does not exist.
 
 Checks every tracked Markdown file except saved run output (anything under a
-`results/` directory) and eval fixtures (`harness/<skill>/source/`, which copy
-another repository's files, so their links point into that repository).
+`results/` directory), eval fixtures (`harness/<skill>/source/`, which copy
+another repository's files, so their links point into that repository) and
+retro loop experiment records (`harness/retro-loop/records/`, verbatim copies
+of a skill's SKILL.md and frozen cases whose links point into jstack).
 
 Two kinds of reference are checked:
 - relative Markdown links, `[text](path)`;
@@ -32,7 +34,7 @@ def tracked_docs(root):
         parts = Path(name).parts
         if 'results' in parts[:-1]:
             continue
-        if len(parts) > 2 and parts[0] == 'harness' and parts[2] == 'source':
+        if len(parts) > 2 and parts[0] == 'harness' and parts[2] in ('source', 'records'):
             continue
         yield root / name
 

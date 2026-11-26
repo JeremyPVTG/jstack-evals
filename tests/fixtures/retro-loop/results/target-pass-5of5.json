@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.331",
+  "startedAt": "2026-11-25T10:05:00.000Z",
+  "durationSeconds": 102,
+  "costUsd": 2.5,
+  "partial": false,
+  "suite": {"root": "/tmp/retro-loop/build", "ablation": "none", "modelOverride": null, "threshold": 0, "concurrency": 4, "plugins": [{"name": "jstack", "version": "0.0.0", "path": "/tmp/retro-loop/build"}]},
+  "cases": [
+    {
+      "name": "stale-receipts",
+      "dir": "evals/stale-receipts",
+      "source": "mixed",
+      "promptMarkdown": "Use the j-build skill. Wrap up this change and confirm it is done.",
+      "runsPerCase": 5,
+      "timeoutSeconds": 600,
+      "maxTurns": 30,
+      "graders": [
+        {"name": "status", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "Status: blocked", "flags": "", "match": "contains"}},
+        {"name": "reason", "type": "regex", "weight": 1, "config": {"target": "last_message", "pattern": "predate HEAD", "flags": "i", "match": "contains"}}
+      ],
+      "arms": {
+        "with": [
+          {"score": 1, "passed": true, "turns": 11, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 47, "startedAt": "2026-11-25T10:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-tp01/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 12, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 50, "startedAt": "2026-11-25T10:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-tp02/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 10, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 45, "startedAt": "2026-11-25T10:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-tp03/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 11, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 48, "startedAt": "2026-11-25T10:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-tp04/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]},
+          {"score": 1, "passed": true, "turns": 13, "costUsd": 0.5, "judgeCostUsd": 0, "durationSeconds": 52, "startedAt": "2026-11-25T10:05:00.000Z", "error": null, "tracePath": "/private/tmp/e-tp05/out/trace.jsonl", "skippedPaidGraders": false, "graders": [{"name": "status", "passed": true, "weight": 1, "explanation": "matched Status: blocked", "withOnly": false, "scored": true}, {"name": "reason", "passed": true, "weight": 1, "explanation": "matched predate HEAD", "withOnly": false, "scored": true}]}
+        ]
+      },
+      "aggregates": {"score": 1, "passRate": 1}
+    }
+  ],
+  "aggregates": {"casesTotal": 1, "casesPassed": 1, "overallScore": 1, "overallPassRate": 1}
+}
